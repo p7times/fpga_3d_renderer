@@ -1,0 +1,3 @@
+/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/vivado/blink/blink_platform/zynq_fsbl/build/CMakeFiles/fsbl.elf.dir
+/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/vivado/blink/blink_platform/zynq_fsbl/build/CMakeFiles/edit_cache.dir
+/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/vivado/blink/blink_platform/zynq_fsbl/build/CMakeFiles/rebuild_cache.dir
