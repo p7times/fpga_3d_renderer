@@ -101,6 +101,10 @@ void DemoPrintTest(u8 *frame, u32 width, u32 height, u32 stride)
     DrawFilledRect(frame, stride, 100, 50);
     DrawFilledRect(frame, stride, 1, 1);
     DrawFilledRect(frame, stride, 200, 100);
+    DrawFilledRect(frame, stride, 800, 590);
+    DrawFilledRect(frame, stride, 800, 450);
+    DrawFilledRect(frame, stride, 1595, 895);
+
 
     // Flush cache pentru a asigura că memoria DDR conține datele actualizate
     Xil_DCacheFlushRange((unsigned int)frame, DEMO_MAX_FRAME);

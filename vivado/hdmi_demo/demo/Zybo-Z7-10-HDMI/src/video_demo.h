@@ -58,9 +58,11 @@ void DemoRun();
 void DemoPrintMenu();
 void DemoChangeRes();
 void DemoCRMenu();
+void DemoISR(void *callBackRef, void *pVideo);
+
 void DrawFilledRect(u8 *frame, u32 stride, u32 x, u32 y);
 void DemoPrintTest(u8 *frame, u32 width, u32 height, u32 stride);
-void DemoISR(void *callBackRef, void *pVideo);
+
 
 /* ------------------------------------------------------------ */
 

@@ -1,4 +1,4 @@
-13:15:01 **** Incremental Build of configuration Debug for project Zybo-Z7-10-HDMI ****
+18:55:15 **** Incremental Build of configuration Debug for project Zybo-Z7-10-HDMI ****
 make all 
 make --no-print-directory pre-build
 a9-linaro-pre-build-step
@@ -33,9 +33,9 @@ Finished building target: Zybo-Z7-10-HDMI.elf
 Invoking: ARM v7 Print Size
 arm-none-eabi-size Zybo-Z7-10-HDMI.elf  |tee "Zybo-Z7-10-HDMI.elf.size"
    text	   data	    bss	    dec	    hex	filename
-  96813	   3504	24909072	25009389	17d9ced	Zybo-Z7-10-HDMI.elf
+  96867	   3504	24909072	25009443	17d9d23	Zybo-Z7-10-HDMI.elf
 Finished building: Zybo-Z7-10-HDMI.elf.size
  
 
-13:15:01 Build Finished (took 319ms)
+18:55:15 Build Finished (took 314ms)
 
