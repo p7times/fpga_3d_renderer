@@ -1,6 +1,6 @@
 Nothing to build in platform 'design_1_wrapper'
 
-16:59:00 **** Incremental Build of configuration Debug for project Zybo-Z7-10-HDMI ****
+13:15:01 **** Incremental Build of configuration Debug for project Zybo-Z7-10-HDMI ****
 make all 
 make --no-print-directory pre-build
 a9-linaro-pre-build-step
@@ -13,11 +13,11 @@ In file included from /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/lic
                  from /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/design_1_wrapper/export/design_1_wrapper/sw/design_1_wrapper/domain_ps7_cortexa9_0/bspinclude/include/xaxivdma.h:297,
                  from ../src/video_capture/video_capture.h:75,
                  from ../src/video_demo.h:32,
-                 from ../src/video_demo.c:28:
+                 from ../src/video_demo.c:1:
 /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/design_1_wrapper/export/design_1_wrapper/sw/design_1_wrapper/domain_ps7_cortexa9_0/bspinclude/include/xdebug.h:21:2: warning: #warning DEBUG is enabled [-Wcpp]
    21 | #warning DEBUG is enabled
       |  ^~~~~~~
-In file included from ../src/video_demo.c:33:
+In file included from ../src/video_demo.c:4:
 /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/design_1_wrapper/export/design_1_wrapper/sw/design_1_wrapper/domain_ps7_cortexa9_0/bspinclude/include/xuartps.h:450: warning: "XUartPs_IsTransmitEmpty" redefined
   450 | #define XUartPs_IsTransmitEmpty(InstancePtr)                            \
       | 
@@ -25,68 +25,6 @@ In file included from /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/lic
 /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/design_1_wrapper/export/design_1_wrapper/sw/design_1_wrapper/domain_ps7_cortexa9_0/bspinclude/include/xuartps_hw.h:424: note: this is the location of the previous definition
   424 | #define XUartPs_IsTransmitEmpty(BaseAddress)                     \
       | 
-../src/video_demo.c: In function 'DemoPrintTest':
-../src/video_demo.c:537:22: warning: unused variable 'yInc' [-Wunused-variable]
-  537 |         double xInc, yInc;
-      |                      ^~~~
-../src/video_demo.c:537:16: warning: unused variable 'xInc' [-Wunused-variable]
-  537 |         double xInc, yInc;
-      |                ^~~~
-../src/video_demo.c:536:19: warning: unused variable 'yInt' [-Wunused-variable]
-  536 |         u32 yMid, yInt;
-      |                   ^~~~
-../src/video_demo.c:536:13: warning: unused variable 'yMid' [-Wunused-variable]
-  536 |         u32 yMid, yInt;
-      |             ^~~~
-../src/video_demo.c:535:34: warning: unused variable 'xInt' [-Wunused-variable]
-  535 |         u32 xLeft, xMid, xRight, xInt;
-      |                                  ^~~~
-../src/video_demo.c:535:26: warning: unused variable 'xRight' [-Wunused-variable]
-  535 |         u32 xLeft, xMid, xRight, xInt;
-      |                          ^~~~~~
-../src/video_demo.c:535:20: warning: unused variable 'xMid' [-Wunused-variable]
-  535 |         u32 xLeft, xMid, xRight, xInt;
-      |                    ^~~~
-../src/video_demo.c:535:13: warning: unused variable 'xLeft' [-Wunused-variable]
-  535 |         u32 xLeft, xMid, xRight, xInt;
-      |             ^~~~~
-../src/video_demo.c:534:37: warning: unused variable 'fColor' [-Wunused-variable]
-  534 |         double fRed, fBlue, fGreen, fColor;
-      |                                     ^~~~~~
-../src/video_demo.c:534:29: warning: unused variable 'fGreen' [-Wunused-variable]
-  534 |         double fRed, fBlue, fGreen, fColor;
-      |                             ^~~~~~
-../src/video_demo.c:534:22: warning: unused variable 'fBlue' [-Wunused-variable]
-  534 |         double fRed, fBlue, fGreen, fColor;
-      |                      ^~~~~
-../src/video_demo.c:534:16: warning: unused variable 'fRed' [-Wunused-variable]
-  534 |         double fRed, fBlue, fGreen, fColor;
-      |                ^~~~
-../src/video_demo.c:533:13: warning: unused variable 'wCurrentInt' [-Wunused-variable]
-  533 |         u32 wCurrentInt;
-      |             ^~~~~~~~~~~
-../src/video_demo.c:532:25: warning: unused variable 'wGreen' [-Wunused-variable]
-  532 |         u8 wRed, wBlue, wGreen;
-      |                         ^~~~~~
-../src/video_demo.c:532:18: warning: unused variable 'wBlue' [-Wunused-variable]
-  532 |         u8 wRed, wBlue, wGreen;
-      |                  ^~~~~
-../src/video_demo.c:532:12: warning: unused variable 'wRed' [-Wunused-variable]
-  532 |         u8 wRed, wBlue, wGreen;
-      |            ^~~~
-../src/video_demo.c:531:13: warning: unused variable 'iPixelAddr' [-Wunused-variable]
-  531 |         u32 iPixelAddr;
-      |             ^~~~~~~~~~
-../src/video_demo.c:530:19: warning: unused variable 'ycoi' [-Wunused-variable]
-  530 |         u32 xcoi, ycoi;
-      |                   ^~~~
-../src/video_demo.c:530:13: warning: unused variable 'xcoi' [-Wunused-variable]
-  530 |         u32 xcoi, ycoi;
-      |             ^~~~
-../src/video_demo.c: In function 'DemoGetInactiveFrame':
-../src/video_demo.c:431:1: warning: control reaches end of non-void function [-Wreturn-type]
-  431 | }
-      | ^
 Finished building: ../src/video_demo.c
  
 Building target: Zybo-Z7-10-HDMI.elf
@@ -97,10 +35,10 @@ Finished building target: Zybo-Z7-10-HDMI.elf
 Invoking: ARM v7 Print Size
 arm-none-eabi-size Zybo-Z7-10-HDMI.elf  |tee "Zybo-Z7-10-HDMI.elf.size"
    text	   data	    bss	    dec	    hex	filename
- 101043	   3504	24909072	25013619	17dad73	Zybo-Z7-10-HDMI.elf
+  96813	   3504	24909072	25009389	17d9ced	Zybo-Z7-10-HDMI.elf
 Finished building: Zybo-Z7-10-HDMI.elf.size
  
-16:59:01 **** Incremental Build of configuration Debug for project Zybo-Z7-10-HDMI_system ****
+13:15:01 **** Incremental Build of configuration Debug for project Zybo-Z7-10-HDMI_system ****
 make all 
 Generating bif file for the system project
 Executing command '::scw::generate_bif -xpfm /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/design_1_wrapper/export/design_1_wrapper/design_1_wrapper.xpfm -domains domain_ps7_cortexa9_0 -bifpath /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI_system/Debug/system.bif' on XSCT

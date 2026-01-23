@@ -1,0 +1,10 @@
+2024-07-04T12:47:40.511823600255-12:47:40 **** Incremental Build of configuration Debug for project Zybo-Z7-10-HDMI ****
+000-make all 
+000-make --no-print-directory pre-build
+000-a9-linaro-pre-build-step
+000-' '
+000-make --no-print-directory main-build
+000-make[1]: Nothing to be done for 'main-build'.
+00255-
+12:47:40 Build Finished (took 368ms)
+
