@@ -3488,3 +3488,657 @@ con
 
 18:55:30 INFO  : Launch script is exported to file '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI_system/_ide/scripts/systemdebugger_zybo-z7-10-hdmi_system_2_standalone.tcl'
 19:06:22 INFO  : Disconnected from the channel tcfchan#8.
+20:39:41 DEBUG : Logs will be stored at '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/IDE.log'.
+20:39:42 INFO  : Launching XSCT server: xsct -n  -interactive /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/temp_xsdb_launch_script.tcl
+20:39:43 INFO  : Platform repository initialization has completed.
+20:39:43 INFO  : Registering command handlers for Vitis TCF services
+20:39:44 INFO  : XSCT server has started successfully.
+20:39:44 INFO  : Successfully done setting XSCT server connection channel  
+20:39:44 INFO  : plnx-install-location is set to ''
+20:39:44 INFO  : Successfully done query RDI_DATADIR 
+20:39:44 INFO  : Successfully done setting workspace for the tool. 
+14:11:37 DEBUG : Logs will be stored at '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/IDE.log'.
+14:11:38 INFO  : Launching XSCT server: xsct -n  -interactive /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/temp_xsdb_launch_script.tcl
+14:11:39 INFO  : Platform repository initialization has completed.
+14:11:40 INFO  : Registering command handlers for Vitis TCF services
+14:11:41 INFO  : XSCT server has started successfully.
+14:11:41 INFO  : plnx-install-location is set to ''
+14:11:41 INFO  : Successfully done setting XSCT server connection channel  
+14:11:41 INFO  : Successfully done query RDI_DATADIR 
+14:11:41 INFO  : Successfully done setting workspace for the tool. 
+14:12:28 INFO  : Connected to target on host '127.0.0.1' and port '3121'.
+14:12:28 INFO  : Jtag cable 'Digilent Zybo Z7 210351B80362A' is selected.
+14:12:28 INFO  : 'jtag frequency' command is executed.
+14:12:28 INFO  : Context for 'APU' is selected.
+14:12:28 INFO  : System reset is completed.
+14:12:31 INFO  : 'after 3000' command is executed.
+14:12:31 INFO  : 'targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B80362A" && level==0 && jtag_device_ctx=="jsn-Zybo Z7-210351B80362A-13722093-0"}' command is executed.
+14:12:32 INFO  : Device configured successfully with "/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/bitstream/design_1_wrapper.bit"
+14:12:33 INFO  : Context for 'APU' is selected.
+14:12:33 INFO  : Hardware design and registers information is loaded from '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/design_1_wrapper/export/design_1_wrapper/hw/design_1_wrapper.xsa'.
+14:12:33 INFO  : 'configparams force-mem-access 1' command is executed.
+14:12:33 INFO  : Context for 'APU' is selected.
+14:12:33 INFO  : Sourcing of '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/psinit/ps7_init.tcl' is done.
+14:12:33 INFO  : 'ps7_init' command is executed.
+14:12:33 INFO  : 'ps7_post_config' command is executed.
+14:12:33 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+14:12:33 INFO  : The application '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/Debug/Zybo-Z7-10-HDMI.elf' is downloaded to processor 'ps7_cortexa9_0'.
+14:12:33 INFO  : 'configparams force-mem-access 0' command is executed.
+14:12:33 INFO  : ----------------XSDB Script----------------
+connect -url tcp:127.0.0.1:3121
+targets -set -nocase -filter {name =~"APU*"}
+rst -system
+after 3000
+targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B80362A" && level==0 && jtag_device_ctx=="jsn-Zybo Z7-210351B80362A-13722093-0"}
+fpga -file /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/bitstream/design_1_wrapper.bit
+targets -set -nocase -filter {name =~"APU*"}
+loadhw -hw /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/design_1_wrapper/export/design_1_wrapper/hw/design_1_wrapper.xsa -mem-ranges [list {0x40000000 0xbfffffff}] -regs
+configparams force-mem-access 1
+targets -set -nocase -filter {name =~"APU*"}
+source /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/psinit/ps7_init.tcl
+ps7_init
+ps7_post_config
+targets -set -nocase -filter {name =~ "*A9*#0"}
+dow /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/Debug/Zybo-Z7-10-HDMI.elf
+configparams force-mem-access 0
+----------------End of Script----------------
+
+14:12:33 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+14:12:33 INFO  : 'con' command is executed.
+14:12:33 INFO  : ----------------XSDB Script (After Launch)----------------
+targets -set -nocase -filter {name =~ "*A9*#0"}
+con
+----------------End of Script----------------
+
+14:12:33 INFO  : Launch script is exported to file '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI_system/_ide/scripts/systemdebugger_zybo-z7-10-hdmi_system_standalone.tcl'
+14:57:00 INFO  : Disconnected from the channel tcfchan#1.
+19:04:33 DEBUG : Logs will be stored at '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/IDE.log'.
+19:04:34 INFO  : Launching XSCT server: xsct -n  -interactive /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/temp_xsdb_launch_script.tcl
+19:04:35 INFO  : Platform repository initialization has completed.
+19:04:35 INFO  : Registering command handlers for Vitis TCF services
+19:04:36 INFO  : XSCT server has started successfully.
+19:04:36 INFO  : plnx-install-location is set to ''
+19:04:36 INFO  : Successfully done setting XSCT server connection channel  
+19:04:36 INFO  : Successfully done query RDI_DATADIR 
+19:04:36 INFO  : Successfully done setting workspace for the tool. 
+19:17:47 INFO  : Result from executing command 'getProjects': design_1_wrapper
+19:17:47 INFO  : Result from executing command 'getPlatforms': design_1_wrapper|/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/design_1_wrapper/export/design_1_wrapper/design_1_wrapper.xpfm
+19:17:50 INFO  : Checking for BSP changes to sync application flags for project 'Zybo-Z7-10-HDMI'...
+19:18:46 INFO  : Checking for BSP changes to sync application flags for project 'Zybo-Z7-10-HDMI'...
+19:25:10 INFO  : Checking for BSP changes to sync application flags for project 'Zybo-Z7-10-HDMI'...
+19:31:58 INFO  : Checking for BSP changes to sync application flags for project 'Zybo-Z7-10-HDMI'...
+19:37:54 INFO  : Checking for BSP changes to sync application flags for project 'Zybo-Z7-10-HDMI'...
+19:37:57 INFO  : Checking for BSP changes to sync application flags for project 'Zybo-Z7-10-HDMI'...
+19:38:34 INFO  : Checking for BSP changes to sync application flags for project 'Zybo-Z7-10-HDMI'...
+19:51:50 INFO  : Checking for BSP changes to sync application flags for project 'Zybo-Z7-10-HDMI'...
+20:18:34 INFO  : Checking for BSP changes to sync application flags for project 'Zybo-Z7-10-HDMI'...
+20:19:39 INFO  : Connected to target on host '127.0.0.1' and port '3121'.
+20:19:39 INFO  : Jtag cable 'Digilent Zybo Z7 210351B80362A' is selected.
+20:19:39 INFO  : 'jtag frequency' command is executed.
+20:19:39 INFO  : Context for 'APU' is selected.
+20:19:39 INFO  : System reset is completed.
+20:19:42 INFO  : 'after 3000' command is executed.
+20:19:42 INFO  : 'targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B80362A" && level==0 && jtag_device_ctx=="jsn-Zybo Z7-210351B80362A-13722093-0"}' command is executed.
+20:19:43 INFO  : Device configured successfully with "/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/bitstream/design_1_wrapper.bit"
+20:19:43 INFO  : Context for 'APU' is selected.
+20:19:44 INFO  : Hardware design and registers information is loaded from '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/design_1_wrapper/export/design_1_wrapper/hw/design_1_wrapper.xsa'.
+20:19:44 INFO  : 'configparams force-mem-access 1' command is executed.
+20:19:44 INFO  : Context for 'APU' is selected.
+20:19:44 INFO  : Sourcing of '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/psinit/ps7_init.tcl' is done.
+20:19:44 INFO  : 'ps7_init' command is executed.
+20:19:44 INFO  : 'ps7_post_config' command is executed.
+20:19:44 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+20:19:44 INFO  : The application '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/Debug/Zybo-Z7-10-HDMI.elf' is downloaded to processor 'ps7_cortexa9_0'.
+20:19:44 INFO  : 'configparams force-mem-access 0' command is executed.
+20:19:44 INFO  : ----------------XSDB Script----------------
+connect -url tcp:127.0.0.1:3121
+targets -set -nocase -filter {name =~"APU*"}
+rst -system
+after 3000
+targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B80362A" && level==0 && jtag_device_ctx=="jsn-Zybo Z7-210351B80362A-13722093-0"}
+fpga -file /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/bitstream/design_1_wrapper.bit
+targets -set -nocase -filter {name =~"APU*"}
+loadhw -hw /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/design_1_wrapper/export/design_1_wrapper/hw/design_1_wrapper.xsa -mem-ranges [list {0x40000000 0xbfffffff}] -regs
+configparams force-mem-access 1
+targets -set -nocase -filter {name =~"APU*"}
+source /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/psinit/ps7_init.tcl
+ps7_init
+ps7_post_config
+targets -set -nocase -filter {name =~ "*A9*#0"}
+dow /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/Debug/Zybo-Z7-10-HDMI.elf
+configparams force-mem-access 0
+----------------End of Script----------------
+
+20:19:44 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+20:19:44 INFO  : 'con' command is executed.
+20:19:44 INFO  : ----------------XSDB Script (After Launch)----------------
+targets -set -nocase -filter {name =~ "*A9*#0"}
+con
+----------------End of Script----------------
+
+20:19:44 INFO  : Launch script is exported to file '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI_system/_ide/scripts/systemdebugger_zybo-z7-10-hdmi_system_standalone.tcl'
+20:21:31 INFO  : Checking for BSP changes to sync application flags for project 'Zybo-Z7-10-HDMI'...
+20:21:43 INFO  : Disconnected from the channel tcfchan#8.
+20:21:43 INFO  : Connected to target on host '127.0.0.1' and port '3121'.
+20:21:43 INFO  : Jtag cable 'Digilent Zybo Z7 210351B80362A' is selected.
+20:21:43 INFO  : 'jtag frequency' command is executed.
+20:21:43 INFO  : Context for 'APU' is selected.
+20:21:43 INFO  : System reset is completed.
+20:21:46 INFO  : 'after 3000' command is executed.
+20:21:46 INFO  : 'targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B80362A" && level==0 && jtag_device_ctx=="jsn-Zybo Z7-210351B80362A-13722093-0"}' command is executed.
+20:21:47 INFO  : Device configured successfully with "/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/bitstream/design_1_wrapper.bit"
+20:21:47 INFO  : Context for 'APU' is selected.
+20:21:47 INFO  : Hardware design and registers information is loaded from '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/design_1_wrapper/export/design_1_wrapper/hw/design_1_wrapper.xsa'.
+20:21:47 INFO  : 'configparams force-mem-access 1' command is executed.
+20:21:47 INFO  : Context for 'APU' is selected.
+20:21:47 INFO  : Sourcing of '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/psinit/ps7_init.tcl' is done.
+20:21:47 INFO  : 'ps7_init' command is executed.
+20:21:47 INFO  : 'ps7_post_config' command is executed.
+20:21:47 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+20:21:48 INFO  : The application '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/Debug/Zybo-Z7-10-HDMI.elf' is downloaded to processor 'ps7_cortexa9_0'.
+20:21:48 INFO  : 'configparams force-mem-access 0' command is executed.
+20:21:48 INFO  : ----------------XSDB Script----------------
+connect -url tcp:127.0.0.1:3121
+targets -set -nocase -filter {name =~"APU*"}
+rst -system
+after 3000
+targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B80362A" && level==0 && jtag_device_ctx=="jsn-Zybo Z7-210351B80362A-13722093-0"}
+fpga -file /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/bitstream/design_1_wrapper.bit
+targets -set -nocase -filter {name =~"APU*"}
+loadhw -hw /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/design_1_wrapper/export/design_1_wrapper/hw/design_1_wrapper.xsa -mem-ranges [list {0x40000000 0xbfffffff}] -regs
+configparams force-mem-access 1
+targets -set -nocase -filter {name =~"APU*"}
+source /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/psinit/ps7_init.tcl
+ps7_init
+ps7_post_config
+targets -set -nocase -filter {name =~ "*A9*#0"}
+dow /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/Debug/Zybo-Z7-10-HDMI.elf
+configparams force-mem-access 0
+----------------End of Script----------------
+
+20:21:48 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+20:21:48 INFO  : 'con' command is executed.
+20:21:48 INFO  : ----------------XSDB Script (After Launch)----------------
+targets -set -nocase -filter {name =~ "*A9*#0"}
+con
+----------------End of Script----------------
+
+20:21:48 INFO  : Launch script is exported to file '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI_system/_ide/scripts/systemdebugger_zybo-z7-10-hdmi_system_standalone.tcl'
+20:25:25 INFO  : Checking for BSP changes to sync application flags for project 'Zybo-Z7-10-HDMI'...
+20:26:17 INFO  : Checking for BSP changes to sync application flags for project 'Zybo-Z7-10-HDMI'...
+20:26:40 INFO  : Checking for BSP changes to sync application flags for project 'Zybo-Z7-10-HDMI'...
+20:26:49 INFO  : Disconnected from the channel tcfchan#10.
+20:26:49 INFO  : Connected to target on host '127.0.0.1' and port '3121'.
+20:26:49 INFO  : Jtag cable 'Digilent Zybo Z7 210351B80362A' is selected.
+20:26:49 INFO  : 'jtag frequency' command is executed.
+20:26:49 INFO  : Context for 'APU' is selected.
+20:26:49 INFO  : System reset is completed.
+20:26:52 INFO  : 'after 3000' command is executed.
+20:26:53 INFO  : 'targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B80362A" && level==0 && jtag_device_ctx=="jsn-Zybo Z7-210351B80362A-13722093-0"}' command is executed.
+20:26:54 INFO  : Device configured successfully with "/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/bitstream/design_1_wrapper.bit"
+20:26:54 INFO  : Context for 'APU' is selected.
+20:26:54 INFO  : Hardware design and registers information is loaded from '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/design_1_wrapper/export/design_1_wrapper/hw/design_1_wrapper.xsa'.
+20:26:54 INFO  : 'configparams force-mem-access 1' command is executed.
+20:26:54 INFO  : Context for 'APU' is selected.
+20:26:54 INFO  : Sourcing of '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/psinit/ps7_init.tcl' is done.
+20:26:54 INFO  : 'ps7_init' command is executed.
+20:26:54 INFO  : 'ps7_post_config' command is executed.
+20:26:54 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+20:26:54 INFO  : The application '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/Debug/Zybo-Z7-10-HDMI.elf' is downloaded to processor 'ps7_cortexa9_0'.
+20:26:54 INFO  : 'configparams force-mem-access 0' command is executed.
+20:26:54 INFO  : ----------------XSDB Script----------------
+connect -url tcp:127.0.0.1:3121
+targets -set -nocase -filter {name =~"APU*"}
+rst -system
+after 3000
+targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B80362A" && level==0 && jtag_device_ctx=="jsn-Zybo Z7-210351B80362A-13722093-0"}
+fpga -file /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/bitstream/design_1_wrapper.bit
+targets -set -nocase -filter {name =~"APU*"}
+loadhw -hw /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/design_1_wrapper/export/design_1_wrapper/hw/design_1_wrapper.xsa -mem-ranges [list {0x40000000 0xbfffffff}] -regs
+configparams force-mem-access 1
+targets -set -nocase -filter {name =~"APU*"}
+source /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/psinit/ps7_init.tcl
+ps7_init
+ps7_post_config
+targets -set -nocase -filter {name =~ "*A9*#0"}
+dow /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/Debug/Zybo-Z7-10-HDMI.elf
+configparams force-mem-access 0
+----------------End of Script----------------
+
+20:26:54 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+20:26:54 INFO  : 'con' command is executed.
+20:26:54 INFO  : ----------------XSDB Script (After Launch)----------------
+targets -set -nocase -filter {name =~ "*A9*#0"}
+con
+----------------End of Script----------------
+
+20:26:54 INFO  : Launch script is exported to file '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI_system/_ide/scripts/systemdebugger_zybo-z7-10-hdmi_system_standalone.tcl'
+20:27:36 INFO  : Checking for BSP changes to sync application flags for project 'Zybo-Z7-10-HDMI'...
+20:27:45 INFO  : Disconnected from the channel tcfchan#12.
+20:27:45 INFO  : Connected to target on host '127.0.0.1' and port '3121'.
+20:27:45 INFO  : Jtag cable 'Digilent Zybo Z7 210351B80362A' is selected.
+20:27:45 INFO  : 'jtag frequency' command is executed.
+20:27:45 INFO  : Context for 'APU' is selected.
+20:27:45 INFO  : System reset is completed.
+20:27:48 INFO  : 'after 3000' command is executed.
+20:27:48 INFO  : 'targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B80362A" && level==0 && jtag_device_ctx=="jsn-Zybo Z7-210351B80362A-13722093-0"}' command is executed.
+20:27:49 INFO  : Device configured successfully with "/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/bitstream/design_1_wrapper.bit"
+20:27:49 INFO  : Context for 'APU' is selected.
+20:27:50 INFO  : Hardware design and registers information is loaded from '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/design_1_wrapper/export/design_1_wrapper/hw/design_1_wrapper.xsa'.
+20:27:50 INFO  : 'configparams force-mem-access 1' command is executed.
+20:27:50 INFO  : Context for 'APU' is selected.
+20:27:50 INFO  : Sourcing of '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/psinit/ps7_init.tcl' is done.
+20:27:50 INFO  : 'ps7_init' command is executed.
+20:27:50 INFO  : 'ps7_post_config' command is executed.
+20:27:50 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+20:27:50 INFO  : The application '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/Debug/Zybo-Z7-10-HDMI.elf' is downloaded to processor 'ps7_cortexa9_0'.
+20:27:50 INFO  : 'configparams force-mem-access 0' command is executed.
+20:27:50 INFO  : ----------------XSDB Script----------------
+connect -url tcp:127.0.0.1:3121
+targets -set -nocase -filter {name =~"APU*"}
+rst -system
+after 3000
+targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B80362A" && level==0 && jtag_device_ctx=="jsn-Zybo Z7-210351B80362A-13722093-0"}
+fpga -file /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/bitstream/design_1_wrapper.bit
+targets -set -nocase -filter {name =~"APU*"}
+loadhw -hw /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/design_1_wrapper/export/design_1_wrapper/hw/design_1_wrapper.xsa -mem-ranges [list {0x40000000 0xbfffffff}] -regs
+configparams force-mem-access 1
+targets -set -nocase -filter {name =~"APU*"}
+source /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/psinit/ps7_init.tcl
+ps7_init
+ps7_post_config
+targets -set -nocase -filter {name =~ "*A9*#0"}
+dow /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/Debug/Zybo-Z7-10-HDMI.elf
+configparams force-mem-access 0
+----------------End of Script----------------
+
+20:27:50 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+20:27:50 INFO  : 'con' command is executed.
+20:27:50 INFO  : ----------------XSDB Script (After Launch)----------------
+targets -set -nocase -filter {name =~ "*A9*#0"}
+con
+----------------End of Script----------------
+
+20:27:50 INFO  : Launch script is exported to file '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI_system/_ide/scripts/systemdebugger_zybo-z7-10-hdmi_system_standalone.tcl'
+20:29:58 INFO  : Checking for BSP changes to sync application flags for project 'Zybo-Z7-10-HDMI'...
+20:30:08 INFO  : Disconnected from the channel tcfchan#14.
+20:30:08 INFO  : Connected to target on host '127.0.0.1' and port '3121'.
+20:30:08 INFO  : Jtag cable 'Digilent Zybo Z7 210351B80362A' is selected.
+20:30:08 INFO  : 'jtag frequency' command is executed.
+20:30:08 INFO  : Context for 'APU' is selected.
+20:30:08 INFO  : System reset is completed.
+20:30:11 INFO  : 'after 3000' command is executed.
+20:30:11 INFO  : 'targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B80362A" && level==0 && jtag_device_ctx=="jsn-Zybo Z7-210351B80362A-13722093-0"}' command is executed.
+20:30:12 INFO  : Device configured successfully with "/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/bitstream/design_1_wrapper.bit"
+20:30:12 INFO  : Context for 'APU' is selected.
+20:30:12 INFO  : Hardware design and registers information is loaded from '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/design_1_wrapper/export/design_1_wrapper/hw/design_1_wrapper.xsa'.
+20:30:12 INFO  : 'configparams force-mem-access 1' command is executed.
+20:30:12 INFO  : Context for 'APU' is selected.
+20:30:12 INFO  : Sourcing of '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/psinit/ps7_init.tcl' is done.
+20:30:12 INFO  : 'ps7_init' command is executed.
+20:30:12 INFO  : 'ps7_post_config' command is executed.
+20:30:12 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+20:30:13 INFO  : The application '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/Debug/Zybo-Z7-10-HDMI.elf' is downloaded to processor 'ps7_cortexa9_0'.
+20:30:13 INFO  : 'configparams force-mem-access 0' command is executed.
+20:30:13 INFO  : ----------------XSDB Script----------------
+connect -url tcp:127.0.0.1:3121
+targets -set -nocase -filter {name =~"APU*"}
+rst -system
+after 3000
+targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B80362A" && level==0 && jtag_device_ctx=="jsn-Zybo Z7-210351B80362A-13722093-0"}
+fpga -file /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/bitstream/design_1_wrapper.bit
+targets -set -nocase -filter {name =~"APU*"}
+loadhw -hw /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/design_1_wrapper/export/design_1_wrapper/hw/design_1_wrapper.xsa -mem-ranges [list {0x40000000 0xbfffffff}] -regs
+configparams force-mem-access 1
+targets -set -nocase -filter {name =~"APU*"}
+source /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/psinit/ps7_init.tcl
+ps7_init
+ps7_post_config
+targets -set -nocase -filter {name =~ "*A9*#0"}
+dow /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/Debug/Zybo-Z7-10-HDMI.elf
+configparams force-mem-access 0
+----------------End of Script----------------
+
+20:30:13 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+20:30:13 INFO  : 'con' command is executed.
+20:30:13 INFO  : ----------------XSDB Script (After Launch)----------------
+targets -set -nocase -filter {name =~ "*A9*#0"}
+con
+----------------End of Script----------------
+
+20:30:13 INFO  : Launch script is exported to file '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI_system/_ide/scripts/systemdebugger_zybo-z7-10-hdmi_system_standalone.tcl'
+20:50:21 INFO  : Checking for BSP changes to sync application flags for project 'Zybo-Z7-10-HDMI'...
+20:51:43 INFO  : Disconnected from the channel tcfchan#16.
+20:51:43 INFO  : Connected to target on host '127.0.0.1' and port '3121'.
+20:51:43 INFO  : Jtag cable 'Digilent Zybo Z7 210351B80362A' is selected.
+20:51:43 INFO  : 'jtag frequency' command is executed.
+20:51:43 INFO  : Context for 'APU' is selected.
+20:51:44 INFO  : System reset is completed.
+20:51:47 INFO  : 'after 3000' command is executed.
+20:51:47 INFO  : 'targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B80362A" && level==0 && jtag_device_ctx=="jsn-Zybo Z7-210351B80362A-13722093-0"}' command is executed.
+20:51:48 INFO  : Device configured successfully with "/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/bitstream/design_1_wrapper.bit"
+20:51:48 INFO  : Context for 'APU' is selected.
+20:51:48 INFO  : Hardware design and registers information is loaded from '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/design_1_wrapper/export/design_1_wrapper/hw/design_1_wrapper.xsa'.
+20:51:48 INFO  : 'configparams force-mem-access 1' command is executed.
+20:51:48 INFO  : Context for 'APU' is selected.
+20:51:48 INFO  : Sourcing of '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/psinit/ps7_init.tcl' is done.
+20:51:48 INFO  : 'ps7_init' command is executed.
+20:51:48 INFO  : 'ps7_post_config' command is executed.
+20:51:48 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+20:51:48 INFO  : The application '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/Debug/Zybo-Z7-10-HDMI.elf' is downloaded to processor 'ps7_cortexa9_0'.
+20:51:48 INFO  : 'configparams force-mem-access 0' command is executed.
+20:51:48 INFO  : ----------------XSDB Script----------------
+connect -url tcp:127.0.0.1:3121
+targets -set -nocase -filter {name =~"APU*"}
+rst -system
+after 3000
+targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B80362A" && level==0 && jtag_device_ctx=="jsn-Zybo Z7-210351B80362A-13722093-0"}
+fpga -file /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/bitstream/design_1_wrapper.bit
+targets -set -nocase -filter {name =~"APU*"}
+loadhw -hw /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/design_1_wrapper/export/design_1_wrapper/hw/design_1_wrapper.xsa -mem-ranges [list {0x40000000 0xbfffffff}] -regs
+configparams force-mem-access 1
+targets -set -nocase -filter {name =~"APU*"}
+source /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/psinit/ps7_init.tcl
+ps7_init
+ps7_post_config
+targets -set -nocase -filter {name =~ "*A9*#0"}
+dow /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/Debug/Zybo-Z7-10-HDMI.elf
+configparams force-mem-access 0
+----------------End of Script----------------
+
+20:51:48 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+20:51:48 INFO  : 'con' command is executed.
+20:51:48 INFO  : ----------------XSDB Script (After Launch)----------------
+targets -set -nocase -filter {name =~ "*A9*#0"}
+con
+----------------End of Script----------------
+
+20:51:48 INFO  : Launch script is exported to file '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI_system/_ide/scripts/systemdebugger_zybo-z7-10-hdmi_system_standalone.tcl'
+21:13:47 INFO  : Checking for BSP changes to sync application flags for project 'Zybo-Z7-10-HDMI'...
+21:21:58 INFO  : Checking for BSP changes to sync application flags for project 'Zybo-Z7-10-HDMI'...
+21:22:25 INFO  : Disconnected from the channel tcfchan#18.
+21:22:26 INFO  : Connected to target on host '127.0.0.1' and port '3121'.
+21:22:26 INFO  : Jtag cable 'Digilent Zybo Z7 210351B80362A' is selected.
+21:22:26 INFO  : 'jtag frequency' command is executed.
+21:22:26 INFO  : Context for 'APU' is selected.
+21:22:26 INFO  : System reset is completed.
+21:22:29 INFO  : 'after 3000' command is executed.
+21:22:29 INFO  : 'targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B80362A" && level==0 && jtag_device_ctx=="jsn-Zybo Z7-210351B80362A-13722093-0"}' command is executed.
+21:22:30 INFO  : Device configured successfully with "/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/bitstream/design_1_wrapper.bit"
+21:22:30 INFO  : Context for 'APU' is selected.
+21:22:30 INFO  : Hardware design and registers information is loaded from '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/design_1_wrapper/export/design_1_wrapper/hw/design_1_wrapper.xsa'.
+21:22:30 INFO  : 'configparams force-mem-access 1' command is executed.
+21:22:30 INFO  : Context for 'APU' is selected.
+21:22:30 INFO  : Sourcing of '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/psinit/ps7_init.tcl' is done.
+21:22:30 INFO  : 'ps7_init' command is executed.
+21:22:30 INFO  : 'ps7_post_config' command is executed.
+21:22:30 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+21:22:30 INFO  : The application '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/Debug/Zybo-Z7-10-HDMI.elf' is downloaded to processor 'ps7_cortexa9_0'.
+21:22:31 INFO  : 'configparams force-mem-access 0' command is executed.
+21:22:31 INFO  : ----------------XSDB Script----------------
+connect -url tcp:127.0.0.1:3121
+targets -set -nocase -filter {name =~"APU*"}
+rst -system
+after 3000
+targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B80362A" && level==0 && jtag_device_ctx=="jsn-Zybo Z7-210351B80362A-13722093-0"}
+fpga -file /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/bitstream/design_1_wrapper.bit
+targets -set -nocase -filter {name =~"APU*"}
+loadhw -hw /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/design_1_wrapper/export/design_1_wrapper/hw/design_1_wrapper.xsa -mem-ranges [list {0x40000000 0xbfffffff}] -regs
+configparams force-mem-access 1
+targets -set -nocase -filter {name =~"APU*"}
+source /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/psinit/ps7_init.tcl
+ps7_init
+ps7_post_config
+targets -set -nocase -filter {name =~ "*A9*#0"}
+dow /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/Debug/Zybo-Z7-10-HDMI.elf
+configparams force-mem-access 0
+----------------End of Script----------------
+
+21:22:31 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+21:22:31 INFO  : 'con' command is executed.
+21:22:31 INFO  : ----------------XSDB Script (After Launch)----------------
+targets -set -nocase -filter {name =~ "*A9*#0"}
+con
+----------------End of Script----------------
+
+21:22:31 INFO  : Launch script is exported to file '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI_system/_ide/scripts/systemdebugger_zybo-z7-10-hdmi_system_standalone.tcl'
+21:25:10 INFO  : Checking for BSP changes to sync application flags for project 'Zybo-Z7-10-HDMI'...
+21:31:12 INFO  : Checking for BSP changes to sync application flags for project 'Zybo-Z7-10-HDMI'...
+21:31:22 INFO  : Disconnected from the channel tcfchan#21.
+21:31:22 INFO  : Connected to target on host '127.0.0.1' and port '3121'.
+21:31:22 INFO  : Jtag cable 'Digilent Zybo Z7 210351B80362A' is selected.
+21:31:22 INFO  : 'jtag frequency' command is executed.
+21:31:22 INFO  : Context for 'APU' is selected.
+21:31:22 INFO  : System reset is completed.
+21:31:25 INFO  : 'after 3000' command is executed.
+21:31:25 INFO  : 'targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B80362A" && level==0 && jtag_device_ctx=="jsn-Zybo Z7-210351B80362A-13722093-0"}' command is executed.
+21:31:26 INFO  : Device configured successfully with "/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/bitstream/design_1_wrapper.bit"
+21:31:26 INFO  : Context for 'APU' is selected.
+21:31:26 INFO  : Hardware design and registers information is loaded from '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/design_1_wrapper/export/design_1_wrapper/hw/design_1_wrapper.xsa'.
+21:31:26 INFO  : 'configparams force-mem-access 1' command is executed.
+21:31:26 INFO  : Context for 'APU' is selected.
+21:31:27 INFO  : Sourcing of '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/psinit/ps7_init.tcl' is done.
+21:31:27 INFO  : 'ps7_init' command is executed.
+21:31:27 INFO  : 'ps7_post_config' command is executed.
+21:31:27 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+21:31:27 INFO  : The application '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/Debug/Zybo-Z7-10-HDMI.elf' is downloaded to processor 'ps7_cortexa9_0'.
+21:31:27 INFO  : 'configparams force-mem-access 0' command is executed.
+21:31:27 INFO  : ----------------XSDB Script----------------
+connect -url tcp:127.0.0.1:3121
+targets -set -nocase -filter {name =~"APU*"}
+rst -system
+after 3000
+targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B80362A" && level==0 && jtag_device_ctx=="jsn-Zybo Z7-210351B80362A-13722093-0"}
+fpga -file /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/bitstream/design_1_wrapper.bit
+targets -set -nocase -filter {name =~"APU*"}
+loadhw -hw /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/design_1_wrapper/export/design_1_wrapper/hw/design_1_wrapper.xsa -mem-ranges [list {0x40000000 0xbfffffff}] -regs
+configparams force-mem-access 1
+targets -set -nocase -filter {name =~"APU*"}
+source /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/psinit/ps7_init.tcl
+ps7_init
+ps7_post_config
+targets -set -nocase -filter {name =~ "*A9*#0"}
+dow /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/Debug/Zybo-Z7-10-HDMI.elf
+configparams force-mem-access 0
+----------------End of Script----------------
+
+21:31:27 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+21:31:27 INFO  : 'con' command is executed.
+21:31:27 INFO  : ----------------XSDB Script (After Launch)----------------
+targets -set -nocase -filter {name =~ "*A9*#0"}
+con
+----------------End of Script----------------
+
+21:31:27 INFO  : Launch script is exported to file '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI_system/_ide/scripts/systemdebugger_zybo-z7-10-hdmi_system_standalone.tcl'
+21:36:13 INFO  : Checking for BSP changes to sync application flags for project 'Zybo-Z7-10-HDMI'...
+21:37:04 INFO  : Checking for BSP changes to sync application flags for project 'Zybo-Z7-10-HDMI'...
+21:37:15 INFO  : Disconnected from the channel tcfchan#24.
+21:37:15 INFO  : Connected to target on host '127.0.0.1' and port '3121'.
+21:37:15 INFO  : Jtag cable 'Digilent Zybo Z7 210351B80362A' is selected.
+21:37:15 INFO  : 'jtag frequency' command is executed.
+21:37:15 INFO  : Context for 'APU' is selected.
+21:37:15 INFO  : System reset is completed.
+21:37:18 INFO  : 'after 3000' command is executed.
+21:37:19 INFO  : 'targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B80362A" && level==0 && jtag_device_ctx=="jsn-Zybo Z7-210351B80362A-13722093-0"}' command is executed.
+21:37:20 INFO  : Device configured successfully with "/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/bitstream/design_1_wrapper.bit"
+21:37:20 INFO  : Context for 'APU' is selected.
+21:37:20 INFO  : Hardware design and registers information is loaded from '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/design_1_wrapper/export/design_1_wrapper/hw/design_1_wrapper.xsa'.
+21:37:20 INFO  : 'configparams force-mem-access 1' command is executed.
+21:37:20 INFO  : Context for 'APU' is selected.
+21:37:20 INFO  : Sourcing of '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/psinit/ps7_init.tcl' is done.
+21:37:20 INFO  : 'ps7_init' command is executed.
+21:37:20 INFO  : 'ps7_post_config' command is executed.
+21:37:20 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+21:37:20 INFO  : The application '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/Debug/Zybo-Z7-10-HDMI.elf' is downloaded to processor 'ps7_cortexa9_0'.
+21:37:20 INFO  : 'configparams force-mem-access 0' command is executed.
+21:37:20 INFO  : ----------------XSDB Script----------------
+connect -url tcp:127.0.0.1:3121
+targets -set -nocase -filter {name =~"APU*"}
+rst -system
+after 3000
+targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B80362A" && level==0 && jtag_device_ctx=="jsn-Zybo Z7-210351B80362A-13722093-0"}
+fpga -file /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/bitstream/design_1_wrapper.bit
+targets -set -nocase -filter {name =~"APU*"}
+loadhw -hw /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/design_1_wrapper/export/design_1_wrapper/hw/design_1_wrapper.xsa -mem-ranges [list {0x40000000 0xbfffffff}] -regs
+configparams force-mem-access 1
+targets -set -nocase -filter {name =~"APU*"}
+source /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/psinit/ps7_init.tcl
+ps7_init
+ps7_post_config
+targets -set -nocase -filter {name =~ "*A9*#0"}
+dow /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/Debug/Zybo-Z7-10-HDMI.elf
+configparams force-mem-access 0
+----------------End of Script----------------
+
+21:37:20 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+21:37:20 INFO  : 'con' command is executed.
+21:37:20 INFO  : ----------------XSDB Script (After Launch)----------------
+targets -set -nocase -filter {name =~ "*A9*#0"}
+con
+----------------End of Script----------------
+
+21:37:20 INFO  : Launch script is exported to file '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI_system/_ide/scripts/systemdebugger_zybo-z7-10-hdmi_system_standalone.tcl'
+21:38:40 INFO  : Checking for BSP changes to sync application flags for project 'Zybo-Z7-10-HDMI'...
+21:38:59 INFO  : Disconnected from the channel tcfchan#26.
+21:38:59 INFO  : Connected to target on host '127.0.0.1' and port '3121'.
+21:38:59 INFO  : Jtag cable 'Digilent Zybo Z7 210351B80362A' is selected.
+21:38:59 INFO  : 'jtag frequency' command is executed.
+21:38:59 INFO  : Context for 'APU' is selected.
+21:38:59 INFO  : System reset is completed.
+21:39:02 INFO  : 'after 3000' command is executed.
+21:39:02 INFO  : 'targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B80362A" && level==0 && jtag_device_ctx=="jsn-Zybo Z7-210351B80362A-13722093-0"}' command is executed.
+21:39:03 INFO  : Device configured successfully with "/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/bitstream/design_1_wrapper.bit"
+21:39:03 INFO  : Context for 'APU' is selected.
+21:39:03 INFO  : Hardware design and registers information is loaded from '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/design_1_wrapper/export/design_1_wrapper/hw/design_1_wrapper.xsa'.
+21:39:03 INFO  : 'configparams force-mem-access 1' command is executed.
+21:39:03 INFO  : Context for 'APU' is selected.
+21:39:03 INFO  : Sourcing of '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/psinit/ps7_init.tcl' is done.
+21:39:03 INFO  : 'ps7_init' command is executed.
+21:39:03 INFO  : 'ps7_post_config' command is executed.
+21:39:03 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+21:39:04 INFO  : The application '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/Debug/Zybo-Z7-10-HDMI.elf' is downloaded to processor 'ps7_cortexa9_0'.
+21:39:04 INFO  : 'configparams force-mem-access 0' command is executed.
+21:39:04 INFO  : ----------------XSDB Script----------------
+connect -url tcp:127.0.0.1:3121
+targets -set -nocase -filter {name =~"APU*"}
+rst -system
+after 3000
+targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B80362A" && level==0 && jtag_device_ctx=="jsn-Zybo Z7-210351B80362A-13722093-0"}
+fpga -file /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/bitstream/design_1_wrapper.bit
+targets -set -nocase -filter {name =~"APU*"}
+loadhw -hw /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/design_1_wrapper/export/design_1_wrapper/hw/design_1_wrapper.xsa -mem-ranges [list {0x40000000 0xbfffffff}] -regs
+configparams force-mem-access 1
+targets -set -nocase -filter {name =~"APU*"}
+source /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/psinit/ps7_init.tcl
+ps7_init
+ps7_post_config
+targets -set -nocase -filter {name =~ "*A9*#0"}
+dow /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/Debug/Zybo-Z7-10-HDMI.elf
+configparams force-mem-access 0
+----------------End of Script----------------
+
+21:39:04 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+21:39:04 INFO  : 'con' command is executed.
+21:39:04 INFO  : ----------------XSDB Script (After Launch)----------------
+targets -set -nocase -filter {name =~ "*A9*#0"}
+con
+----------------End of Script----------------
+
+21:39:04 INFO  : Launch script is exported to file '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI_system/_ide/scripts/systemdebugger_zybo-z7-10-hdmi_system_standalone.tcl'
+21:41:21 INFO  : Checking for BSP changes to sync application flags for project 'Zybo-Z7-10-HDMI'...
+21:41:31 INFO  : Disconnected from the channel tcfchan#28.
+21:41:31 INFO  : Connected to target on host '127.0.0.1' and port '3121'.
+21:41:31 INFO  : Jtag cable 'Digilent Zybo Z7 210351B80362A' is selected.
+21:41:31 INFO  : 'jtag frequency' command is executed.
+21:41:31 INFO  : Context for 'APU' is selected.
+21:41:31 INFO  : System reset is completed.
+21:41:34 INFO  : 'after 3000' command is executed.
+21:41:34 INFO  : 'targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B80362A" && level==0 && jtag_device_ctx=="jsn-Zybo Z7-210351B80362A-13722093-0"}' command is executed.
+21:41:35 INFO  : Device configured successfully with "/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/bitstream/design_1_wrapper.bit"
+21:41:35 INFO  : Context for 'APU' is selected.
+21:41:35 INFO  : Hardware design and registers information is loaded from '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/design_1_wrapper/export/design_1_wrapper/hw/design_1_wrapper.xsa'.
+21:41:35 INFO  : 'configparams force-mem-access 1' command is executed.
+21:41:35 INFO  : Context for 'APU' is selected.
+21:41:35 INFO  : Sourcing of '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/psinit/ps7_init.tcl' is done.
+21:41:35 INFO  : 'ps7_init' command is executed.
+21:41:35 INFO  : 'ps7_post_config' command is executed.
+21:41:35 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+21:41:36 INFO  : The application '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/Debug/Zybo-Z7-10-HDMI.elf' is downloaded to processor 'ps7_cortexa9_0'.
+21:41:36 INFO  : 'configparams force-mem-access 0' command is executed.
+21:41:36 INFO  : ----------------XSDB Script----------------
+connect -url tcp:127.0.0.1:3121
+targets -set -nocase -filter {name =~"APU*"}
+rst -system
+after 3000
+targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B80362A" && level==0 && jtag_device_ctx=="jsn-Zybo Z7-210351B80362A-13722093-0"}
+fpga -file /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/bitstream/design_1_wrapper.bit
+targets -set -nocase -filter {name =~"APU*"}
+loadhw -hw /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/design_1_wrapper/export/design_1_wrapper/hw/design_1_wrapper.xsa -mem-ranges [list {0x40000000 0xbfffffff}] -regs
+configparams force-mem-access 1
+targets -set -nocase -filter {name =~"APU*"}
+source /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/psinit/ps7_init.tcl
+ps7_init
+ps7_post_config
+targets -set -nocase -filter {name =~ "*A9*#0"}
+dow /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/Debug/Zybo-Z7-10-HDMI.elf
+configparams force-mem-access 0
+----------------End of Script----------------
+
+21:41:36 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+21:41:36 INFO  : 'con' command is executed.
+21:41:36 INFO  : ----------------XSDB Script (After Launch)----------------
+targets -set -nocase -filter {name =~ "*A9*#0"}
+con
+----------------End of Script----------------
+
+21:41:36 INFO  : Launch script is exported to file '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI_system/_ide/scripts/systemdebugger_zybo-z7-10-hdmi_system_standalone.tcl'
+21:46:24 INFO  : Checking for BSP changes to sync application flags for project 'Zybo-Z7-10-HDMI'...
+21:47:25 INFO  : Checking for BSP changes to sync application flags for project 'Zybo-Z7-10-HDMI'...
+21:50:44 INFO  : Checking for BSP changes to sync application flags for project 'Zybo-Z7-10-HDMI'...
+21:50:53 INFO  : Disconnected from the channel tcfchan#30.
+21:50:53 INFO  : Connected to target on host '127.0.0.1' and port '3121'.
+21:50:53 INFO  : Jtag cable 'Digilent Zybo Z7 210351B80362A' is selected.
+21:50:53 INFO  : 'jtag frequency' command is executed.
+21:50:53 INFO  : Context for 'APU' is selected.
+21:50:53 INFO  : System reset is completed.
+21:50:56 INFO  : 'after 3000' command is executed.
+21:50:57 INFO  : 'targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B80362A" && level==0 && jtag_device_ctx=="jsn-Zybo Z7-210351B80362A-13722093-0"}' command is executed.
+21:50:58 INFO  : Device configured successfully with "/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/bitstream/design_1_wrapper.bit"
+21:50:58 INFO  : Context for 'APU' is selected.
+21:50:58 INFO  : Hardware design and registers information is loaded from '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/design_1_wrapper/export/design_1_wrapper/hw/design_1_wrapper.xsa'.
+21:50:58 INFO  : 'configparams force-mem-access 1' command is executed.
+21:50:58 INFO  : Context for 'APU' is selected.
+21:50:58 INFO  : Sourcing of '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/psinit/ps7_init.tcl' is done.
+21:50:58 INFO  : 'ps7_init' command is executed.
+21:50:58 INFO  : 'ps7_post_config' command is executed.
+21:50:58 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+21:50:58 INFO  : The application '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/Debug/Zybo-Z7-10-HDMI.elf' is downloaded to processor 'ps7_cortexa9_0'.
+21:50:58 INFO  : 'configparams force-mem-access 0' command is executed.
+21:50:58 INFO  : ----------------XSDB Script----------------
+connect -url tcp:127.0.0.1:3121
+targets -set -nocase -filter {name =~"APU*"}
+rst -system
+after 3000
+targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B80362A" && level==0 && jtag_device_ctx=="jsn-Zybo Z7-210351B80362A-13722093-0"}
+fpga -file /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/bitstream/design_1_wrapper.bit
+targets -set -nocase -filter {name =~"APU*"}
+loadhw -hw /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/design_1_wrapper/export/design_1_wrapper/hw/design_1_wrapper.xsa -mem-ranges [list {0x40000000 0xbfffffff}] -regs
+configparams force-mem-access 1
+targets -set -nocase -filter {name =~"APU*"}
+source /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/_ide/psinit/ps7_init.tcl
+ps7_init
+ps7_post_config
+targets -set -nocase -filter {name =~ "*A9*#0"}
+dow /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI/Debug/Zybo-Z7-10-HDMI.elf
+configparams force-mem-access 0
+----------------End of Script----------------
+
+21:50:58 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+21:50:58 INFO  : 'con' command is executed.
+21:50:58 INFO  : ----------------XSDB Script (After Launch)----------------
+targets -set -nocase -filter {name =~ "*A9*#0"}
+con
+----------------End of Script----------------
+
+21:50:58 INFO  : Launch script is exported to file '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/Zybo-Z7-10-HDMI_system/_ide/scripts/systemdebugger_zybo-z7-10-hdmi_system_standalone.tcl'
+21:52:54 INFO  : Disconnected from the channel tcfchan#32.

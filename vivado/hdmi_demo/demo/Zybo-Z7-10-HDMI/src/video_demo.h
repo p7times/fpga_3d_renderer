@@ -60,7 +60,11 @@ void DemoChangeRes();
 void DemoCRMenu();
 void DemoISR(void *callBackRef, void *pVideo);
 
-void DrawFilledRect(u8 *frame, u32 stride, u32 x, u32 y);
+void DrawRect(u8 *frame, u32 stride, int x, int y);
+void DrawLine(u8 *frame, u32 stride, int x0, int y0, int x1, int y1);
+void ScreenPos(float x_ndc, float y_ndc, u32 *out_x, u32 *out_y, u32 width, u32 height);
+void Project(float x, float y, float z, float *out_x, float *out_y, float aspect);
+void DrawPoint(u8 *frame, u32 stride, float x, float y, float z, u32 width, u32 height);
 void DemoPrintTest(u8 *frame, u32 width, u32 height, u32 stride);
 
 
