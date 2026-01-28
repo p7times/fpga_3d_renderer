@@ -15,4 +15,3 @@ Progrese:
 Probleme:
 
 - cand camera se afla in interiorul corpului 3D, programul o ia razna
-- ecranul se actualizeaza incet

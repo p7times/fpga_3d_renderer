@@ -1,6 +1,5 @@
 *.zip
 
-# Vivado generated files
 *.wdb
 *.sim/
 *.runs/
@@ -10,4 +9,3 @@
 *.jou
 *.log
 
-*.wdb
