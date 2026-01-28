@@ -60,12 +60,14 @@ void DemoChangeRes();
 void DemoCRMenu();
 void DemoISR(void *callBackRef, void *pVideo);
 
+void cordic_rotate(float theta, float *cos_out, float *sin_out);
+void RotateY(float x, float y, float z, float theta, float *out_x, float *out_y, float *out_z);
 void DrawRect(u8 *frame, u32 stride, int x, int y);
-void DrawLine(u8 *frame, u32 stride, int x0, int y0, int x1, int y1);
+void DrawLine(u8 *frame, u32 stride, int x0, int y0, int x1, int y1, u32 width, u32 height);
 void ScreenPos(float x_ndc, float y_ndc, u32 *out_x, u32 *out_y, u32 width, u32 height);
 void Project(float x, float y, float z, float *out_x, float *out_y, float aspect);
 void DrawPoint(u8 *frame, u32 stride, float x, float y, float z, u32 width, u32 height);
-void DemoPrintTest(u8 *frame, u32 width, u32 height, u32 stride);
+void Print3D(u8 *frame, u32 width, u32 height, u32 stride);
 
 
 /* ------------------------------------------------------------ */

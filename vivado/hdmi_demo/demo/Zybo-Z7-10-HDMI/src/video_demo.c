@@ -7,46 +7,60 @@
 #include "timer_ps/timer_ps.h"
 #include "xparameters.h"
 #include <stdlib.h>
+#include <stdint.h>
 
-// Definirea adreselor și ID-urilor hardware din platforma Zynq/ZYBO
+// Definirea adreselor si ID-urilor hardware din platforma Zynq/ZYBO
 #define DYNCLK_BASEADDR        XPAR_AXI_DYNCLK_0_S_AXI_LITE_BASEADDR
 #define VDMA_ID                XPAR_AXIVDMA_0_DEVICE_ID
 #define HDMI_OUT_VTC_ID        XPAR_V_TC_OUT_DEVICE_ID
 #define HDMI_IN_VTC_ID         XPAR_V_TC_IN_DEVICE_ID
 #define HDMI_IN_GPIO_ID        XPAR_AXI_GPIO_VIDEO_DEVICE_ID
 
-// Interrupții hardware (fabric interrupts)
+// Interruptii hardware (fabric interrupts)
 #define HDMI_IN_VTC_IRPT_ID    XPAR_FABRIC_V_TC_IN_IRQ_INTR
 #define HDMI_IN_GPIO_IRPT_ID   XPAR_FABRIC_AXI_GPIO_VIDEO_IP2INTC_IRPT_INTR
 
-// Timer și UART (PS side)
+// Timer si UART (PS side)
 #define SCU_TIMER_ID           XPAR_SCUTIMER_DEVICE_ID
 #define UART_BASEADDR          XPAR_PS7_UART_1_BASEADDR
 
+// Constante pentru animatie
+#define FPS 60
+#define DT (1.0f / FPS)
+
+// Constante pentru rotatia CORDIC
+#define M_PI 3.14159265358979323846f
+#define CORDIC_ITER 16        // Numar de iteratii
+#define CORDIC_SCALE 0.607252935f  // 1/K ptr 16 iteratii
+
+// Tabla de arctangente precalculata in radiani (float)
+const float cordic_atan_table[CORDIC_ITER] = {
+    0.7853981633974483f, 0.4636476090008061f, 0.24497866312686414f, 0.12435499454676144f,
+    0.06241880999595735f, 0.031239833430268277f, 0.015623728620476831f, 0.007812341060101111f,
+    0.0039062301319669718f, 0.0019531225164788188f, 0.0009765621895593195f, 0.0004882812111948983f,
+    0.00024414062014936177f, 0.00012207031189367021f, 6.103515617420877e-05f, 3.0517578115526096e-05f
+};
 
 // Structuri globale pentru componentele demo-ului
 DisplayCtrl dispCtrl;      // Controlerul de display (VDMA + timing + frame buffer)
-XAxiVdma vdma;             // AXI VDMA (scriere în frame buffer)
+XAxiVdma vdma;             // AXI VDMA (scriere in frame buffer)
 VideoCapture videoCapt;    // Captură HDMI IN (VTC + GPIO)
-INTC intc;                 // Controller de întreruperi (interrupt controller)
-char fRefresh;             // Flag setat de ISR când există o nouă imagine capturată
+INTC intc;                 // Controller de intreruperi (interrupt controller)
+char fRefresh;             // Flag setat de ISR când există o nouă imagine capturata
 
-// Buffer video pentru display (alocat static în DDR)
+// Buffer video pentru display (alocat static in DDR)
 u8 frameBuf[DISPLAY_NUM_FRAMES][DEMO_MAX_FRAME] __attribute__((aligned(0x20)));
 // Pointeri către fiecare frame buffer
 u8 *pFrames[DISPLAY_NUM_FRAMES];
 
-// Tabel de întreruperi (interrupt vector table)
+// Tabel de intreruperi (interrupt vector table)
 const ivt_t ivt[] = {
     videoGpioIvt(HDMI_IN_GPIO_IRPT_ID, &videoCapt),
     videoVtcIvt(HDMI_IN_VTC_IRPT_ID, &(videoCapt.vtc))
 };
 
-/*
- * Desenează un dreptunghi mic 5x5 în bufferul de frame.
- * Folosește format RGB (3 bytes per pixel).
- * stride = numărul de bytes per linie (de obicei width*3)
- */
+float dz = 0.0f;
+float theta = 0.0f; // rotation angle in radians
 
 typedef struct {
     float x;
@@ -93,6 +107,77 @@ const Faces quads[] = {
 	    { 1, 2, 6, 5 }
 };
 
+// Computes cos(theta) and sin(theta) using CORDIC
+void cordic_rotate(float theta, float *cos_out, float *sin_out)
+{
+    // Wrap theta to [-pi, pi]
+    while (theta > 3.14159265f) theta -= 6.28318531f;
+    while (theta < -3.14159265f) theta += 6.28318531f;
+
+    // Reflect to [-pi/2, pi/2] for CORDIC stability
+    int flip = 0;
+    if (theta > 1.57079633f) {
+        theta -= 3.14159265f;
+        flip = 1;
+    } else if (theta < -1.57079633f) {
+        theta += 3.14159265f;
+        flip = 1;
+    }
+
+    // Standard CORDIC rotation
+    float x = CORDIC_SCALE;
+    float y = 0.0f;
+    float z = theta;
+    float pow2 = 1.0f;
+
+    for (int i = 0; i < CORDIC_ITER; i++)
+    {
+        float dx = (z >= 0.0f) ? -y / pow2 : y / pow2;
+        float dy = (z >= 0.0f) ? x / pow2 : -x / pow2;
+        float dz = (z >= 0.0f) ? -cordic_atan_table[i] : cordic_atan_table[i];
+
+        x += dx;
+        y += dy;
+        z += dz;
+
+        pow2 *= 2.0f;
+    }
+
+    // If reflected, invert signs
+    if (flip) {
+        x = -x;
+        y = -y;
+    }
+
+    *cos_out = x;
+    *sin_out = y;
+}
+
+void RotateY(float x, float y, float z, float theta, float *out_x, float *out_y, float *out_z)
+{
+    float c, s;
+    cordic_rotate(theta, &c, &s);
+
+    // cube center
+    float cx = 0.0f;
+    float cy = 0.0f;
+    float cz = 1.5f;
+
+    // translate to cube center
+    float x_rel = x - cx;
+    float y_rel = y - cy;
+    float z_rel = z - cz;
+
+    // rotate
+    float rx = x_rel * c + z_rel * s;
+    float ry = y_rel;
+    float rz = -x_rel * s + z_rel * c;
+
+    // translate back
+    *out_x = rx + cx;
+    *out_y = ry + cy;
+    *out_z = rz + cz;
+}
 
 void DrawRect(u8 *frame, u32 stride, int x, int y)
 {
@@ -124,14 +209,14 @@ void DrawRect(u8 *frame, u32 stride, int x, int y)
     }
 }
 
-void DrawLine(u8 *frame, u32 stride, int x0, int y0, int x1, int y1) {
+void DrawLine(u8 *frame, u32 stride, int x0, int y0, int x1, int y1, u32 width, u32 height) {
     int dx = abs(x1 - x0), sx = x0 < x1 ? 1 : -1; // Distanță pe X și direcție
     int dy = -abs(y1 - y0), sy = y0 < y1 ? 1 : -1; // Distanță pe Y și direcție
     int err = dx + dy, e2;
 
     while (1) {
-        // Dacă pixelul este în interiorul bufferului, îl desenam
-        if (x0 >= 0 && x0 < (int)(stride / 3) && y0 >= 0 && y0 < (int)(stride / 3))
+        // Dacă pixelul este in interiorul bufferului, il desenam
+        if (x0 >= 0 && x0 < width && y0 >= 0 && y0 < height)
         {
         	u32 pixel_index = y0 * stride + (x0 * 3);
             frame[pixel_index + 0] = 0; //blue
@@ -148,7 +233,6 @@ void DrawLine(u8 *frame, u32 stride, int x0, int y0, int x1, int y1) {
     }
 }
 
-
 void ScreenPos(float x_ndc, float y_ndc, u32 *out_x, u32 *out_y, u32 width, u32 height)
 {
 	*out_x = (u32)(((x_ndc + 1.0f) * 0.5f) * width);
@@ -160,7 +244,6 @@ void Project(float x, float y, float z, float *out_x, float *out_y, float aspect
     *out_x = (x / z) * aspect;
     *out_y = y / z;
 }
-
 
 void DrawPoint(u8 *frame, u32 stride, float x, float y, float z, u32 width, u32 height)
 {
@@ -178,13 +261,7 @@ void DrawPoint(u8 *frame, u32 stride, float x, float y, float z, u32 width, u32 
     DrawRect(frame, stride, (int)sx, (int)sy);
 }
 
-/*
- * Scrie în buffer un "test pattern" simplu:
- * - curăță ecranul (negru)
- * - desenează 3 puncte verzi (dreptunghiuri 5x5)
- * - flush la cache pentru a forța scrierea în memorie
- */
-void DemoPrintTest(u8 *frame, u32 width, u32 height, u32 stride)
+void Print3D(u8 *frame, u32 width, u32 height, u32 stride)
 {
     // Clear screen (setare pixeli la 0)
     for (u32 y = 0; y < height; y++)
@@ -207,23 +284,33 @@ void DemoPrintTest(u8 *frame, u32 width, u32 height, u32 stride)
         int v2 = quads[f].v3;
         int v3 = quads[f].v4;
 
+        float rx0, ry0, rz0;
+        float rx1, ry1, rz1;
+        float rx2, ry2, rz2;
+        float rx3, ry3, rz3;
+
         float px0, py0, px1, py1, px2, py2, px3, py3;
         u32 sx0, sy0, sx1, sy1, sx2, sy2, sx3, sy3;
 
-        Project(points[v0].x, points[v0].y, points[v0].z, &px0, &py0, (float)height / (float)width);
-        Project(points[v1].x, points[v1].y, points[v1].z, &px1, &py1, (float)height / (float)width);
-        Project(points[v2].x, points[v2].y, points[v2].z, &px2, &py2, (float)height / (float)width);
-        Project(points[v3].x, points[v3].y, points[v3].z, &px3, &py3, (float)height / (float)width);
+        RotateY(points[v0].x, points[v0].y, points[v0].z, theta, &rx0, &ry0, &rz0);
+        RotateY(points[v1].x, points[v1].y, points[v1].z, theta, &rx1, &ry1, &rz1);
+        RotateY(points[v2].x, points[v2].y, points[v2].z, theta, &rx2, &ry2, &rz2);
+        RotateY(points[v3].x, points[v3].y, points[v3].z, theta, &rx3, &ry3, &rz3);
+
+        Project(rx0, ry0, rz0, &px0, &py0, (float)height / (float)width);
+        Project(rx1, ry1, rz1, &px1, &py1, (float)height / (float)width);
+        Project(rx2, ry2, rz2, &px2, &py2, (float)height / (float)width);
+        Project(rx3, ry3, rz3, &px3, &py3, (float)height / (float)width);
 
         ScreenPos(px0, py0, &sx0, &sy0, width, height);
         ScreenPos(px1, py1, &sx1, &sy1, width, height);
         ScreenPos(px2, py2, &sx2, &sy2, width, height);
         ScreenPos(px3, py3, &sx3, &sy3, width, height);
 
-        DrawLine(frame, stride, sx0, sy0, sx1, sy1);
-        DrawLine(frame, stride, sx1, sy1, sx2, sy2);
-        DrawLine(frame, stride, sx2, sy2, sx3, sy3);
-        DrawLine(frame, stride, sx3, sy3, sx0, sy0);
+        DrawLine(frame, stride, sx0, sy0, sx1, sy1, width, height);
+        DrawLine(frame, stride, sx1, sy1, sx2, sy2, width, height);
+        DrawLine(frame, stride, sx2, sy2, sx3, sy3, width, height);
+        DrawLine(frame, stride, sx3, sy3, sx0, sy0, width, height);
 
     }
 
@@ -238,7 +325,7 @@ void DemoPrintTest(u8 *frame, u32 width, u32 height, u32 stride)
 
 
 /*
- * Inițializează întregul demo:
+ * Initializeaza intregul demo:
  * - buffer frame-uri
  * - timer
  * - VDMA
@@ -259,7 +346,7 @@ void DemoInitialize()
     }
 
 
-    // Inițializează timer-ul SCU (folosit în demo pentru delay)
+    // Initializează timer-ul SCU (folosit în demo pentru delay)
     TimerInitialize(SCU_TIMER_ID);
 
     // Inițializează VDMA
@@ -313,7 +400,7 @@ void DemoInitialize()
     VideoSetCallback(&videoCapt, DemoISR, &fRefresh);
 
     // Afișează test pattern pe ecran (buffer curent)
-    DemoPrintTest(dispCtrl.framePtr[dispCtrl.curFrame], dispCtrl.vMode.width, dispCtrl.vMode.height, dispCtrl.stride);
+    Print3D(dispCtrl.framePtr[dispCtrl.curFrame], dispCtrl.vMode.width, dispCtrl.vMode.height, dispCtrl.stride);
 }
 
 
@@ -457,47 +544,45 @@ void DemoChangeRes()
  * - așteaptă input UART sau refresh (frame nou capturat)
  * - permite schimbarea rezoluției
  */
+
+static inline u8* GetBackBuffer(void)
+{
+    int next = (dispCtrl.curFrame + 1) % DISPLAY_NUM_FRAMES;
+    return dispCtrl.framePtr[next];
+}
+
+
+
 void DemoRun()
 {
-    char userInput = 0;
-
-    // Golire buffer UART la start
-    while (XUartPs_IsReceiveData(UART_BASEADDR))
+    while (1)
     {
-    	XUartPs_ReadReg(UART_BASEADDR, XUARTPS_FIFO_OFFSET);
-    }
+
+    	//aici actualizam theta si dz (sau orice altceva ar trebui modificat)
+        dz += 1.0f * DT;   // same as JS: dz += dt
+        theta += 1.0f * DT; // rotate at 1 rad/s (adjust speed as needed)
+        if(theta > 2.0f * M_PI) theta -= 2.0f * M_PI; // wrap around
 
 
-    while (userInput != 'q')
-    {
-        fRefresh = 0;
-        DemoPrintMenu();
 
-        // Așteaptă input UART sau semnal de refresh (ISR)
-        while (!XUartPs_IsReceiveData(UART_BASEADDR) && !fRefresh) {}
 
-        if (XUartPs_IsReceiveData(UART_BASEADDR))
-        {
-            userInput = XUartPs_ReadReg(UART_BASEADDR, XUARTPS_FIFO_OFFSET);
-            xil_printf("%c", userInput);
-        }
-        else
-        {
-            // Dacă a venit refresh, nu schimbăm nimic
-            userInput = 'r';
-        }
+        u8 *back = dispCtrl.framePtr[(dispCtrl.curFrame + 1) % DISPLAY_NUM_FRAMES];
 
-        switch (userInput)
-        {
-            case '1': DemoChangeRes(); break;
-            case 'q': break;
-            case 'r': break;
-            default:
-                xil_printf("\n\rInvalid Selection");
-                TimerDelay(500000);
-        }
+        Print3D(
+            back,
+            dispCtrl.vMode.width,
+            dispCtrl.vMode.height,
+            dispCtrl.stride
+        );
+
+        dispCtrl.curFrame =
+            (dispCtrl.curFrame + 1) % DISPLAY_NUM_FRAMES;
+
+        TimerDelay(1000000 / FPS);
     }
 }
+
+
 
 
 /*

@@ -8,6 +8,9 @@
 		<item key="caseSensitive" value="false"/>
 		<item key="searchFlags" value="227191"/>
 		<list key="previousPatterns">
+			<item value="ă"/>
+			<item value="fRefresh"/>
+			<item value="clearscreen"/>
 			<item value="DisplayIniti"/>
 			<item value="DEMO_PATTERN_1"/>
 		</list>

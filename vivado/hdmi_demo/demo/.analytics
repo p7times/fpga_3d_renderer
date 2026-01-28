@@ -183,3 +183,84 @@ timestamp=[2026-01-27 21:46:25], mode=BUILD, duration=0:00:00.470, duration_ms=4
 timestamp=[2026-01-27 21:47:25], mode=BUILD, duration=0:00:00.372, duration_ms=372, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
 timestamp=[2026-01-27 21:50:44], mode=BUILD, duration=0:00:00.322, duration_ms=322, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
 timestamp=[2026-01-27 21:50:51], mode=BUILD, duration=0:00:06.133, duration_ms=6133, data={name=Zybo-Z7-10-HDMI_system, configuration=Debug, clean_build=false}
+timestamp=[2026-01-27 21:58:42], mode=WORKBENCH_START, duration=0:00:05.563, duration_ms=5563, data={}
+timestamp=[2026-01-27 21:58:43], mode=PLATFORM_REPOSITORY_INIT, duration=0:00:00.018, duration_ms=18, data={}
+timestamp=[2026-01-27 21:58:43], mode=WORKBENCH_UI_INIT, duration=0:00:00.646, duration_ms=646, data={editors_count=2, platform_editors_count=0, projects_count=4, platform_projects_count=1, active_platform_editor=false, projects=RemoteSystemsTempFiles,Zybo-Z7-10-HDMI,Zybo-Z7-10-HDMI_system,design_1_wrapper}
+timestamp=[2026-01-28 15:43:39], mode=WORKBENCH_START, duration=0:00:05.412, duration_ms=5412, data={}
+timestamp=[2026-01-28 15:43:39], mode=PLATFORM_REPOSITORY_INIT, duration=0:00:00.017, duration_ms=17, data={}
+timestamp=[2026-01-28 15:43:39], mode=WORKBENCH_UI_INIT, duration=0:00:00.612, duration_ms=612, data={editors_count=2, platform_editors_count=0, projects_count=4, platform_projects_count=1, active_platform_editor=false, projects=RemoteSystemsTempFiles,Zybo-Z7-10-HDMI,Zybo-Z7-10-HDMI_system,design_1_wrapper}
+timestamp=[2026-01-28 15:45:02], mode=PLATFORM_GENERATION, duration=0:00:07.258, duration_ms=7258, data={name=design_1_wrapper}
+timestamp=[2026-01-28 15:45:04], mode=BUILD, duration=0:00:00.580, duration_ms=580, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 15:45:11], mode=BUILD, duration=0:00:05.833, duration_ms=5833, data={name=Zybo-Z7-10-HDMI_system, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:04:15], mode=BUILD, duration=0:00:00.323, duration_ms=323, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:04:21], mode=BUILD, duration=0:00:05.876, duration_ms=5876, data={name=Zybo-Z7-10-HDMI_system, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:06:45], mode=BUILD, duration=0:00:00.329, duration_ms=329, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:06:52], mode=BUILD, duration=0:00:06.179, duration_ms=6179, data={name=Zybo-Z7-10-HDMI_system, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:08:00], mode=BUILD, duration=0:00:00.321, duration_ms=321, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:08:06], mode=BUILD, duration=0:00:05.929, duration_ms=5929, data={name=Zybo-Z7-10-HDMI_system, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:11:47], mode=BUILD, duration=0:00:00.426, duration_ms=426, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:11:54], mode=BUILD, duration=0:00:05.878, duration_ms=5878, data={name=Zybo-Z7-10-HDMI_system, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:14:44], mode=BUILD, duration=0:00:00.323, duration_ms=323, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:14:51], mode=BUILD, duration=0:00:05.930, duration_ms=5930, data={name=Zybo-Z7-10-HDMI_system, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:18:04], mode=BUILD, duration=0:00:00.345, duration_ms=345, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:18:11], mode=BUILD, duration=0:00:05.883, duration_ms=5883, data={name=Zybo-Z7-10-HDMI_system, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:18:39], mode=BUILD, duration=0:00:00.334, duration_ms=334, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:18:45], mode=BUILD, duration=0:00:06.026, duration_ms=6026, data={name=Zybo-Z7-10-HDMI_system, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:19:21], mode=BUILD, duration=0:00:00.331, duration_ms=331, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:19:27], mode=BUILD, duration=0:00:05.983, duration_ms=5983, data={name=Zybo-Z7-10-HDMI_system, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:21:38], mode=BUILD, duration=0:00:00.337, duration_ms=337, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:21:45], mode=BUILD, duration=0:00:05.981, duration_ms=5981, data={name=Zybo-Z7-10-HDMI_system, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:22:11], mode=BUILD, duration=0:00:00.323, duration_ms=323, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:22:17], mode=BUILD, duration=0:00:05.880, duration_ms=5880, data={name=Zybo-Z7-10-HDMI_system, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:22:37], mode=BUILD, duration=0:00:00.333, duration_ms=333, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:22:44], mode=BUILD, duration=0:00:06.282, duration_ms=6282, data={name=Zybo-Z7-10-HDMI_system, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:24:18], mode=BUILD, duration=0:00:00.325, duration_ms=325, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:24:24], mode=BUILD, duration=0:00:05.885, duration_ms=5885, data={name=Zybo-Z7-10-HDMI_system, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:24:43], mode=BUILD, duration=0:00:00.230, duration_ms=230, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:24:49], mode=BUILD, duration=0:00:06.125, duration_ms=6125, data={name=Zybo-Z7-10-HDMI_system, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:24:57], mode=BUILD, duration=0:00:00.342, duration_ms=342, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:25:04], mode=BUILD, duration=0:00:05.881, duration_ms=5881, data={name=Zybo-Z7-10-HDMI_system, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:28:35], mode=BUILD, duration=0:00:00.323, duration_ms=323, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:28:41], mode=BUILD, duration=0:00:05.980, duration_ms=5980, data={name=Zybo-Z7-10-HDMI_system, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:40:17], mode=BUILD, duration=0:00:00.226, duration_ms=226, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:41:28], mode=BUILD, duration=0:00:00.327, duration_ms=327, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:41:53], mode=BUILD, duration=0:00:00.333, duration_ms=333, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:45:25], mode=BUILD, duration=0:00:00.226, duration_ms=226, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:47:01], mode=BUILD, duration=0:00:00.325, duration_ms=325, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:47:08], mode=BUILD, duration=0:00:05.882, duration_ms=5882, data={name=Zybo-Z7-10-HDMI_system, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:48:56], mode=BUILD, duration=0:00:00.327, duration_ms=327, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:49:02], mode=BUILD, duration=0:00:05.830, duration_ms=5830, data={name=Zybo-Z7-10-HDMI_system, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:50:29], mode=BUILD, duration=0:00:00.326, duration_ms=326, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:50:35], mode=BUILD, duration=0:00:05.886, duration_ms=5886, data={name=Zybo-Z7-10-HDMI_system, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:53:11], mode=BUILD, duration=0:00:00.327, duration_ms=327, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:53:17], mode=BUILD, duration=0:00:05.889, duration_ms=5889, data={name=Zybo-Z7-10-HDMI_system, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:54:33], mode=BUILD, duration=0:00:00.332, duration_ms=332, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:54:39], mode=BUILD, duration=0:00:05.980, duration_ms=5980, data={name=Zybo-Z7-10-HDMI_system, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:55:48], mode=BUILD, duration=0:00:00.326, duration_ms=326, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:55:54], mode=BUILD, duration=0:00:05.883, duration_ms=5883, data={name=Zybo-Z7-10-HDMI_system, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:56:30], mode=BUILD, duration=0:00:00.327, duration_ms=327, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:56:36], mode=BUILD, duration=0:00:05.932, duration_ms=5932, data={name=Zybo-Z7-10-HDMI_system, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:57:45], mode=BUILD, duration=0:00:00.326, duration_ms=326, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:57:52], mode=BUILD, duration=0:00:06.333, duration_ms=6333, data={name=Zybo-Z7-10-HDMI_system, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:59:16], mode=BUILD, duration=0:00:00.326, duration_ms=326, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 16:59:22], mode=BUILD, duration=0:00:05.882, duration_ms=5882, data={name=Zybo-Z7-10-HDMI_system, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 17:00:02], mode=BUILD, duration=0:00:00.328, duration_ms=328, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 17:00:09], mode=BUILD, duration=0:00:05.990, duration_ms=5990, data={name=Zybo-Z7-10-HDMI_system, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 17:02:13], mode=BUILD, duration=0:00:00.326, duration_ms=326, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 17:02:20], mode=BUILD, duration=0:00:05.935, duration_ms=5935, data={name=Zybo-Z7-10-HDMI_system, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 17:06:39], mode=BUILD, duration=0:00:00.327, duration_ms=327, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 17:06:45], mode=BUILD, duration=0:00:05.882, duration_ms=5882, data={name=Zybo-Z7-10-HDMI_system, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 17:10:10], mode=BUILD, duration=0:00:00.277, duration_ms=277, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 17:11:32], mode=BUILD, duration=0:00:00.326, duration_ms=326, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 17:11:38], mode=BUILD, duration=0:00:05.931, duration_ms=5931, data={name=Zybo-Z7-10-HDMI_system, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 17:16:26], mode=BUILD, duration=0:00:00.326, duration_ms=326, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 17:16:33], mode=BUILD, duration=0:00:06.235, duration_ms=6235, data={name=Zybo-Z7-10-HDMI_system, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 17:17:28], mode=BUILD, duration=0:00:00.228, duration_ms=228, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 17:18:08], mode=BUILD, duration=0:00:00.582, duration_ms=582, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 17:18:17], mode=BUILD, duration=0:00:07.732, duration_ms=7732, data={name=Zybo-Z7-10-HDMI_system, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 17:18:54], mode=BUILD, duration=0:00:00.529, duration_ms=529, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 17:19:03], mode=BUILD, duration=0:00:08.085, duration_ms=8085, data={name=Zybo-Z7-10-HDMI_system, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 17:21:18], mode=BUILD, duration=0:00:00.324, duration_ms=324, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 17:21:24], mode=BUILD, duration=0:00:05.831, duration_ms=5831, data={name=Zybo-Z7-10-HDMI_system, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 17:25:48], mode=BUILD, duration=0:00:00.327, duration_ms=327, data={name=Zybo-Z7-10-HDMI, configuration=Debug, clean_build=false}
+timestamp=[2026-01-28 17:25:54], mode=BUILD, duration=0:00:05.831, duration_ms=5831, data={name=Zybo-Z7-10-HDMI_system, configuration=Debug, clean_build=false}
