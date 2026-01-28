@@ -1,4 +1,4 @@
-17:25:48 **** Incremental Build of configuration Debug for project Zybo-Z7-10-HDMI ****
+21:26:07 **** Incremental Build of configuration Debug for project Zybo-Z7-10-HDMI ****
 make all 
 make --no-print-directory pre-build
 a9-linaro-pre-build-step
@@ -10,7 +10,7 @@ arm-none-eabi-gcc -DDEBUG -Wall -O0 -g3 -ID:/Zybo-Z7-SW/src/Zybo-Z7-10-HDMI/src 
 In file included from /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/design_1_wrapper/export/design_1_wrapper/sw/design_1_wrapper/domain_ps7_cortexa9_0/bspinclude/include/xaxivdma_i.h:52,
                  from /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/design_1_wrapper/export/design_1_wrapper/sw/design_1_wrapper/domain_ps7_cortexa9_0/bspinclude/include/xaxivdma.h:297,
                  from ../src/video_capture/video_capture.h:75,
-                 from ../src/video_demo.h:32,
+                 from ../src/video_demo.h:7,
                  from ../src/video_demo.c:1:
 /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/design_1_wrapper/export/design_1_wrapper/sw/design_1_wrapper/domain_ps7_cortexa9_0/bspinclude/include/xdebug.h:21:2: warning: #warning DEBUG is enabled [-Wcpp]
    21 | #warning DEBUG is enabled
@@ -23,6 +23,10 @@ In file included from /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/lic
 /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/design_1_wrapper/export/design_1_wrapper/sw/design_1_wrapper/domain_ps7_cortexa9_0/bspinclude/include/xuartps_hw.h:424: note: this is the location of the previous definition
   424 | #define XUartPs_IsTransmitEmpty(BaseAddress)                     \
       | 
+../src/video_demo.c: In function 'DemoRun':
+../src/video_demo.c:425:16: warning: variable 'dt' set but not used [-Wunused-but-set-variable]
+  425 |         double dt = 0.0;
+      |                ^~
 Finished building: ../src/video_demo.c
  
 Building target: Zybo-Z7-10-HDMI.elf
@@ -33,9 +37,9 @@ Finished building target: Zybo-Z7-10-HDMI.elf
 Invoking: ARM v7 Print Size
 arm-none-eabi-size Zybo-Z7-10-HDMI.elf  |tee "Zybo-Z7-10-HDMI.elf.size"
    text	   data	    bss	    dec	    hex	filename
- 100323	   3504	24909088	25012915	17daab3	Zybo-Z7-10-HDMI.elf
+  99621	   3504	24909104	25012229	17da805	Zybo-Z7-10-HDMI.elf
 Finished building: Zybo-Z7-10-HDMI.elf.size
  
 
-17:25:48 Build Finished (took 322ms)
+21:26:07 Build Finished (took 321ms)
 

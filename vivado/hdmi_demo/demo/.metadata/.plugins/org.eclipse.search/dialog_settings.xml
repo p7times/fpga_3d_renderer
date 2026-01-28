@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="SearchDialog">
-		<item key="PREVIOUS_PAGE" value="org.eclipse.search.internal.ui.text.TextSearchPage"/>
+		<item key="PREVIOUS_PAGE" value="org.eclipse.cdt.ui.pdomSearchPage"/>
 	</section>
 	<section name="Search">
 		<list key="Search.processedPageIds">
@@ -27,8 +27,8 @@
 	<section name="DialogBounds_SearchDialog">
 		<item key="DIALOG_X_ORIGIN" value="307"/>
 		<item key="DIALOG_Y_ORIGIN" value="202"/>
-		<item key="DIALOG_WIDTH" value="550"/>
-		<item key="DIALOG_HEIGHT" value="496"/>
+		<item key="DIALOG_WIDTH" value="597"/>
+		<item key="DIALOG_HEIGHT" value="468"/>
 		<item key="DIALOG_FONT_NAME" value="1|Ubuntu|10.0|0|GTK|1|"/>
 	</section>
 	<section name="org.eclipse.cdt.ui.pdomSearchViewPage">
