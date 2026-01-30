@@ -1,0 +1,12 @@
+#ifndef MESH_TEAPOT_H
+#define MESH_TEAPOT_H
+
+#include "mesh.h"
+
+extern const Mesh TeapotMesh;
+
+#endif
+
+
+
+

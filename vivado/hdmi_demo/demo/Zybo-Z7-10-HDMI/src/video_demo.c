@@ -7,10 +7,16 @@
 #include "timer_ps/timer_ps.h"
 #include "xparameters.h"
 #include <stdlib.h>
+#include <stdio.h>
 #include <stdint.h>
-
 #include "xil_printf.h"
-#include "xtime_l.h"  // for XTime
+
+#include "meshes/mesh.h"
+#include "meshes/mesh_cube.h"
+#include "meshes/mesh_teapot.h"
+#include "meshes/mesh_human.h"
+
+const Mesh* currentMesh = &CubeMesh;
 
 // Definirea adreselor si ID-urilor hardware din platforma Zynq/ZYBO
 #define DYNCLK_BASEADDR        XPAR_AXI_DYNCLK_0_S_AXI_LITE_BASEADDR
@@ -30,7 +36,10 @@
 // Constante pentru animatie
 #define FPS 60
 #define DT (1.0f / FPS)
-#define cameraZ 2.0f
+#define MAX_FACE_VERTS 8	// OBJ supports ngons
+#define MAX_VERTS 64
+#define MAX_FACES 64
+#define CAMERA_Z 1.5f
 
 // Constante pentru rotatia CORDIC
 #define M_PI 3.14159265358979323846f
@@ -65,40 +74,6 @@ const ivt_t ivt[] = {
 
 float dz = 0.0f;
 float theta = 0.0f; // rotation angle in radians
-
-typedef struct {
-    float x;
-    float y;
-    float z;
-} Vertices;
-
-const Vertices points[] = {
-    { -0.5, -0.5, -0.5 }, //0
-    { -0.5,  0.5, -0.5 }, //1
-    {  0.5,  0.5, -0.5 }, //2
-    {  0.5, -0.5, -0.5 }, //3
-
-    { -0.5, -0.5, 0.5 }, //4
-    { -0.5,  0.5, 0.5 }, //5
-    {  0.5,  0.5, 0.5 }, //6
-    {  0.5, -0.5, 0.5 }  //7
-};
-
-typedef struct {
-    int v1;
-    int v2;
-    int v3;
-    int v4;
-} Faces;
-
-const Faces quads[] = {
-		{ 0, 1, 2, 3 }, // front
-	    { 4, 5, 6, 7 }, // back
-	    { 0, 1, 5, 4 }, // left
-	    { 3, 7, 6, 2 }, // right
-	    { 0, 4, 7, 3 }, // bottom
-	    { 1, 2, 6, 5 } // top
-};
 
 // Calculeaza cos(theta) si sin(theta) folosind CORDIC
 void CordicRotate(float theta, float *cos_out, float *sin_out)
@@ -244,68 +219,45 @@ void DrawPoint(u8 *frame, u32 stride, float x, float y, float z, u32 width, u32 
     DrawRect(frame, stride, (int)sx, (int)sy);
 }
 
-// Deseneaza corpul 3D: Parseaza -> RotateY -> Project -> ScreenPos -> DrawLine
-void Print3D(u8 *frame, u32 width, u32 height, u32 stride)
+void DrawFace(u8* frame, u32 stride, const Face* face, const Vertices* verts, float theta, u32 width, u32 height)
 {
-    // Curata ecranul (setare pixeli la 0)
-    memset(frame, 0, height * stride);
+    float px[MAX_FACE_VERTS];
+    float py[MAX_FACE_VERTS];
+    u32 sx[MAX_FACE_VERTS];
+    u32 sy[MAX_FACE_VERTS];
 
-    // Desenează punctele
-    for (int f = 0; f < (sizeof(quads) / sizeof(quads[0])); f++)
-    {
-    	int v0 = quads[f].v1;
-        int v1 = quads[f].v2;
-        int v2 = quads[f].v3;
-        int v3 = quads[f].v4;
+    for (int i = 0; i < face->count; i++) {
+        int vi = face->indices[i];
 
-        float rx0, ry0, rz0;
-        float rx1, ry1, rz1;
-        float rx2, ry2, rz2;
-        float rx3, ry3, rz3;
+        float rx, ry, rz;
+        RotateY(verts[vi].x, verts[vi].y, verts[vi].z,
+                theta, &rx, &ry, &rz);
 
-        float px0, py0, px1, py1, px2, py2, px3, py3;
-        u32 sx0, sy0, sx1, sy1, sx2, sy2, sx3, sy3;
+        rz += CAMERA_Z;
 
-        // Roteste punctele
-        RotateY(points[v0].x, points[v0].y, points[v0].z, theta, &rx0, &ry0, &rz0);
-        RotateY(points[v1].x, points[v1].y, points[v1].z, theta, &rx1, &ry1, &rz1);
-        RotateY(points[v2].x, points[v2].y, points[v2].z, theta, &rx2, &ry2, &rz2);
-        RotateY(points[v3].x, points[v3].y, points[v3].z, theta, &rx3, &ry3, &rz3);
-
-        rz0 += cameraZ;
-        rz1 += cameraZ;
-        rz2 += cameraZ;
-        rz3 += cameraZ;
-
-        // Proiecteaza punctele
-        Project(rx0, ry0, rz0, &px0, &py0, (float)height / (float)width);
-        Project(rx1, ry1, rz1, &px1, &py1, (float)height / (float)width);
-        Project(rx2, ry2, rz2, &px2, &py2, (float)height / (float)width);
-        Project(rx3, ry3, rz3, &px3, &py3, (float)height / (float)width);
-
-        // Converteste din sistemul NDC de coordonate in cel al monitorului
-        ScreenPos(px0, py0, &sx0, &sy0, width, height);
-        ScreenPos(px1, py1, &sx1, &sy1, width, height);
-        ScreenPos(px2, py2, &sx2, &sy2, width, height);
-        ScreenPos(px3, py3, &sx3, &sy3, width, height);
-
-        // Deseneaza liniile intre 2 puncte
-        DrawLine(frame, stride, sx0, sy0, sx1, sy1, width, height);
-        DrawLine(frame, stride, sx1, sy1, sx2, sy2, width, height);
-        DrawLine(frame, stride, sx2, sy2, sx3, sy3, width, height);
-        DrawLine(frame, stride, sx3, sy3, sx0, sy0, width, height);
-
+        Project(rx, ry, rz, &px[i], &py[i], (float)height / width);
+        ScreenPos(px[i], py[i], &sx[i], &sy[i], width, height);
     }
 
-    //for (int i = 0; i < (sizeof(points) / sizeof(points[0])); i++)
-    //{
-    //DrawPoint(frame, stride, points[i].x, points[i].y, points[i].z, width, height);
-    //}
-
-    // Flush cache pentru a asigura că memoria DDR conține datele actualizate
-    Xil_DCacheFlushRange((unsigned int)frame, DEMO_MAX_FRAME);
+    // draw edges
+    for (int i = 0; i < face->count; i++) {
+        int j = (i + 1) % face->count;
+        DrawLine(frame, stride, sx[i], sy[i], sx[j], sy[j], width, height);
+    }
 }
 
+
+// Deseneaza corpul 3D: Parseaza -> RotateY -> Project -> ScreenPos -> DrawLine
+void PrintMesh(u8 *frame, u32 width, u32 height, u32 stride, const Mesh* mesh)
+{
+    memset(frame, 0, height * stride);
+
+    for (int f = 0; f < mesh->face_count; f++) {
+        DrawFace(frame, stride, &mesh->faces[f], mesh->vertices, theta, width, height);
+    }
+
+    Xil_DCacheFlushRange((unsigned int)frame, DEMO_MAX_FRAME);
+}
 
 /*
  * Initializeaza intregul demo:
@@ -383,7 +335,7 @@ void DemoInitialize()
     VideoSetCallback(&videoCapt, DemoISR, &fRefresh);
 
     // Afișează test pattern pe ecran (buffer curent)
-    Print3D(dispCtrl.framePtr[dispCtrl.curFrame], dispCtrl.vMode.width, dispCtrl.vMode.height, dispCtrl.stride);
+    PrintMesh(dispCtrl.framePtr[dispCtrl.curFrame], dispCtrl.vMode.width, dispCtrl.vMode.height, dispCtrl.stride, currentMesh);
 }
 
 /*
@@ -395,45 +347,15 @@ void DemoInitialize()
 
 void DemoRun()
 {
-
-	 static XTime lastFrameTime = 0;
-	 static XTime prevTime = 0;
-	 XTime now;
-
     while (1)
     {
-
-    	XTime_GetTime(&now);
-    	if (lastFrameTime != 0)
-    	        {
-    				double target_us = 1e6 / FPS;
-    	            double frame_us = (double)(now - lastFrameTime) * 1e6 / COUNTS_PER_SECOND;
-    	            double remaining_us = target_us - frame_us;
-
-    	            /* Throttle UART output or it WILL stall */
-    	            static int printCounter = 0;
-    	            printCounter++;
-
-    	            if (printCounter % 60 == 0)   // print once per second @ ~60fps
-    	            {
-    	               // printf("Frame-to-frame: %.2f us\r\n", frame_us);
-    	                printf("Remaining time (16,666 us - frame_us): %.2f us\r\n", remaining_us);
-    	            }
-    	        }
-
-    	lastFrameTime = now;
-    	double dt = 0.0;
-    	if (prevTime != 0)
-    		dt = (double)(now - prevTime) / COUNTS_PER_SECOND;
-    	prevTime = now;
-
     	//aici actualizam theta (sau orice altceva ar trebui modificat)
         theta += 1.0f * DT; // rotate at 1 rad/s (adjust speed as needed)
         if(theta > 2.0f * M_PI) theta -= 2.0f * M_PI; // wrap around
 
         // logica double buffer
         u8 *backbuffer = dispCtrl.framePtr[(dispCtrl.curFrame + 1) % DISPLAY_NUM_FRAMES];   // definim un al doilea buffer
-        Print3D(backbuffer,dispCtrl.vMode.width,dispCtrl.vMode.height,dispCtrl.stride);		// desenam in acest buffer
+        PrintMesh(backbuffer,dispCtrl.vMode.width,dispCtrl.vMode.height,dispCtrl.stride, currentMesh);		// desenam in acest buffer
         dispCtrl.curFrame = (dispCtrl.curFrame + 1) % DISPLAY_NUM_FRAMES;					// actualizam monitorul
     }
 }

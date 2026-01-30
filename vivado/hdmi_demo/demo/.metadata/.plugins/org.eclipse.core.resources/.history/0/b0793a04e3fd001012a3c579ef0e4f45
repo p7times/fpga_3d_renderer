@@ -1,0 +1,17 @@
+#ifndef MESH_TEAPOT_H
+#define MESH_TEAPOT_H
+
+#include <stdint.h>
+#include "video_demo.h" // or wherever Vertices/Face are defined
+
+typedef struct {
+    const Vertices* vertices;
+    int vertex_count;
+    const Face* faces;
+    int face_count;
+} Mesh;
+
+// Teapot mesh object
+extern const Mesh TeapotMesh;
+
+#endif // MESH_TEAPOT_H
