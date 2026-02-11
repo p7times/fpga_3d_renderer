@@ -30,6 +30,6 @@ void DrawFace(u8* frame, u32 stride, const Face* face, const Vertices* verts, fl
 void RotateY(float x, float y, float z, float theta, float *out_x, float *out_y, float *out_z);	// Roteste corpul 3D in jurul axei Y, relativ la centrul corpului, folosind CORDIC
 void Project(float x, float y, float z, float *out_x, float *out_y, float aspect);				// Proiectia 3D -> 2D a unui punct
 void ScreenPos(float x_ndc, float y_ndc, u32 *out_x, u32 *out_y, u32 width, u32 height);		// Converteste coordonatele din sistemul NDC in cel al monitorului
-void PrintMesh(u8 *frame, u32 width, u32 height, u32 stride, const Mesh* mesh);										// Deseneaza corpul 3D: Parseaza -> RotateY -> Project -> ScreenPos -> DrawLine
+void PrintMesh(u8 *frame, u32 width, u32 height, u32 stride, const Mesh* mesh);				    // Deseneaza corpul 3D: Parseaza -> RotateY -> Project -> ScreenPos -> DrawLine
 
 #endif /* VIDEO_DEMO_H_ */

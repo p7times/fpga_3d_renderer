@@ -16,7 +16,7 @@
 #include "meshes/mesh_teapot.h"
 #include "meshes/mesh_human.h"
 
-const Mesh* currentMesh = &CubeMesh;
+const Mesh* currentMesh = &TeapotMesh;
 
 // Definirea adreselor si ID-urilor hardware din platforma Zynq/ZYBO
 #define DYNCLK_BASEADDR        XPAR_AXI_DYNCLK_0_S_AXI_LITE_BASEADDR

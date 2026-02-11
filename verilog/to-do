@@ -1,0 +1,2 @@
+figure out clip space: z-values very small -> 0 
+clamp screen values to fit inside width and height
