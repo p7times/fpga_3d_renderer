@@ -195,7 +195,7 @@ void ScreenPos(float x_ndc, float y_ndc, u32 *out_x, u32 *out_y, u32 width, u32 
 	*out_y = (u32)(((1.0f - y_ndc) * 0.5f) * height);
 }
 
-// Proiectia 3D -> 2D a unui punct
+// Proiectia 3D -> 2D a unui punct, FOLOSESTE WEAK PERSPECTIVE PROJECTION
 void Project(float x, float y, float z, float *out_x, float *out_y, float aspect)
 {
     *out_x = (x / z) * aspect;

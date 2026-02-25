@@ -12,21 +12,23 @@
    </db_ref_list>
    <zoom_setting>
       <ZoomStartTime time="0.000 ns"></ZoomStartTime>
-      <ZoomEndTime time="80.001 ns"></ZoomEndTime>
-      <Cursor1Time time="6.995 ns"></Cursor1Time>
+      <ZoomEndTime time="20.000 ns"></ZoomEndTime>
+      <Cursor1Time time="7.310 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="162"></NameColumnWidth>
-      <ValueColumnWidth column_width="75"></ValueColumnWidth>
+      <ValueColumnWidth column_width="71"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="9" />
+   <WVObjectSize size="7" />
    <wvobject type="array" fp_name="/tb_project/tb_x">
       <obj_property name="ElementShortName">tb_x[31:0]</obj_property>
       <obj_property name="ObjectShortName">tb_x[31:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
    </wvobject>
    <wvobject type="array" fp_name="/tb_project/tb_y">
       <obj_property name="ElementShortName">tb_y[31:0]</obj_property>
       <obj_property name="ObjectShortName">tb_y[31:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
    </wvobject>
    <wvobject type="array" fp_name="/tb_project/tb_z">
       <obj_property name="ElementShortName">tb_z[31:0]</obj_property>
@@ -41,14 +43,6 @@
       <obj_property name="ElementShortName">tb_height[31:0]</obj_property>
       <obj_property name="ObjectShortName">tb_height[31:0]</obj_property>
       <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
-   </wvobject>
-   <wvobject type="array" fp_name="/tb_project/tb_xp">
-      <obj_property name="ElementShortName">tb_xp[31:0]</obj_property>
-      <obj_property name="ObjectShortName">tb_xp[31:0]</obj_property>
-   </wvobject>
-   <wvobject type="array" fp_name="/tb_project/tb_yp">
-      <obj_property name="ElementShortName">tb_yp[31:0]</obj_property>
-      <obj_property name="ObjectShortName">tb_yp[31:0]</obj_property>
    </wvobject>
    <wvobject type="array" fp_name="/tb_project/tb_screen_x">
       <obj_property name="ElementShortName">tb_screen_x[31:0]</obj_property>

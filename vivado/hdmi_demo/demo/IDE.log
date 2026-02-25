@@ -7600,3 +7600,12 @@ con
 17:12:08 INFO  : Successfully done setting XSCT server connection channel  
 17:12:08 INFO  : Successfully done setting workspace for the tool. 
 17:12:08 INFO  : Successfully done query RDI_DATADIR 
+21:52:14 DEBUG : Logs will be stored at '/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/IDE.log'.
+21:52:15 INFO  : Launching XSCT server: xsct -n  -interactive /home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/licenta_repo/vivado/hdmi_demo/demo/temp_xsdb_launch_script.tcl
+21:52:16 INFO  : Platform repository initialization has completed.
+21:52:16 INFO  : Registering command handlers for Vitis TCF services
+21:52:17 INFO  : XSCT server has started successfully.
+21:52:17 INFO  : plnx-install-location is set to ''
+21:52:17 INFO  : Successfully done setting XSCT server connection channel  
+21:52:17 INFO  : Successfully done query RDI_DATADIR 
+21:52:17 INFO  : Successfully done setting workspace for the tool. 
