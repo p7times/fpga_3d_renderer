@@ -1,4 +1,4 @@
-module adder_q_16_16(
+module add_q_16_16(
     input  signed [31:0] a, b,      // operanzi in format Q16.16 (32-bit signed fixed-point)
     output               overflow,  // flag de overflow (folosit pentru debug / monitorizare)
     output signed [31:0] sum        // rezultat Q16.16 cu saturatie

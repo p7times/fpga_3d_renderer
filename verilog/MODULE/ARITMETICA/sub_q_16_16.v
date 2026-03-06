@@ -1,4 +1,4 @@
-module subtract_q_16_16(
+module sub_q_16_16(
     input  signed [31:0] a, b,     // operanzi in format Q16.16 (32-bit signed fixed-point)
     output               overflow, // flag de overflow (pentru debug / saturatie)
     output signed [31:0] dif       // rezultat Q16.16, cu saturatie
