@@ -1,3 +1,0 @@
-/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/vivado/Hello_world_minized/hello_world_minized_platform/zynq_fsbl/build/CMakeFiles/fsbl.elf.dir
-/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/vivado/Hello_world_minized/hello_world_minized_platform/zynq_fsbl/build/CMakeFiles/edit_cache.dir
-/home/user/Desktop/Personal_Stuff/Homework/an4/LICENTA/vivado/Hello_world_minized/hello_world_minized_platform/zynq_fsbl/build/CMakeFiles/rebuild_cache.dir

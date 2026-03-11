@@ -1,0 +1,1 @@
+program facut de prof. Nicula ajutator pentru tema 2(rezolvarea temei 7)

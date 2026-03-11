@@ -1,0 +1,119 @@
+m255
+K4
+z2
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+dC:/Users/Alexandru/Downloads/Limbaje de descriere hardware/laborator/tema 2
+vdiv
+Z0 !s110 1463577936
+!i10b 1
+!s100 7AL^kGS6lnB]^QX;VCiOM2
+I0b_fGU8boBfE@EIfUlF?W3
+Z1 VDg1SIo80bB@j0V0VzS_@n1
+Z2 dD:/Documentare/facultate/Cursuri facultate/anul 3, sem II/Limbaje de descriere hardware/laborator/tema 2
+w1433771121
+8./div.v
+F./div.v
+L0 1
+Z3 OP;L;10.4a;61
+r1
+!s85 0
+31
+Z4 !s108 1463577936.000000
+Z5 !s107 ./divTEST.v|./divTB.v|./divCD.v|./divCC.v|./div.v|
+Z6 !s90 -reportprogress|300|-work|work|./div.v|./divCC.v|./divCD.v|./divTB.v|./divTEST.v|
+!s101 -O0
+!i113 1
+Z7 o-work work -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact -O0
+vdivCC
+R0
+!i10b 1
+!s100 B48R6LjDm18Z>;j[@>3nF1
+IoM4_@U^MgWBD_kAMYSZ]Q3
+R1
+R2
+w1433456156
+8./divCC.v
+F./divCC.v
+L0 1
+R3
+r1
+!s85 0
+31
+R4
+R5
+R6
+!s101 -O0
+!i113 1
+R7
+ndiv@c@c
+vdivCD
+Z8 !s110 1463577937
+!i10b 1
+!s100 Y0BW:L=0RQon1Gg2WKaNl2
+I[lzAW1fFBK:Iaz;RO>B:Q1
+R1
+R2
+w1460824665
+8./divCD.v
+F./divCD.v
+L0 1
+R3
+r1
+!s85 0
+31
+R4
+R5
+R6
+!s101 -O0
+!i113 1
+R7
+ndiv@c@d
+vdivTB
+R8
+!i10b 1
+!s100 K13j9mlni^D83Eab`<3JX3
+Io:RAkfOZ6zVRAPa8XN7FO2
+R1
+R2
+w1460824958
+8./divTB.v
+F./divTB.v
+L0 1
+R3
+r1
+!s85 0
+31
+R4
+R5
+R6
+!s101 -O0
+!i113 1
+R7
+ndiv@t@b
+vdivTEST
+R8
+!i10b 1
+!s100 897<fM3;UzGG_PCl0`g3?0
+Ib4c3MS7PQBmzJ1HO46K153
+R1
+R2
+w1433771131
+8./divTEST.v
+F./divTEST.v
+L0 1
+R3
+r1
+!s85 0
+31
+R4
+R5
+R6
+!s101 -O0
+!i113 1
+R7
+ndiv@t@e@s@t

@@ -1,0 +1,119 @@
+m255
+K4
+z2
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 dC:/Users/Alexandru/Downloads/Limbaje de descriere hardware/program facut de prof. Nicula
+vmult
+!s110 1433461860
+!i10b 1
+!s100 cRK7LT;5@b0I;R<Ji2GEn2
+I:UFUzbJ[RgYLni:53U8AT3
+Z1 VDg1SIo80bB@j0V0VzS_@n1
+R0
+Z2 w1431447360
+8C:/Users/Alexandru/Downloads/Limbaje de descriere hardware/program facut de prof. Nicula/mult.v
+FC:/Users/Alexandru/Downloads/Limbaje de descriere hardware/program facut de prof. Nicula/mult.v
+L0 1
+Z3 OP;L;10.4;61
+r1
+!s85 0
+31
+!s108 1433461860.076000
+!s107 C:/Users/Alexandru/Downloads/Limbaje de descriere hardware/program facut de prof. Nicula/mult.v|
+!s90 -reportprogress|300|-work|work|C:/Users/Alexandru/Downloads/Limbaje de descriere hardware/program facut de prof. Nicula/mult.v|
+!s101 -O0
+!i113 1
+Z4 o-work work -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact -O0
+vmultCC
+!s110 1433461862
+!i10b 1
+!s100 i7K^GBFO:0R;V>T`SHlAb1
+I1kR:fok0>bO<aDD2HKeZ>1
+R1
+R0
+R2
+8C:/Users/Alexandru/Downloads/Limbaje de descriere hardware/program facut de prof. Nicula/multCC.v
+FC:/Users/Alexandru/Downloads/Limbaje de descriere hardware/program facut de prof. Nicula/multCC.v
+L0 1
+R3
+r1
+!s85 0
+31
+!s108 1433461862.188000
+!s107 C:/Users/Alexandru/Downloads/Limbaje de descriere hardware/program facut de prof. Nicula/multCC.v|
+!s90 -reportprogress|300|-work|work|C:/Users/Alexandru/Downloads/Limbaje de descriere hardware/program facut de prof. Nicula/multCC.v|
+!s101 -O0
+!i113 1
+R4
+nmult@c@c
+vmultCD
+!s110 1433461864
+!i10b 1
+!s100 4mY]j6eMN<W[lO3fzL@EI0
+I7ej8Z^PZFEG?Emm:RJf;a2
+R1
+R0
+R2
+8C:/Users/Alexandru/Downloads/Limbaje de descriere hardware/program facut de prof. Nicula/multCD.v
+FC:/Users/Alexandru/Downloads/Limbaje de descriere hardware/program facut de prof. Nicula/multCD.v
+L0 1
+R3
+r1
+!s85 0
+31
+!s108 1433461864.075000
+!s107 C:/Users/Alexandru/Downloads/Limbaje de descriere hardware/program facut de prof. Nicula/multCD.v|
+!s90 -reportprogress|300|-work|work|C:/Users/Alexandru/Downloads/Limbaje de descriere hardware/program facut de prof. Nicula/multCD.v|
+!s101 -O0
+!i113 1
+R4
+nmult@c@d
+vmultTB
+!s110 1433461866
+!i10b 1
+!s100 JhgGaV=DA3[K]mcRGiV_Z0
+IJX@3nWk4D?k39^[UKLE420
+R1
+R0
+R2
+8C:/Users/Alexandru/Downloads/Limbaje de descriere hardware/program facut de prof. Nicula/multTB.v
+FC:/Users/Alexandru/Downloads/Limbaje de descriere hardware/program facut de prof. Nicula/multTB.v
+L0 1
+R3
+r1
+!s85 0
+31
+!s108 1433461866.095000
+!s107 C:/Users/Alexandru/Downloads/Limbaje de descriere hardware/program facut de prof. Nicula/multTB.v|
+!s90 -reportprogress|300|-work|work|C:/Users/Alexandru/Downloads/Limbaje de descriere hardware/program facut de prof. Nicula/multTB.v|
+!s101 -O0
+!i113 1
+R4
+nmult@t@b
+vmultTEST
+!s110 1433461868
+!i10b 1
+!s100 jHB^hnd0dJLmXQ:8MAb`?2
+IngSdIJTmI<D]:3@SERYi;1
+R1
+R0
+R2
+8C:/Users/Alexandru/Downloads/Limbaje de descriere hardware/program facut de prof. Nicula/multTEST.v
+FC:/Users/Alexandru/Downloads/Limbaje de descriere hardware/program facut de prof. Nicula/multTEST.v
+L0 1
+R3
+r1
+!s85 0
+31
+!s108 1433461868.040000
+!s107 C:/Users/Alexandru/Downloads/Limbaje de descriere hardware/program facut de prof. Nicula/multTEST.v|
+!s90 -reportprogress|300|-work|work|C:/Users/Alexandru/Downloads/Limbaje de descriere hardware/program facut de prof. Nicula/multTEST.v|
+!s101 -O0
+!i113 1
+R4
+nmult@t@e@s@t

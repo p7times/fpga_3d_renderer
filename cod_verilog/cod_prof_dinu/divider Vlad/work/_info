@@ -1,0 +1,120 @@
+m255
+K4
+z2
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 dC:/Users/Alexandru/Downloads/Limbaje de descriere hardware/proiect/divider Vlad
+vDivider
+Z1 !s110 1434608604
+!i10b 1
+!s100 I2bel55>3AT?23[U8LX1o3
+I0mkj^Zj_6JJR>^W4>>PjS3
+Z2 VDg1SIo80bB@j0V0VzS_@n1
+R0
+w1434602558
+8./Divider.v
+F./Divider.v
+L0 1
+Z3 OP;L;10.4;61
+r1
+!s85 0
+31
+Z4 !s108 1434608604.503000
+Z5 !s107 ./restoreDiv_CD.v|./restoreDiv_CC.v|./divTEST.v|./divTB.v|./Divider.v|
+Z6 !s90 -reportprogress|300|-work|work|./Divider.v|./divTB.v|./divTEST.v|./restoreDiv_CC.v|./restoreDiv_CD.v|
+!s101 -O0
+!i113 1
+Z7 o-work work -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact -O0
+n@divider
+vdivTB
+R1
+!i10b 1
+!s100 IMnJh^^d^hMcH3GM4nzlW3
+IBbJgQb<7dUUZA;FgkLPY[2
+R2
+R0
+w1434608599
+8./divTB.v
+F./divTB.v
+L0 1
+R3
+r1
+!s85 0
+31
+R4
+R5
+R6
+!s101 -O0
+!i113 1
+R7
+ndiv@t@b
+vdivTEST
+R1
+!i10b 1
+!s100 Y[;H`=U>D[bW2e5D=X25i2
+IC_Pd2I>FPa`TCE=cRc;Z]3
+R2
+R0
+w1434607289
+8./divTEST.v
+F./divTEST.v
+L0 1
+R3
+r1
+!s85 0
+31
+R4
+R5
+R6
+!s101 -O0
+!i113 1
+R7
+ndiv@t@e@s@t
+vrestoreDiv_CC
+R1
+!i10b 1
+!s100 dAQkZ4[^_@O3:?J6ec=A71
+ISn=hDTT=acAaPcd43Oe?G2
+R2
+R0
+Z8 w1434602559
+8./restoreDiv_CC.v
+F./restoreDiv_CC.v
+L0 1
+R3
+r1
+!s85 0
+31
+R4
+R5
+R6
+!s101 -O0
+!i113 1
+R7
+nrestore@div_@c@c
+vrestoreDiv_CD
+R1
+!i10b 1
+!s100 oj86@W23LA4VV_bS=7KC<2
+IAhYBgUhC9KV2@g4X46eo11
+R2
+R0
+R8
+8./restoreDiv_CD.v
+F./restoreDiv_CD.v
+L0 1
+R3
+r1
+!s85 0
+31
+R4
+R5
+R6
+!s101 -O0
+!i113 1
+R7
+nrestore@div_@c@d
