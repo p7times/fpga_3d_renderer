@@ -12,6 +12,11 @@ Progrese:
 - corpul se roteste cu succes in jurul axei Y 360 de grade
 
 
-Probleme:
+Module implementate:
 
-- cand camera se afla in interiorul corpului 3D, programul o ia razna
+- adunare in format Q, lungime biti parametrizabili, cu detectie overflow saturare
+- testbench ptr modulul adunare
+- scadere in format Q, lungime biti parametrizabili, cu detectie overflow saturare
+- testbench ptr modulul scadere
+- inmultire in format Q, lungime biti parametrizabili, cu detectie overflow saturare
+- testbench ptr modulul inmultire
