@@ -2,8 +2,8 @@ module div_top_level_q #(
     parameter INT_BITS  = 16,
     parameter FRAC_BITS = 16
 )(
-    input                               clk,       // Semnal de ceas
-    input                               rst_n,  // Reset asincron, activ in 0
+    input                               clk,      // Semnal de ceas
+    input                               rst_n,    // Reset asincron, activ in 0
     input                               start,    // Semnal pentru startul operatiei de impărtire
     input  [INT_BITS+FRAC_BITS-1:0]     op1,      // Primul operand
     input  [INT_BITS+FRAC_BITS-1:0]     op2,      // Al doilea operand
