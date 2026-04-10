@@ -7,37 +7,42 @@ module proj_q #(
     input                               start,
     input  [INT_BITS+FRAC_BITS-1:0]     f, x, y, z,
     output reg [INT_BITS+FRAC_BITS-1:0] xp, yp,
-    output reg                          valid
+    output reg                          valid,
+    output reg                          overflow,
+    output [2:0]                        dbg_state
 );
 
     localparam WIDTH = INT_BITS + FRAC_BITS;
 
     // Stari FSM
-    localparam IDLE      = 3'd0,    // Asteapta start
-               LOAD      = 3'd1,    // Incarca datele in registre
-               CALC_DIV  = 3'd2,    // Modulul de impartire calculeaza f/z
-               DONE_DIV  = 3'd3,    // Impartirea s-a efectuat
-               CALC_PROJ = 3'd4,    // Se inmulteste f/z cu x, respectiv cu y
-               DONE      = 3'd5;    // Calculul s-a efectuat
+    localparam IDLE      = 3'b000,    // Asteapta semnalul de start
+               LOAD      = 3'b001,    // Incarca datele in registrele interne
+               START_DIV = 3'b010,    // Trimite puls de start catre divizor
+               CALC_DIV  = 3'b011,    // Asteapta finalizarea impartirii f/z
+               DONE_DIV  = 3'b100,
+               CALC_PROJ = 3'b101,    // Asteapta rezultatul multiplicarii (1 ciclu)
+               DONE      = 3'b110;    // Pune rezultatele pe iesire
 
     reg [2:0] state, next_state;
 
-    // Registre interne
+    // Registrele interne ce retin valorile de intrare
     reg [WIDTH-1:0] reg_f, reg_x, reg_y, reg_z;
-    reg [WIDTH-1:0] reg_fz;          // rezultat f/z
+    reg [WIDTH-1:0] reg_fz;          // rezultat intermediar f/z
 
-    // Semnale catre/de la modulul div
-    reg              div_start;
-    wire [WIDTH-1:0] div_result;
-    wire             div_valid;
-
-    // Semnale catre/de la modulele mult
+    // Interfata cu divizorul
+    reg              div_start;     // Semnal de start (puls 1 ciclu)
+    wire [WIDTH-1:0] div_result;    // Rezultat impartire
+    wire             div_valid;     // Semnal ca rezultatul este gata
+    
+    assign dbg_state = state;
+    
+    // Interfata cu multiplicatoarele
     // mult_xp : (f/z) * x
     // mult_yp : (f/z) * y
     wire [WIDTH-1:0] mult_xp_result, mult_yp_result;
     wire             ovf_xp, ovf_yp;   // overflow flags (ignorate / debug)
 
-    // Instantiere div
+    // Instantiere divizor
     div_top_level_q #(
         .INT_BITS (INT_BITS),
         .FRAC_BITS(FRAC_BITS)
@@ -51,7 +56,7 @@ module proj_q #(
         .valid   (div_valid)
     );
 
-    // Instantiere mult xp
+    // Instantiere multiplicator ptr xp = (f/z) * x
     mult_q #(
         .INT_BITS (INT_BITS),
         .FRAC_BITS(FRAC_BITS)
@@ -64,7 +69,7 @@ module proj_q #(
         .result  (mult_xp_result)
     );
 
-    // Instantiere mult yp
+    // Instantiere multiplicator ptr yp = (f/z) * y
     mult_q #(
         .INT_BITS (INT_BITS),
         .FRAC_BITS(FRAC_BITS)
@@ -77,7 +82,7 @@ module proj_q #(
         .result  (mult_yp_result)
     );
 
-    // FSM - registru de stare
+    // Registru de stare FSM
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n)
             state <= IDLE;
@@ -86,23 +91,26 @@ module proj_q #(
     end
 
 
-    // FSM - logica de tranzitie
+    // Logica de tranzitie intre stari
     always @(*) begin
         next_state = state;
         case (state)
-            IDLE:      next_state = start ? LOAD : IDLE;
-            LOAD:      next_state = CALC_DIV;
-            CALC_DIV:  next_state = div_valid ? DONE_DIV : CALC_DIV;
+            IDLE:      next_state = start ? LOAD : IDLE;                // asteapta start
+            LOAD:      next_state = START_DIV;                          // dupa incarcare pornim divizorul
+            START_DIV: next_state = CALC_DIV;                           // pulsul de start a fost transmis
+            CALC_DIV:  next_state = div_valid ? DONE_DIV : CALC_DIV;    // asteapta rezultatul divizorului
             DONE_DIV:  next_state = CALC_PROJ;
-            CALC_PROJ: next_state = DONE;
-            DONE:      next_state = IDLE;
-            default:   next_state = IDLE;
+            CALC_PROJ: next_state = DONE;                               // 1 ciclu ptr multiplicator
+            DONE:      next_state = IDLE;                               // operatia s-a efectuat, revine in IDLE
+            default:   
+                next_state = IDLE;
         endcase
     end
 
-    // FSM - logica de iesire / actiuni
+    // Logica secventiala
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
+            // reset general
             reg_f     <= 0;
             reg_x     <= 0;
             reg_y     <= 0;
@@ -112,52 +120,52 @@ module proj_q #(
             xp        <= 0;
             yp        <= 0;
             valid     <= 1'b0;
+            overflow  <= 1'b0;
         end else begin
             // valori default
-            div_start <= 1'b0;
-            valid     <= 1'b0;
+            div_start <= 1'b0;  // implicit nu dam start
+            valid     <= 1'b0;  // valid este 1 doar in DONE
 
             case (state)
-                // 1. IDLE
+
+                // 1. asteapta start
                 IDLE: begin
-                    // nu facem nimic, asteptam start
+                    // nu facem nimic
                 end
 
-                // 2. LOAD
+                // 2. incarca datele de intrare in registre
                 LOAD: begin
                     reg_f  <= f;
                     reg_x  <= x;
                     reg_y  <= y;
                     reg_z  <= z;
-                    div_start <= 1'b1;   // pulsam start catre div
+                end
+                
+                // 3. pornim divizorul (puls de 1 ciclu)
+                START_DIV: begin
+                    div_start <= 1'b1;
                 end
 
-                // 3. CALC_DIV
-                // div_start a fost puls de 1 tact; asteptam div_valid
+                // 4. asteptam rezultatul divizorului
                 CALC_DIV: begin
-                    // nimic – doar asteptam div_valid
+                    // captureaza rezultatul cand e gata
                 end
-
-                // 4. DONE_DIV
-                // stocam f/z; modulele mult primesc reg_fz si
-                // vor produce rezultatul peste UN tact (CALC_PROJ)
+                
                 DONE_DIV: begin
                     reg_fz <= div_result;
                 end
 
-                // 5. CALC_PROJ
-                // mult_q are latenta de 1 tact (registru la iesire)
-                // deja am dat a=reg_fz, b=reg_x/y -> rezultatul
-                // apare la sfarsitul acestui tact in mult_xp_result
+                // 5. asteapta rezultatul multiplicarii (latenta 1 ciclu)
                 CALC_PROJ: begin
                     // nimic – latenta multiplicatorului se consuma
                 end
 
-                // 6. DONE
+                // 6. scrie rezultatele finale
                 DONE: begin
                     xp    <= mult_xp_result;
                     yp    <= mult_yp_result;
-                    valid <= 1'b1;
+                    overflow <= ovf_xp | ovf_yp;
+                    valid <= 1'b1;  // semnal ca rezultatul e valid (1 ciclu)
                 end
             endcase
         end

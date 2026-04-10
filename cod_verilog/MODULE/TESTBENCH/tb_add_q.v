@@ -85,6 +85,75 @@ begin
 end
 endtask
 
+
+
+// -------------------------------------------------------
+// Task: un test random pentru ADD
+// -------------------------------------------------------
+task run_one_random_add;
+    input [WIDTH-1:0] r_a, r_b;
+    input integer     idx;
+
+    real ra, rb, rsum, SCALE, MAX_R, MIN_R;
+    reg signed [WIDTH-1:0] exp_sum;
+    integer diff;
+begin
+    SCALE = 65536.0;
+    MAX_R =  2147483647.0 / SCALE;
+    MIN_R = -2147483648.0 / SCALE;
+
+    ra   = $itor($signed(r_a)) / SCALE;
+    rb   = $itor($signed(r_b)) / SCALE;
+    rsum = ra + rb;
+
+    // Saturare
+    if      (rsum >= MAX_R) exp_sum = 32'h7FFF_FFFF;
+    else if (rsum <= MIN_R) exp_sum = 32'h8000_0000;
+    else                    exp_sum = $rtoi(rsum * SCALE);
+
+    // Stimulare DUT (combinational - 2 cicluri)
+    a = r_a;
+    b = r_b;
+    @(posedge clk); #1;
+    @(posedge clk); #1;
+
+    diff = $signed(sum) - $signed(exp_sum);
+    if (diff > 1 || diff < -1) begin
+        error_count = error_count + 1;
+        $display("EROARE ADD RAND [%0d]: a=%h b=%h | sum=%h (exp %h, d=%0d)",
+                 idx, r_a, r_b, sum, exp_sum, diff);
+    end else
+        $display("OK    ADD RAND [%0d]: a=%h + b=%h -> sum=%h", idx, r_a, r_b, sum);
+end
+endtask
+
+// -------------------------------------------------------
+// Task: ruleaza N teste random pentru ADD
+// -------------------------------------------------------
+task run_random_tests_add;
+    input integer seed;
+    input integer num;
+    integer i, dummy;
+    reg [WIDTH-1:0] r_a, r_b;
+begin
+    dummy = $random(seed);
+    $display("--- START %0d TESTE RANDOM ADD (seed=%0d) ---", num, seed);
+    for (i = 0; i < num; i = i + 1) begin
+        r_a = $random;
+        r_b = $random;
+        run_one_random_add(r_a, r_b, i);
+    end
+    $display("--- SFARSIT TESTE RANDOM ADD: %0d erori ---", error_count);
+end
+endtask
+
+
+
+
+
+
+
+
 // ------------------------
 // Secventa de test
 // ------------------------
@@ -126,7 +195,9 @@ initial begin
     run_test(32'hC000_0000, 32'hC000_0000, MIN_VAL, 1'b0,       "-1/2 ovf  ");
     run_test(MAX_VAL, MIN_VAL, 32'hFFFF_FFFF, 1'b0,             "MAX+MIN   ");
     run_test(MIN_VAL, MAX_VAL, 32'hFFFF_FFFF, 1'b0,             "MIN+MAX   ");
-
+    // La sfarsitul blocului initial, dupa testele fixe:
+    run_random_tests_add(42,  200);   // sau sub / mult / div
+    // run_random_tests_add($time, 200); // seed dinamic
     $display("---------------------------------------------");
     $display("=== TEST ADD terminat cu %0d erori ===", error_count);
     $finish;

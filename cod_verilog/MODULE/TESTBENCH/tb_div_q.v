@@ -76,6 +76,74 @@ module tb_div_q;
             end
         end
     endtask
+    
+    task run_one_random_div;
+        input [WIDTH-1:0] r_a, r_b;
+        input integer idx;
+        
+        real ra, rb, rquot, SCALE, MAX_R, MIN_R;
+        reg signed [WIDTH-1:0] exp_result;
+        integer diff;
+    begin
+        SCALE = 65536.0;
+        MAX_R =  2147483647.0 / SCALE;
+        MIN_R = -2147483648.0 / SCALE;
+        
+        ra = $itor($signed(r_a)) / SCALE;
+        rb = $itor($signed(r_b)) / SCALE;
+
+        // Impartire la zero - saturare dupa semnul deimpartitului
+        if (rb == 0.0) begin
+            exp_result = (ra >= 0.0) ? 32'h7FFF_FFFF : 32'h8000_0000;
+        end else begin
+            rquot = ra / rb;
+            if      (rquot >= MAX_R) exp_result = 32'h7FFF_FFFF;
+            else if (rquot <= MIN_R) exp_result = 32'h8000_0000;
+            else                     exp_result = $rtoi(rquot * SCALE);
+        end
+        
+        // Stimulare DUT (are start/valid ca div_top_level_q)
+        op1 = r_a;
+        op2 = r_b;
+        @(posedge clk);
+        start = 1'b1;
+        @(posedge clk);
+        start = 1'b0;
+    
+        wait(valid === 1'b1);
+        @(posedge clk); #1;
+    
+        diff = $signed(rezultat) - $signed(exp_result);
+        if (diff > 1 || diff < -1) begin
+            error_count = error_count + 1;
+            $display("EROARE DIV RAND [%0d]: a=%h b=%h | result=%h (exp %h, d=%0d)",
+                     idx, r_a, r_b, rezultat, exp_result, diff);
+        end else
+            $display("OK    DIV RAND [%0d]: a=%h / b=%h -> result=%h", idx, r_a, r_b, rezultat);
+    end
+    endtask
+        
+    task run_random_tests_div;
+        input integer seed;
+        input integer num;
+        integer i, dummy;
+        reg [WIDTH-1:0] r_a, r_b;
+    begin
+        dummy = $random(seed);
+        $display("--- START %0d TESTE RANDOM DIV (seed=%0d) ---", num, seed);
+        for (i = 0; i < num; i = i + 1) begin
+            r_a = $random;
+            r_b = $random;
+            run_one_random_div(r_a, r_b, i);
+        end
+        $display("--- SFARSIT TESTE RANDOM DIV: %0d erori ---", error_count);
+    end
+    endtask
+    
+    
+    
+    
+    
 
     // ------------------------
     // Secventa de test
@@ -154,6 +222,7 @@ module tb_div_q;
         
         run_test(32'h0003_0000, 32'h7FFF_FFFF, 32'h0000_0006, "3/MAX≈0        "); // EROARE
         
+        run_random_tests_div(42, 300);
 
         $display("---------------------------------------------");
         $display("=== TEST DIV terminat cu %0d erori ===", error_count);

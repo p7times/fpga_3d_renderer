@@ -96,7 +96,7 @@ module div_data_q #(
             count <= count + 1; // incrementeaza contorul de pasi
 
             // STEP 5: Verifica finalizare
-            if (count == WIDTH-1) begin
+            if (count == WIDTH -1) begin
                 // Corectie finala pentru rest
                 if (A_next[WIDTH-1]) begin
                     cat <= sign_q ? MIN : MAX;

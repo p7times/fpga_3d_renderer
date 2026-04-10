@@ -85,6 +85,68 @@ begin
 end
 endtask
 
+
+
+
+
+task run_one_random_sub;
+    input [WIDTH-1:0] r_a, r_b;
+    input integer     idx;
+
+    real ra, rb, rdif, SCALE, MAX_R, MIN_R;
+    reg signed [WIDTH-1:0] exp_dif;
+    integer diff;
+begin
+    SCALE = 65536.0;
+    MAX_R =  2147483647.0 / SCALE;
+    MIN_R = -2147483648.0 / SCALE;
+
+    ra   = $itor($signed(r_a)) / SCALE;
+    rb   = $itor($signed(r_b)) / SCALE;
+    rdif = ra - rb;
+
+    if      (rdif >= MAX_R) exp_dif = 32'h7FFF_FFFF;
+    else if (rdif <= MIN_R) exp_dif = 32'h8000_0000;
+    else                    exp_dif = $rtoi(rdif * SCALE);
+
+    a = r_a;
+    b = r_b;
+    @(posedge clk); #1;
+    @(posedge clk); #1;
+
+    diff = $signed(dif) - $signed(exp_dif);
+    if (diff > 1 || diff < -1) begin
+        error_count = error_count + 1;
+        $display("EROARE SUB RAND [%0d]: a=%h b=%h | dif=%h (exp %h, d=%0d)",
+                 idx, r_a, r_b, dif, exp_dif, diff);
+    end else
+        $display("OK    SUB RAND [%0d]: a=%h - b=%h -> dif=%h", idx, r_a, r_b, dif);
+end
+endtask
+
+task run_random_tests_sub;
+    input integer seed;
+    input integer num;
+    integer i, dummy;
+    reg [WIDTH-1:0] r_a, r_b;
+begin
+    dummy = $random(seed);
+    $display("--- START %0d TESTE RANDOM SUB (seed=%0d) ---", num, seed);
+    for (i = 0; i < num; i = i + 1) begin
+        r_a = $random;
+        r_b = $random;
+        run_one_random_sub(r_a, r_b, i);
+    end
+    $display("--- SFARSIT TESTE RANDOM SUB: %0d erori ---", error_count);
+end
+endtask
+
+
+
+
+
+
+
 // ------------------------
 // Secventa de test
 // ------------------------
@@ -125,7 +187,9 @@ initial begin
     run_test(32'hC000_0000, 32'h4000_0000, MIN_VAL, 1'b0,       "half ovf- ");
     run_test(MAX_VAL, 32'h0001_0000, 32'h7FFE_FFFF, 1'b0,       "MAX-1     ");
     run_test(MIN_VAL, 32'hFFFF_0000, 32'h8001_0000, 1'b0,       "MIN-(-1)  ");
-
+    
+    run_random_tests_sub(42,  200);
+    
     $display("---------------------------------------------");
     $display("=== TEST SUB terminat cu %0d erori ===", error_count);
     $finish;

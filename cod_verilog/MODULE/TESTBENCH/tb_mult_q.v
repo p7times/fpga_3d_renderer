@@ -85,6 +85,114 @@ begin
 end
 endtask
 
+
+
+
+
+
+task run_one_random_mult;
+    input [WIDTH-1:0] r_a, r_b;
+    input integer     idx;
+
+    real ra, rb, rprod, SCALE, MAX_R, MIN_R;
+    reg signed [WIDTH-1:0] exp_result;
+    integer diff;
+begin
+    SCALE = 65536.0;
+    MAX_R =  2147483647.0 / SCALE;
+    MIN_R = -2147483648.0 / SCALE;
+
+    ra    = $itor($signed(r_a)) / SCALE;
+    rb    = $itor($signed(r_b)) / SCALE;
+    rprod = ra * rb;
+
+    if      (rprod >= MAX_R) exp_result = 32'h7FFF_FFFF;
+    else if (rprod <= MIN_R) exp_result = 32'h8000_0000;
+    else                     exp_result = $rtoi(rprod * SCALE);
+
+    a = r_a;
+    b = r_b;
+    @(posedge clk); #1;
+    @(posedge clk); #1;
+
+    diff = $signed(result) - $signed(exp_result);
+    if (diff > 1 || diff < -1) begin
+        error_count = error_count + 1;
+        $display("EROARE MULT RAND [%0d]: a=%h b=%h | result=%h (exp %h, d=%0d)",
+                 idx, r_a, r_b, result, exp_result, diff);
+    end else
+        $display("OK    MULT RAND [%0d]: a=%h * b=%h -> result=%h", idx, r_a, r_b, result);
+end
+endtask
+
+task run_random_tests_mult;
+    input integer seed;
+    input integer num;      // num per categorie => total = 3*num
+
+    integer i, dummy;
+    integer raw_a, raw_b;
+    reg [WIDTH-1:0] r_a, r_b;
+    integer idx;
+begin
+    dummy = $random(seed);
+    idx   = 0;
+    $display("--- START %0d TESTE RANDOM MULT (seed=%0d) ---", 3*num, seed);
+
+    // --------------------------------------------------
+    // CAT 1: ambii operanzi mici  |val| < 128
+    // produs maxim: 128*128 = 16384 < MAX  => rar overflow
+    // testa precizia fractionara
+    // --------------------------------------------------
+    $display("  [CAT1] operanzi mici |a|,|b| < 128");
+    for (i = 0; i < num; i = i + 1) begin
+        raw_a = $random % (128 * 65536);   // -128 .. +128 in Q16.16
+        raw_b = $random % (128 * 65536);
+        r_a   = raw_a[WIDTH-1:0];
+        r_b   = raw_b[WIDTH-1:0];
+        run_one_random_mult(r_a, r_b, idx);
+        idx = idx + 1;
+    end
+
+    // --------------------------------------------------
+    // CAT 2: un operand mic, unul mare
+    // testa ca rezultatele cu overflow sunt saturate corect
+    // --------------------------------------------------
+    $display("  [CAT2] un operand mic, unul intreg aleator");
+    for (i = 0; i < num; i = i + 1) begin
+        raw_a = $random % (4 * 65536);     // |a| < 4
+        raw_b = $random;                   // b intreg aleator
+        r_a   = raw_a[WIDTH-1:0];
+        r_b   = raw_b[WIDTH-1:0];
+        run_one_random_mult(r_a, r_b, idx);
+        idx = idx + 1;
+    end
+
+    // --------------------------------------------------
+    // CAT 3: ambii operanzi subunitari  |val| < 1.0
+    // produs < 1.0  => niciodata overflow, testeaza
+    // precizia fractionara pura
+    // --------------------------------------------------
+    $display("  [CAT3] operanzi subunitari |a|,|b| < 1.0");
+    for (i = 0; i < num; i = i + 1) begin
+        raw_a = $random % 65536;           // 0 .. 0.9999 in Q16.16
+        raw_b = $random % 65536;
+        r_a   = raw_a[WIDTH-1:0];
+        r_b   = raw_b[WIDTH-1:0];
+        run_one_random_mult(r_a, r_b, idx);
+        idx = idx + 1;
+    end
+
+    $display("--- SFARSIT TESTE RANDOM MULT: %0d erori ---", error_count);
+end
+endtask
+
+
+
+
+
+
+
+
 // ------------------------
 // Secventa de test
 // ------------------------
@@ -130,6 +238,8 @@ initial begin
     run_test(32'h0100_0000, 32'hFF00_0000, MIN_VAL, 1'b1,       "256*-256  ");
     run_test(MIN_VAL, 32'hFFFF_0000, MAX_VAL, 1'b1,             "MIN*-1    ");
 
+    run_random_tests_mult(42,  200);
+    
     $display("---------------------------------------------");
     $display("=== TEST terminat cu %0d erori ===", error_count);
     $finish;

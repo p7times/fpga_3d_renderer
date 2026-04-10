@@ -15,8 +15,14 @@ Progrese:
 Module implementate:
 
 - adunare in format Q, lungime biti parametrizabili, cu detectie overflow saturare
-- testbench ptr modulul adunare
+- testbench ptr adunare, cu testare random (doar ptr lungime fixa Q16.16)
 - scadere in format Q, lungime biti parametrizabili, cu detectie overflow saturare
-- testbench ptr modulul scadere
+- testbench ptr scadere, cu testare random (doar ptr lungime fixa Q16.16)
 - inmultire in format Q, lungime biti parametrizabili, cu detectie overflow saturare
-- testbench ptr modulul inmultire
+- testbench ptr inmultire, cu testare random (doar ptr lungime fixa Q16.16)
+- impartire in format Q, lungime biti parametrizabili, cu FSM
+- testbench ptr impartire, cu testare random (doar ptr lungime fixa Q16.16)
+
+- modul proiectie xp = (f/z) * x, yp = (f/z) * x, implementat cu FSM, detectie overflow
+- testbench ptr proiectie, cu testare random (doar ptr lungime fixa Q16.16) (CONTINE ERORI)
+
