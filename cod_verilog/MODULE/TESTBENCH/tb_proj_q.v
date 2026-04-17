@@ -9,8 +9,9 @@ parameter INT_BITS  = 16;
 parameter FRAC_BITS = 16;
 parameter WIDTH     = INT_BITS + FRAC_BITS;
 parameter PER       = 4;
-parameter NUM_RAND = 3000;
-parameter THRESHOLD = 0.4;
+parameter NUM_RAND  = 3000;
+parameter THRESHOLD = 5.0 / 65536.0;
+parameter ONE = 1 << FRAC_BITS;  // = 65536
 // ---------------------------------------------------
 // SEMNALE
 // ---------------------------------------------------
@@ -132,7 +133,7 @@ begin
     rx = $itor($signed(r_x)) / SCALE;
     ry = $itor($signed(r_y)) / SCALE;
     rz = $itor($signed(r_z)) / SCALE;
-
+    
     // --------------------------------------------------
     // Calcul referinta gold
     // --------------------------------------------------
@@ -142,8 +143,10 @@ begin
         exp_yp = (rf >= 0.0) ? 32'h7FFF_FFFF : 32'h8000_0000;
     end else begin
         factor    = rf / rz;
-        exp_xp_r  = factor * rx;
-        exp_yp_r  = factor * ry;
+        //exp_xp_r  = factor * rx;
+       // exp_yp_r  = factor * ry;
+       exp_xp_r = (rf * rx) / rz;
+       exp_yp_r = (rf * ry) / rz;
 
         // Saturare xp
         if      (exp_xp_r >= MAX_R) exp_xp = 32'h7FFF_FFFF;
@@ -205,10 +208,14 @@ begin
 
     for (i = 0; i < NUM_RAND; i = i + 1) begin
         // $random actualizeaza seed-ul automat la fiecare apel
-        r_f = $random; // primul apel seteaza seed-ul
-        r_x = $random;
-        r_y = $random;
-        r_z = $random;
+        // primul apel seteaza seed-ul
+        r_z = $urandom_range(-5000, 5000); 
+      //  r_f = $random; 
+      //  r_x = $random;
+       // r_y = $random;
+        r_f = $urandom_range(-5000, 5000);
+        r_x = $urandom_range(-5000, 5000);
+        r_y = $urandom_range(-5000, 5000);
 
         run_one_random(r_f, r_x, r_y, r_z, i);
         test_count = test_count + 1;

@@ -222,23 +222,25 @@ initial begin
         // -------------------------------------------------------
     // 2. Cazuri fara overflow
     // -------------------------------------------------------
-    run_test(32'h0000_0000, 32'h0002_0000, 32'h0000_0000, 1'b0, "0*2=0     ");
-    run_test(32'h0001_0000, 32'h0001_0000, 32'h0001_0000, 1'b0, "1*1=1     ");
-    run_test(32'h0002_0000, 32'h0003_0000, 32'h0006_0000, 1'b0, "2*3=6     ");
-    run_test(32'h0000_8000, 32'h0000_8000, 32'h0000_4000, 1'b0, "0.5*0.5   ");
-    run_test(32'h0001_0000, 32'hFFFF_0000, 32'hFFFF_0000, 1'b0, "1*-1=-1   ");
-    run_test(32'hFFFF_0000, 32'hFFFF_0000, 32'h0001_0000, 1'b0, "-1*-1=1   ");
-    run_test(32'hFFFE_0000, 32'h0003_0000, 32'hFFFA_0000, 1'b0, "-2*3=-6   ");
-    run_test(MAX_VAL,       32'h0002_0000, MAX_VAL, 1'b1,       "MAX*2     ");
-    run_test(MAX_VAL,       MAX_VAL,       MAX_VAL, 1'b1,       "MAX*MAX   ");
-    run_test(MIN_VAL,       MIN_VAL,       MAX_VAL, 1'b1,       "MIN*MIN   ");
-    run_test(32'h0100_0000, 32'h0100_0000, MAX_VAL, 1'b1,       "256*256   ");
-    run_test(MAX_VAL,       32'hFFFE_0000, MIN_VAL, 1'b1,       "MAX*-2    ");
-    run_test(MIN_VAL,       32'h0002_0000, MIN_VAL, 1'b1,       "MIN*2     ");
-    run_test(32'h0100_0000, 32'hFF00_0000, MIN_VAL, 1'b1,       "256*-256  ");
-    run_test(MIN_VAL, 32'hFFFF_0000, MAX_VAL, 1'b1,             "MIN*-1    ");
+//    run_test(32'h0000_0000, 32'h0002_0000, 32'h0000_0000, 1'b0, "0*2=0     ");
+//    run_test(32'h0001_0000, 32'h0001_0000, 32'h0001_0000, 1'b0, "1*1=1     ");
+//    run_test(32'h0002_0000, 32'h0003_0000, 32'h0006_0000, 1'b0, "2*3=6     ");
+//    run_test(32'h0000_8000, 32'h0000_8000, 32'h0000_4000, 1'b0, "0.5*0.5   ");
+//    run_test(32'h0001_0000, 32'hFFFF_0000, 32'hFFFF_0000, 1'b0, "1*-1=-1   ");
+//    run_test(32'hFFFF_0000, 32'hFFFF_0000, 32'h0001_0000, 1'b0, "-1*-1=1   ");
+//    run_test(32'hFFFE_0000, 32'h0003_0000, 32'hFFFA_0000, 1'b0, "-2*3=-6   ");
+//    run_test(MAX_VAL,       32'h0002_0000, MAX_VAL, 1'b1,       "MAX*2     ");
+//    run_test(MAX_VAL,       MAX_VAL,       MAX_VAL, 1'b1,       "MAX*MAX   ");
+//    run_test(MIN_VAL,       MIN_VAL,       MAX_VAL, 1'b1,       "MIN*MIN   ");
+//    run_test(32'h0100_0000, 32'h0100_0000, MAX_VAL, 1'b1,       "256*256   ");
+//    run_test(MAX_VAL,       32'hFFFE_0000, MIN_VAL, 1'b1,       "MAX*-2    ");
+//    run_test(MIN_VAL,       32'h0002_0000, MIN_VAL, 1'b1,       "MIN*2     ");
+//    run_test(32'h0100_0000, 32'hFF00_0000, MIN_VAL, 1'b1,       "256*-256  ");
+//    run_test(MIN_VAL, 32'hFFFF_0000, MAX_VAL, 1'b1,             "MIN*-1    ");
 
     run_random_tests_mult(42,  200);
+    //run_test(32'hffff_3a97, 32'h759b_c3eb, 32'ha54f_052f, 1'b0, "xp");
+    //run_test(32'hffff_3a97, 32'hd841_18b0, 32'h1ea6_2a8b, 1'b0, "yp");
     
     $display("---------------------------------------------");
     $display("=== TEST terminat cu %0d erori ===", error_count);

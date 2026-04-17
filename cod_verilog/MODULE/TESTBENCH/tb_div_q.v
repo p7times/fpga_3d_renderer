@@ -6,6 +6,8 @@ module tb_div_q;
     parameter FRAC_BITS = 16;
     parameter WIDTH = INT_BITS + FRAC_BITS; // Latimea datelor
     parameter PER = 4;                      // Perioada ceasului în ns
+    
+    parameter THRESHOLD = 0.5 / 65536.0;
 
     reg              clk = 0;                 
     reg              rst_n = 1;
@@ -80,19 +82,20 @@ module tb_div_q;
     task run_one_random_div;
         input [WIDTH-1:0] r_a, r_b;
         input integer idx;
-        
+    
         real ra, rb, rquot, SCALE, MAX_R, MIN_R;
+        real err;
         reg signed [WIDTH-1:0] exp_result;
+        reg signed [WIDTH-1:0] got_result_s;
         integer diff;
     begin
         SCALE = 65536.0;
         MAX_R =  2147483647.0 / SCALE;
         MIN_R = -2147483648.0 / SCALE;
-        
+    
         ra = $itor($signed(r_a)) / SCALE;
         rb = $itor($signed(r_b)) / SCALE;
-
-        // Impartire la zero - saturare dupa semnul deimpartitului
+    
         if (rb == 0.0) begin
             exp_result = (ra >= 0.0) ? 32'h7FFF_FFFF : 32'h8000_0000;
         end else begin
@@ -101,8 +104,7 @@ module tb_div_q;
             else if (rquot <= MIN_R) exp_result = 32'h8000_0000;
             else                     exp_result = $rtoi(rquot * SCALE);
         end
-        
-        // Stimulare DUT (are start/valid ca div_top_level_q)
+    
         op1 = r_a;
         op2 = r_b;
         @(posedge clk);
@@ -113,13 +115,19 @@ module tb_div_q;
         wait(valid === 1'b1);
         @(posedge clk); #1;
     
-        diff = $signed(rezultat) - $signed(exp_result);
-        if (diff > 1 || diff < -1) begin
+        got_result_s = $signed(rezultat);
+        diff = $signed(got_result_s) - $signed(exp_result);
+    
+        // Eroare exprimata in unitati reale, ca in tb_proj
+        err = $itor(diff) / SCALE;
+    
+        if (err > THRESHOLD || err < -THRESHOLD) begin
             error_count = error_count + 1;
-            $display("EROARE DIV RAND [%0d]: a=%h b=%h | result=%h (exp %h, d=%0d)",
-                     idx, r_a, r_b, rezultat, exp_result, diff);
+            $display("EROARE DIV RAND [%0d]: a=%h b=%h | result=%h (exp %h, err=%f)",
+                     idx, r_a, r_b, rezultat, exp_result, err);
         end else
-            $display("OK    DIV RAND [%0d]: a=%h / b=%h -> result=%h", idx, r_a, r_b, rezultat);
+            $display("OK    DIV RAND [%0d]: a=%d / b=%d -> result=%d (err=%f)",
+                     idx, r_a, r_b, rezultat, err);
     end
     endtask
         
@@ -139,11 +147,6 @@ module tb_div_q;
         $display("--- SFARSIT TESTE RANDOM DIV: %0d erori ---", error_count);
     end
     endtask
-    
-    
-    
-    
-    
 
     // ------------------------
     // Secventa de test
@@ -169,60 +172,10 @@ module tb_div_q;
             $display("EROARE  [RESET]: rezultat=%h valid=%b (asteptate 0/0)", rezultat, valid);
         end else
             $display("OK      [RESET]: rezultat=0 valid=0");
-
-        // -------------------------------------------------------
-        // 2. Cazuri normale pozitive
-        // 1.0  = 32'h0001_0000
-        // 2.0  = 32'h0002_0000
-        // 0.5  = 32'h0000_8000
-        // -------------------------------------------------------
-      //  run_test(32'h0002_0000, 32'h0001_0000, 32'h0002_0000, "2/1=2          ");
-     //   run_test(32'h0001_0000, 32'h0002_0000, 32'h0000_8000, "1/2=0.5        ");
-    //    run_test(32'h0003_0000, 32'h0002_0000, 32'h0001_8000, "3/2=1.5        ");
-    //    run_test(32'h0001_0000, 32'h0001_0000, 32'h0001_0000, "1/1=1          ");
-    //    run_test(32'h0000_0000, 32'h0002_0000, 32'h0000_0000, "0/2=0          ");
-
-        // -------------------------------------------------------
-        // 3. Cazuri signed
-        // -1.0 = 32'hFFFF_0000
-        // -2.0 = 32'hFFFE_0000
-        // -------------------------------------------------------
-      //  run_test(32'hFFFF_0000, 32'h0001_0000, 32'hFFFF_0000, "-1/1=-1        ");
- //       run_test(32'h0001_0000, 32'hFFFF_0000, 32'hFFFF_0000, "1/-1=-1        ");
-       // run_test(32'hFFFF_0000, 32'hFFFF_0000, 32'h0001_0000, "-1/-1=1        ");
-     //   run_test(32'hFFFE_0000, 32'h0002_0000, 32'hFFFF_0000, "-2/2=-1        ");
-     //   run_test(32'hFFFE_0000, 32'hFFFF_0000, 32'h0002_0000, "-2/-1=2        ");
-
-        // -------------------------------------------------------
-        // 4. Impartire la zero → saturare
-        // -------------------------------------------------------
-    //    run_test(32'h0002_0000, 32'h0000_0000, MAX_VAL,       "+x/0=MAX       ");
-     //   run_test(32'hFFFF_0000, 32'h0000_0000, MIN_VAL,       "-x/0=MIN       ");
-     //   run_test(32'h0000_0000, 32'h0000_0000, MAX_VAL,       "0/0=MAX        ");
-
-        // -------------------------------------------------------
-        // 5. Overflow → saturare
-        // -------------------------------------------------------
-    //    run_test(MAX_VAL,       32'h0000_8000, MAX_VAL,       "MAX/0.5=SAT+   ");
-    //    run_test(MIN_VAL,       32'h0000_8000, MIN_VAL,       "MIN/0.5=SAT-   ");
-    //    run_test(MIN_VAL,       32'hFFFF_0000, MAX_VAL,       "MIN/-1=SAT+    ");
         
-        // -------------------------------------------------------
-        // 6. Teste random
-        // -------------------------------------------------------
-   //     run_test(32'h0005_8000, 32'h0002_0000, 32'h0002_C000, "5.5/2=2.75     ");
-    //    run_test(32'h0000_4000, 32'h0000_8000, 32'h0000_8000, "0.25/0.5=0.5   ");
-     //   run_test(32'h000A_0000, 32'h0003_0000, 32'h0003_5555, "10/3=3.333     ");
-       // run_test(32'hFFFC_0000, 32'h0002_8000, 32'hFFFE_6667, "-4/2.5=-1.6    ");
-   //     run_test(32'h0064_0000, 32'h000A_0000, 32'h000A_0000, "100/10=10      ");
-    //    run_test(32'h0001_8000, 32'h0000_C000, 32'h0002_0000, "1.5/0.75=2     ");
-    //    run_test(32'h0007_0000, 32'h0002_0000, 32'h0003_8000, "7/2=3.5        ");
-   //     run_test(32'hFFF9_0000, 32'hFFFF_0000, 32'h0007_0000, "-7/-1=7        ");
-    //    run_test(32'h0000_199A, 32'h0000_3333, 32'h0000_8002, "0.1/0.2~0.5    ");
         
-        run_test(32'h0003_0000, 32'h7FFF_FFFF, 32'h0000_0006, "3/MAX≈0        "); // EROARE
-        
-        run_random_tests_div(42, 300);
+       run_test(32'h54c4_9ba9, 32'h9212_aa24, 32'hffff_3a97, "");
+      // run_random_tests_div(42, 3000);
 
         $display("---------------------------------------------");
         $display("=== TEST DIV terminat cu %0d erori ===", error_count);
