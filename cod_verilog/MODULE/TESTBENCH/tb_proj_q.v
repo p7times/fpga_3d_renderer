@@ -205,20 +205,22 @@ task run_random_tests;
 begin
     dummy = $random(seed);
     $display("--- START %0d TESTE RANDOM (seed=%0d) ---", NUM_RAND, seed);
-
+        
     for (i = 0; i < NUM_RAND; i = i + 1) begin
-        // $random actualizeaza seed-ul automat la fiecare apel
-        // primul apel seteaza seed-ul
-        r_z = $urandom_range(-5000, 5000); 
-      //  r_f = $random; 
-      //  r_x = $random;
-       // r_y = $random;
-        r_f = $urandom_range(-5000, 5000);
-        r_x = $urandom_range(-5000, 5000);
-        r_y = $urandom_range(-5000, 5000);
-
-        run_one_random(r_f, r_x, r_y, r_z, i);
-        test_count = test_count + 1;
+     // $random actualizeaza seed-ul automat la fiecare apel
+     // primul apel seteaza seed-ul
+        
+       r_z = $urandom_range(-50000, 50000); 
+       //r_z = $random; 
+       r_f = $urandom_range(-50000, 50000);
+    //   r_f = $random; 
+       r_x = $urandom_range(-50000, 50000);
+   //  r_x = $random;
+       r_y = $urandom_range(-50000, 50000);
+    //   r_y = $random;
+         
+       run_one_random(r_f, r_x, r_y, r_z, i);
+       test_count = test_count + 1;
     end
 
     $display("--- SFARSIT TESTE RANDOM: %0d erori ---", error_count);

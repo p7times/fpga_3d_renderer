@@ -23,6 +23,18 @@ Module implementate:
 - impartire in format Q, lungime biti parametrizabili, cu FSM
 - testbench ptr impartire, cu testare random (doar ptr lungime fixa Q16.16)
 
-- modul proiectie xp = (f/z) * x, yp = (f/z) * x, implementat cu FSM, detectie overflow
-- testbench ptr proiectie, cu testare random (doar ptr lungime fixa Q16.16) (CONTINE ERORI)
+- modul proiectie, implementat cu FSM, detectie overflow
+- testbench ptr proiectie, cu testare random (doar ptr lungime fixa Q16.16) (CONTINE ERORI PRECIZIE)
 
+- modul conversie sist. coord. NDC -> sist. coord. monitor, implementat cu FSM, detectie overflow
+- testbench ptr NDC_to_screen, cu testare random (doar ptr lungime fixa Q16.16)
+
+
+DE FACUT:
+
+- modul rotatie 3D + testbench
+- implementare parametri de clampare (valori z foarte mici sau foarte mari) - clip space
+- saturare valori monitor intre latime si lungime 
+- aproximare xs/ys ptr coordonate pixeli
+- comentarii amanuntite ptr testbenchuri
+- vezi cum ai putea implementa testele random ptr lungimi parametrizabile

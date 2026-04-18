@@ -1,67 +1,94 @@
+//---------------------------------------------------------------
+// Proiect    : Grafica 3D implementata pe FPGA
+//
+// Autor      : Petru-Andrei BRASOVEANU 
+// An         : 2026
+//---------------------------------------------------------------
+// Descriere  : Convertor coordonate NDC (Normalized Device Coordinates) la coordonate ecran (Screen Space).
+//
+//              Transformari efectuate:
+//                  xs = (xp * h + w) / 2
+//                  ys = (h - yp * h) / 2
+//
+//              Reprezentare numerica: virgula fixa semnata (signed fixed-point)
+//---------------------------------------------------------------
+
 module ndc_to_screen_q #(
-    parameter INT_BITS  = 16,
-    parameter FRAC_BITS = 16
+    parameter INT_BITS  = 16,                           // Numar de biti parte intreaga (include semnul) 
+    parameter FRAC_BITS = 16                            // Numar de biti parte fractionara
 )(
-    input                               clk,
-    input                               rst_n,
-    input                               start,
-    input      [INT_BITS+FRAC_BITS-1:0] xp, yp, w, h,
-    output reg [INT_BITS+FRAC_BITS-1:0] xs, ys,
-    output reg                          valid,
-    output reg                          overflow,
-    output [2:0]                        dbg_state
+    input                               clk,            // Semnal de ceas
+    input                               rst_n,          // Reset asincron (activ in 0)
+    input                               start,          // Pornire proces conversie
+    input      [INT_BITS+FRAC_BITS-1:0] xp, yp, w, h,   // Datele de intrare (NDC + dimensiuni ecran)
+    output reg [INT_BITS+FRAC_BITS-1:0] xs, ys,         // Datele de iesire (coordonate ecran)
+    output reg                          valid,          // Flag finalizare conversie
+    output reg                          overflow,       // Indicator depasire domeniu numeric (DEBUG)
+    output [2:0]                        dbg_state       // Flag stare FSM (DEBUG)
 );
 
     localparam WIDTH = INT_BITS + FRAC_BITS;
 
-    // Stari FSM
-    localparam IDLE         = 3'b000,    // Asteapta semnalul de start
-               LOAD         = 3'b001,    // Incarca datele in registrele interne
-               CALC_MULT    = 3'b010,    // Calculeaza xp * h si yp * h
-               DONE_MULT    = 3'b011,
-               ADD_SUB      = 3'b100,    // Calculeaza adunarea/scaderea cu h sau cu w
-               DONE_ADD_SUB = 3'b101,
-               SHIFT_RIGHT  = 3'b110,    // Impartire la 2, tratata ca arithmetic shift right cu 1 pozitie
-               DONE         = 3'b111;    // Pune rezultatele pe iesire
+    // ------------------------
+    // Definitie stari FSM
+    // ------------------------
+
+    localparam IDLE         = 3'b000,   // Asteapta semnalul de start
+               LOAD         = 3'b001,   // Incarca datele de intrare in registrele interne
+               CALC_MULT    = 3'b010,   // Etapa de multiplicare (xp*h, yp*h)
+               DONE_MULT    = 3'b011,   // Salvare rezultate multiplicare
+               ADD_SUB      = 3'b100,   // Etapa de adunare/scadere (translatie)
+               DONE_ADD_SUB = 3'b101,   // Salvare rezultate adunare/scadere
+               SHIFT_RIGHT  = 3'b110,   // Impartire la 2 prin deplasare bit cu bit
+               DONE         = 3'b111;   // Rezultate finale valide
 
     reg [2:0] state, next_state;
     assign dbg_state = state;
 
-    // Registrele interne ptr valorile de intrare
-    reg [WIDTH-1:0] reg_xp, reg_yp, reg_w, reg_h;
-    reg [WIDTH-1:0] reg_xph, reg_yph;          // rezultat intermediar xp * h si yp * h dupa CALC_MULT
-    reg [WIDTH-1:0] reg_add;                   // rezultat intermediar (xp * h) + w
-    reg [WIDTH-1:0] reg_sub;                   // rezultat intermediar h - (yp * h)
 
-    // Outputuri multiplicare
-    wire [WIDTH-1:0] mult_xph_result;   // xp * h
-    wire [WIDTH-1:0] mult_yph_result;   // yp * h
+    // ------------------------
+    // Registrele interne ptr pipeline
+    // ------------------------
+
+    reg [WIDTH-1:0] reg_xp, reg_yp;     // Coordonate NDC
+    reg [WIDTH-1:0] reg_w, reg_h;       // Dimensiuni ecran
+
+    reg [WIDTH-1:0] reg_xph, reg_yph;   // Rezultate multiplicare
+    reg [WIDTH-1:0] reg_add;            // Rezultat intermediar: (xp * h) + w
+    reg [WIDTH-1:0] reg_sub;            // Rezultat intermediar: h - (yp * h)
+
+
+    // ------------------------
+    // Semnale interfata submodule aritmetice
+    // ------------------------
+
+    wire [WIDTH-1:0] mult_xph_result;  
+    wire [WIDTH-1:0] mult_yph_result;  
     wire [WIDTH-1:0] add_result;   
     wire [WIDTH-1:0] sub_result;  
     
-    
-    wire ovf_add, ovf_sub;             // flaguri overflow (ignorate / debug)
-    wire ovf_mult_xp, ovf_mult_yp;
-
-    // Acumulator overflow
-    reg ovf_mult;
-    reg ovf_add_sub;
+    wire ovf_add, ovf_sub, ovf_mult_xp, ovf_mult_yp; // Semnale overflow din submodule (DEBUG)
+    reg ovf_mult, ovf_add_sub;                       // Acumulatoare overflow intermediare
 
 
-    // Instantiere multiplicator xp * h
+    // ------------------------
+    // Instantiere submodule aritmetice
+    // ------------------------
+
+    // Multiplicator pentru axa X: xp * h
     mult_q #(
         .INT_BITS (INT_BITS),
         .FRAC_BITS(FRAC_BITS)
     ) u_mult_xp (
         .clk     (clk),
         .rst_n   (rst_n),
-        .a       (reg_xp),      // incarcat in starea LOAD
-        .b       (reg_h),       // incarcat in starea LOAD
+        .a       (reg_xp), 
+        .b       (reg_h),    
         .overflow(ovf_mult_xp),
         .result  (mult_xph_result)
     );
 
-    // Instantiere multiplicator yp * h
+    // Multiplicator pentru axa Y: yp * h
     mult_q #(
         .INT_BITS (INT_BITS),
         .FRAC_BITS(FRAC_BITS)
@@ -74,88 +101,93 @@ module ndc_to_screen_q #(
         .result  (mult_yph_result)
     );
 
-    // Instantiere sumator (xp * h) + w
+    // Sumator pentru X: (xp * h) + w
     add_q #(
         .INT_BITS (INT_BITS),
         .FRAC_BITS(FRAC_BITS)
     ) u_add (
         .clk     (clk),
         .rst_n   (rst_n),
-        .a       (reg_xph),     // xp * h, capturat in ADD_SUB
+        .a       (reg_xph),
         .b       (reg_w),
         .overflow(ovf_add),
         .sum     (add_result)
     );
 
-    // Instantiere diferenta  h- (yp * h)
+    // Diferenta pentru Y: h - (yp * h): Inversare axa Y (ecran vs cartesian)
     sub_q #(
         .INT_BITS (INT_BITS),
         .FRAC_BITS(FRAC_BITS)
     ) u_sub (
         .clk     (clk),
         .rst_n   (rst_n),
-        .a       (reg_h),       // valoarea h, constanta
-        .b       (reg_yph),     // yp * h, capturata in ADD_SUB
+        .a       (reg_h),     
+        .b       (reg_yph),  
         .overflow(ovf_sub),
         .dif     (sub_result)
     );
 
-    // Registru de stare FSM
+
+    // ------------------------
+    // Logica FSM - Calea de control
+    // ------------------------
+
     always @(posedge clk or negedge rst_n) begin
-        if (!rst_n)
-            state <= IDLE;
-        else
-            state <= next_state;
+        if (!rst_n) state <= IDLE;
+        else        state <= next_state;
     end
 
-
-    // Logica de tranzitie intre stari
     always @(*) begin
-        next_state = state;
         case (state)
-            IDLE:        next_state = start ? LOAD : IDLE;  // asteapta start
-            LOAD:        next_state = CALC_MULT;            // dupa incarcare pornim multiplicarea
-            CALC_MULT:   next_state = DONE_MULT;              // registrele mult se actualizeaza 
-            DONE_MULT:   next_state = ADD_SUB;
-            ADD_SUB:     next_state = DONE_ADD_SUB;          // adunare/scadere aici
+            IDLE:         next_state = start ? LOAD : IDLE; 
+            LOAD:         next_state = CALC_MULT;          
+            CALC_MULT:    next_state = DONE_MULT;           
+            DONE_MULT:    next_state = ADD_SUB;
+            ADD_SUB:      next_state = DONE_ADD_SUB;       
             DONE_ADD_SUB: next_state = SHIFT_RIGHT;
-            SHIFT_RIGHT: next_state = DONE;                 // dupa care, >>>1
-            DONE:        next_state = IDLE;                 // operatia s-a efectuat, revine in IDLE
-            default:   
-                next_state = IDLE;
+            SHIFT_RIGHT:  next_state = DONE;                
+            DONE:         next_state = IDLE;                 
+            default:      next_state = IDLE;
         endcase
     end
 
-    // Logica secventiala cale de date:
+
+    // ------------------------
+    // Logica FSM - Calea de date
+    // ------------------------
+
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            // reset general
-            reg_xp      <= 0;
+            // Reset complet registre interne si iesiri
+
+            reg_xp      <= 0;     
             reg_yp      <= 0;
             reg_w       <= 0;
             reg_h       <= 0;
-            reg_xph     <= 0;
+
+            reg_xph     <= 0;      
             reg_yph     <= 0;
             reg_add     <= 0;
             reg_sub     <= 0;
-            ovf_mult    <= 0;
-            ovf_add_sub <= 0;
-            xs          <= 0;
+
+            xs          <= 0;       
             ys          <= 0;
+
+            ovf_mult    <= 0;      
+            ovf_add_sub <= 0;
+
             valid       <= 1'b0;
             overflow    <= 1'b0;
         end else begin
-            // valori default
-            valid     <= 1'b0;  // valid este 1 doar in DONE
 
             case (state)
 
-                // 1. asteapta start
+                // Asteapta semnalul de start
                 IDLE: begin
-                    // nu se intampla nimic
+                    valid     <= 1'b0;  // Valid este 1 doar in DONE
                 end
 
-                // 2. incarca datele de intrare in registre
+                // Incarca datele de intrare in registre
                 LOAD: begin
                     reg_xp <= xp;
                     reg_yp <= yp;
@@ -163,39 +195,38 @@ module ndc_to_screen_q #(
                     reg_h  <= h;
                 end
                 
-                // 3. mult_q vor efectua operatiile ptr reg_xp/reg_yp
+                // Multiplicarea este efectuata in modulele dedicate
                 CALC_MULT: begin
-                    // se efectueaza multiplicarea pe frontul pozitiv
                 end
                 
+                // Salveaza rezultate multiplicare
                 DONE_MULT: begin
-                    reg_xph <= mult_xph_result; // ptr add_q
-                    reg_yph <= mult_yph_result; // ptr sub_q
+                    reg_xph <= mult_xph_result; 
+                    reg_yph <= mult_yph_result;
                     ovf_mult <= ovf_mult_xp | ovf_mult_yp;
                 end
 
-                // 4. efectuam adunare si scadere
+                // Adunare si scadere (in modulele dedicate)
                 ADD_SUB: begin
                 end
 
+                // Salveaza rezultate adunare/scadere
                 DONE_ADD_SUB: begin
                     reg_add <= add_result;
                     reg_sub <= sub_result;
                     ovf_add_sub <= ovf_add | ovf_sub;
                 end
                 
-                // 5. impartirea la 2 este echivalent cu shiftare aritmetica la dreapta cu 1
+                // Scalare finala: impartire la 2 (shift aritmetic)
                 SHIFT_RIGHT: begin
                     xs <= $signed(reg_add) >>> 1;
                     ys <= $signed(reg_sub) >>> 1;
                 end
-
-                // 6. scrie rezultatele finale
+    
+                // Rezultat final disponibil
                 DONE: begin
-                    overflow <= ovf_mult | ovf_add_sub; // shiftarea la dreapta nu poate da overflow, deci
-                    // doar flag-urile mult/add/sub conteaza
-
-                    valid <= 1'b1;  // semnal ca rezultatul e valid (1 ciclu)
+                    overflow <= ovf_mult | ovf_add_sub;
+                    valid <= 1'b1; 
                 end
             endcase
         end

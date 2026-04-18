@@ -1,3 +1,13 @@
+#---------------------------------------------------------------
+# Proiect    : Grafica 3D implementata pe FPGA
+#
+# Autor      : Petru-Andrei BRASOVEANU  
+# An         : 2026
+#---------------------------------------------------------------
+# Descriere  : Genereaza intrarile pentru blocul "case" din
+#              modulul sin_cos_lut_q. Format Q0.16 (hexazecimal).
+#---------------------------------------------------------------
+
 import math
 
 # Converteste un numar real in format Q0.16 (16 biti fractionari)
@@ -40,5 +50,5 @@ for i in range(179):
     sin_val = to_q0_16(math.sin(math.radians(angle_deg)))
     cos_val = to_q0_16(math.cos(math.radians(angle_deg)))
 
-    # afisare in format Verilog pentru LUT
+    # afisare in stil Verilog pentru LUT
     print(f"{angle_to_bin8_split(i)} : begin sin_mag = 16'h{sin_val:04X}; cos_mag = 16'h{cos_val:04X}; end // {angle_deg}")

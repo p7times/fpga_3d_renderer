@@ -1,13 +1,30 @@
+//---------------------------------------------------------------
+// Proiect    : Grafica 3D implementata pe FPGA
+//
+// Autor      : Petru-Andrei BRASOVEANU  
+// An         : 2026
+//---------------------------------------------------------------
+// Descriere  : Generator Sinus/Cosinus folosind Look-Up Table (LUT).
+//
+//              Unghiul de intrare are rezolutie de 0.5 grade.
+//              Implementeaza simetria cadranelor pentru optimizarea memoriei.
+//---------------------------------------------------------------
+
 module sin_cos_lut_q #(
-    parameter INT_BITS  = 2,                      // 1 bit de semn si 1 bit ptr partea intreaga
-    parameter FRAC_BITS = 16
+    parameter INT_BITS  = 2,                        // Minim 2 biti (1 semn + 1 parte intreaga pentru valoarea "1.0")
+    parameter FRAC_BITS = 16                        // Numar de biti parte fractionara
 )(
-    input  wire [9:0]                    angle,   // angle este codificat pe 10 biti, cu pas de 0.5:
-                                                  // [9:1] = grade intregi, [0] = jumatatea de grad
-    output reg  [INT_BITS+FRAC_BITS-1:0] sin_out, 
+    input  wire [9:0]                    angle,     // [9:1] grade intregi, [0] jumatate de grad (0..719)     
+    output reg  [INT_BITS+FRAC_BITS-1:0] sin_out,    
     output reg  [INT_BITS+FRAC_BITS-1:0] cos_out
 );
+
     localparam WIDTH = INT_BITS + FRAC_BITS;
+
+
+    // ------------------------
+    // Constante in format Q 
+    // ------------------------
 
     localparam [WIDTH-1:0] POS_ONE = {{(INT_BITS-1){1'b0}}, 1'b1, {FRAC_BITS{1'b0}}};
     localparam [WIDTH-1:0] NEG_ONE = ~POS_ONE + 1'b1;
@@ -16,38 +33,48 @@ module sin_cos_lut_q #(
     // Observatie despre limita superioara: angle <= 10'b101100111_1 e echivalent cu angle <= 359.5 
 
     reg [1:0] QUAD;
-    reg [7:0] FOLD_ANGLE;  // unghi redus la primul cadran, [7:1] = grade intregi, [0]=0.5, max=89.5, ce poate fi cuprins intr-un octet
+    reg [7:0] FOLD_ANGLE;  // unghi redus la primul cadran, [7:1] = grade intregi, [0]=0.5, max=89.5
 
-    // Magnitudini pozitive in Q0.16 unsigned
+
+    // ------------------------
+    // Magnitudini extrase din LUT (unsigned Q0.16) 
+    // ------------------------
+
     reg [15:0] sin_mag;    
     reg [15:0] cos_mag;   
     
     reg [WIDTH-1:0] sin_scaled, cos_scaled; 
 
-    // 1. Aflam in care cadran se afla unghiul
+    // ------------------------
+    // Extragerea unghiului 
+    // ------------------------
+
+    // 1. Detectie Cadran
+    // Impartim cercul de 360 grade in 4 zone de cate 90 grade
     always @(*) begin
-        if      (angle >= 10'b100001110_0) QUAD = 2'b11; // unghiul e cuprins intre 270 – 359.5
-        else if (angle >= 10'b010110100_0) QUAD = 2'b10; // unghiul e cuprins intre 180 – 269.5
-        else if (angle >= 10'b001011010_0) QUAD = 2'b01; // unghiul e cuprins intre 90  – 179.5
-        else                               QUAD = 2'b00; // altfel, e cuprins intre 0   – 89.5
+        if      (angle >= 10'b100001110_0) QUAD = 2'b11; // unghiul e cuprins intre 270 - 359.5
+        else if (angle >= 10'b010110100_0) QUAD = 2'b10; // unghiul e cuprins intre 180 - 269.5
+        else if (angle >= 10'b001011010_0) QUAD = 2'b01; // unghiul e cuprins intre 90  - 179.5
+        else                               QUAD = 2'b00; // altfel, e cuprins intre 0   - 89.5
     end
 
-    // 2. Reducem unghiul la primul cadran in functie de cadranul in care se afla
+    // 2. Reducem unghiul la primul cadran
     // OBSERVATIE: Unghiurile "cardinale" (0, 90, 180, 270) teoretic nu se afla intr-un cadran specific.
     // Unghiurile cardinale sunt tratate separat mai tarziu !
     always @(*) begin
         case (QUAD)
-            2'b00  : FOLD_ANGLE = angle[7:0];                         // unghiul ramane neschimbat            
-            2'b01  : FOLD_ANGLE = (10'b010110100_0 - angle) & 8'hFF;  // unghi_redus = 180 - unghi (sau 10110100_0)
-            2'b10  : FOLD_ANGLE = (angle - 10'b010110100_0) & 8'hFF;  // unghi_redus = unghi - 180
-            2'b11  : FOLD_ANGLE = (10'b101101000_0 - angle) & 8'hFF;  // unghi_redus = 360 - unghi (sau 101101000_0)
+            2'b00  : FOLD_ANGLE = angle[7:0];                         // Cadran I            
+            2'b01  : FOLD_ANGLE = (10'b010110100_0 - angle) & 8'hFF;  // Cadran II (180 - unghi, sau 10110100_0)
+            2'b10  : FOLD_ANGLE = (angle - 10'b010110100_0) & 8'hFF;  // Cadran III (unghi - 180)
+            2'b11  : FOLD_ANGLE = (10'b101101000_0 - angle) & 8'hFF;  // Cadran IV (360 - unghi, sau 101101000_0)
             default: FOLD_ANGLE = 8'b0000000_0;
         endcase
     end
 
 
-    // 4. LUT pentru primul cadran: valori Q0.16 pentru sin/cos
-    // Sin si cos sunt pozitive aici; semnul se aplica ulterior din cadran
+    // 3. LUT (Look-Up Table)
+    // Contine valorile precalculate pentru Sinus si Cosinus intre 0 si 89.5 grade
+    // Valorile sunt stocate in format Q0.16 (doar partea fractionara)
     always @(*) begin
         case (FOLD_ANGLE)
             8'b0000000_1 : begin sin_mag = 16'h023C; cos_mag = 16'hFFFE; end // 0.5
@@ -233,10 +260,11 @@ module sin_cos_lut_q #(
         endcase
     end
 
-    // 5. Scalare la latimea finala si aplicarea semnului
+    // 4. Scalare si Aplicare Semn
+    // Ajustam precizia LUT-ului (16 biti) la precizia parametrului FRAC_BITS
     always @(*) begin
 
-        // scalare sin_mag/cos_mag de la 16 biti -> FRAC_BITS biti
+        // Scalare sin_mag/cos_mag de la 16 biti -> FRAC_BITS biti
         // integer bit e mereu 0 (valorile LUT sunt strict intre 0 si 1)
         
         // FRAC_BITS >= 16: extindem la dreapta
@@ -249,17 +277,19 @@ module sin_cos_lut_q #(
             cos_scaled = {{(INT_BITS){1'b0}}, cos_mag[15:16-FRAC_BITS]};
         end
 
-        // aplicare semn din QUAD
+        // Aplicare semn din QUAD
         // sin_neg = QUAD[1]
         // cos_neg = QUAD[1] ^ QUAD[0]
         // Cazurile cardinale au valori exacte si nu trec prin LUT
         case (angle[9:0])
-            10'b000000000_0: begin sin_out = ZERO;    cos_out = POS_ONE; end  //   0: sin=0,  cos=+1
-            10'b001011010_0: begin sin_out = POS_ONE; cos_out = ZERO;    end  //  90: sin=+1, cos=0
-            10'b010110100_0: begin sin_out = ZERO;    cos_out = NEG_ONE; end  // 180: sin=0,  cos=-1
-            10'b100001110_0: begin sin_out = NEG_ONE; cos_out = ZERO;    end  // 270: sin=-1, cos=0
+            10'b000000000_0: begin sin_out = ZERO;    cos_out = POS_ONE; end  //   0 deg
+            10'b001011010_0: begin sin_out = POS_ONE; cos_out = ZERO;    end  //  90 deg
+            10'b010110100_0: begin sin_out = ZERO;    cos_out = NEG_ONE; end  // 180 deg
+            10'b100001110_0: begin sin_out = NEG_ONE; cos_out = ZERO;    end  // 270 deg
             default: begin
+                // Sinus e negativ in Cadranele III si IV (QUAD[1] == 1)
                 sin_out = QUAD[1]           ? (~sin_scaled + 1) :  sin_scaled;
+                // Cosinus e negativ in Cadranele II si III (QUAD[1] XOR QUAD[0])
                 cos_out = (QUAD[1]^QUAD[0]) ? (~cos_scaled + 1) :  cos_scaled;  
             end
         endcase

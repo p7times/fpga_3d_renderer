@@ -126,7 +126,7 @@ module tb_div_q;
             $display("EROARE DIV RAND [%0d]: a=%h b=%h | result=%h (exp %h, err=%f)",
                      idx, r_a, r_b, rezultat, exp_result, err);
         end else
-            $display("OK    DIV RAND [%0d]: a=%d / b=%d -> result=%d (err=%f)",
+            $display("OK    DIV RAND [%0d]: a= %h / b= %h -> result= %h",
                      idx, r_a, r_b, rezultat, err);
     end
     endtask
@@ -174,8 +174,8 @@ module tb_div_q;
             $display("OK      [RESET]: rezultat=0 valid=0");
         
         
-       run_test(32'h54c4_9ba9, 32'h9212_aa24, 32'hffff_3a97, "");
-      // run_random_tests_div(42, 3000);
+      // run_test(32'h54c4_9ba9, 32'h9212_aa24, 32'hffff_3a97, "");
+       run_random_tests_div(42, 3000);
 
         $display("---------------------------------------------");
         $display("=== TEST DIV terminat cu %0d erori ===", error_count);
