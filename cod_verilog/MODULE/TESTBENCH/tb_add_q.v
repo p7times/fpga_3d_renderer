@@ -14,8 +14,8 @@ parameter PER       = 4;                        // Perioada ceasului în ns
 // ---------------------------------------------------
 // SEMNALE
 // ---------------------------------------------------
-reg                 clk   = 0;                 
-reg                 rst_n = 1;
+wire                clk;                 
+wire                rst_n;
 reg  [WIDTH-1:0]    a, b;
 wire                overflow;   
 wire [WIDTH-1:0]    sum;
@@ -25,11 +25,18 @@ integer error_count = 0;
 // ---------------------------------------------------
 // Ceas
 // ---------------------------------------------------
-always #(PER/2) clk = ~clk;
+ck_rst_tb #(
+    .CK_SEMIPERIOD(PER/2)
+) clk_gen (
+    .clk(clk),
+    .rst_n(rst_n)
+);
 
 // ---------------------------------------------------
 // Instantiere DUT
 // ---------------------------------------------------
+
+
 add_q #(
     .INT_BITS  (INT_BITS),
     .FRAC_BITS (FRAC_BITS)
@@ -147,13 +154,6 @@ begin
 end
 endtask
 
-
-
-
-
-
-
-
 // ------------------------
 // Secventa de test
 // ------------------------
@@ -162,14 +162,10 @@ initial begin
     $display("------------------------------------------------------");
     
     // --- RESET ---
-    rst_n = 0;
     a = 0;
     b = 0;
-    @(posedge clk);
-    @(posedge clk);
-    rst_n = 1; 
-    @(posedge clk);
-
+    repeat (5) @(posedge clk);
+    
     // -------------------------------------------------------
     // 1. Verificare reset: imediat dupa dezactivarea resetului
     //    sum si overflow trebuie sa fie 0

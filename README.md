@@ -3,17 +3,13 @@ Randare 3D, implementata pe FPGA
 
 Progrese:
 
-- afisare cu succes benzi de culoare (steaguri)
-- generare de puncte individuale pe ecran si setarea corecta a rezolutiei
-- desenarea liniilor intre 2 puncte folosind aalgoritmul Bresenham
-- schimbarea sistemului de coordonate din NDC in Screen
-- proiectia cu succes a punctelor
-- 2 structuri: Vertices & Faces
-- corpul se roteste cu succes in jurul axei Y 360 de grade
-
+- sin_cos_lut_q este acum de tip FSM, actualizat testbench
+- adaugat generator ceas
+- modul rotation_q 
 
 Module implementate:
 
+- modul clk_rst_tb de la dmnul profesor Nicula Dan
 - adunare in format Q, lungime biti parametrizabili, cu detectie overflow saturare
 - testbench ptr adunare, cu testare random (doar ptr lungime fixa Q16.16)
 - scadere in format Q, lungime biti parametrizabili, cu detectie overflow saturare
@@ -29,12 +25,12 @@ Module implementate:
 - modul conversie sist. coord. NDC -> sist. coord. monitor, implementat cu FSM, detectie overflow
 - testbench ptr NDC_to_screen, cu testare random (doar ptr lungime fixa Q16.16)
 
+- modul rotatie 3D
 
 DE FACUT:
 
-- modul rotatie 3D + testbench
+- testbench rotatie 3D
 - implementare parametri de clampare (valori z foarte mici sau foarte mari) - clip space
 - saturare valori monitor intre latime si lungime 
 - aproximare xs/ys ptr coordonate pixeli
-- comentarii amanuntite ptr testbenchuri
 - vezi cum ai putea implementa testele random ptr lungimi parametrizabile

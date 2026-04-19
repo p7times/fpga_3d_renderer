@@ -15,8 +15,8 @@ parameter ONE = 1 << FRAC_BITS;  // = 65536
 // ---------------------------------------------------
 // SEMNALE
 // ---------------------------------------------------
-reg clk = 0;
-reg rst_n = 1;
+wire                clk;                 
+wire                rst_n;
 reg start;
 
 reg  [WIDTH-1:0] f, x, y, z;
@@ -30,7 +30,12 @@ real error_rate;
 // ---------------------------------------------------
 // Ceas
 // ---------------------------------------------------
-always #(PER/2) clk = ~clk;
+ck_rst_tb #(
+    .CK_SEMIPERIOD(PER/2)
+) clk_gen (
+    .clk(clk),
+    .rst_n(rst_n)
+);
 
 // ---------------------------------------------------
 // DUT
@@ -235,13 +240,9 @@ initial begin
     $display("=== START TEST PROJ ===");
 
     // RESET
-    rst_n = 0;
     start = 0;
     f = 0; x = 0; y = 0; z = 0;
-
-    repeat(3) @(posedge clk);
-    rst_n = 1;
-    @(posedge clk);
+    repeat(5) @(posedge clk);
 
     run_random_tests(402);     // seed fix => reproductibil
     error_rate = (error_count * 100.0) / test_count;

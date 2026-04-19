@@ -20,7 +20,7 @@ module proj_q #(
     input                               clk,        // Semnal de ceas
     input                               rst_n,      // Reset asincron (activ in 0)
     input                               start,      // Pornire calcul proiectie
-    input  [INT_BITS+FRAC_BITS-1:0]     f, x, y, z, // Datele de intrare (distanta focala + coordonate 3D)
+    input      [INT_BITS+FRAC_BITS-1:0] f, x, y, z, // Datele de intrare (distanta focala + coordonate 3D)
     output reg [INT_BITS+FRAC_BITS-1:0] xp, yp,     // Datele de iesire (coordonatele 2D proiectate)
     output reg                          valid,      // Flag finalizare conversie
     output reg                          overflow,   // Indicator depasire domeniu numeric (DEBUG)

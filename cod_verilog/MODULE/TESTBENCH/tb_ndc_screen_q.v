@@ -15,9 +15,9 @@ parameter THRESHOLD = 5.0 / 65536.0;
 // ---------------------------------------------------
 // SEMNALE
 // ---------------------------------------------------
-reg clk = 0;
-reg rst_n = 1;
-reg start;
+wire clk;                 
+wire rst_n;
+reg  start;
 
 reg  [WIDTH-1:0] xp_in, yp_in, w_in, h_in;
 wire [WIDTH-1:0] xs, ys;
@@ -32,7 +32,12 @@ real error_rate;
 // ---------------------------------------------------
 // Ceas
 // ---------------------------------------------------
-always #(PER/2) clk = ~clk;
+ck_rst_tb #(
+    .CK_SEMIPERIOD(PER/2)
+) clk_gen (
+    .clk(clk),
+    .rst_n(rst_n)
+);
 
 // ---------------------------------------------------
 // DUT
@@ -144,12 +149,9 @@ initial begin
     $display("=== START TEST NDC_TO_SCREEN ===");
     
     // Initializare si Reset
-    rst_n = 0;
     start = 0;
     xp_in = 0; yp_in = 0; w_in = 0; h_in = 0;
     repeat(5) @(posedge clk);
-    rst_n = 1;
-    @(posedge clk);
     
     // Rezolutie fixa pentru toate testele de mai jos: 320x240
     w_in = 32'h0780_0000; // 320.0 in Q16.16

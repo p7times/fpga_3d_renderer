@@ -9,8 +9,8 @@ module tb_div_q;
     
     parameter THRESHOLD = 0.5 / 65536.0;
 
-    reg              clk = 0;                 
-    reg              rst_n = 1;
+    wire                clk;                 
+    wire                rst_n;
     reg              start = 0;
     reg  [WIDTH-1:0] op1, op2;       // operanzii de test
     wire [WIDTH-1:0] rezultat;      
@@ -21,7 +21,12 @@ module tb_div_q;
     // ------------------------
     // Ceas
     // ------------------------
-    always #(PER/2) clk = ~clk;
+    ck_rst_tb #(
+        .CK_SEMIPERIOD(PER/2)
+    ) clk_gen (
+        .clk(clk),
+        .rst_n(rst_n)
+    );
 
     // ------------------------
     // Instantiere DUT
@@ -155,14 +160,10 @@ module tb_div_q;
         $display("=== Start TEST DIV ===");
         $display("------------------------------------------------------");
 
-        rst_n = 0;
         start = 0;
         op1 = 0;
         op2 = 0;
-        @(posedge clk);
-        @(posedge clk);
-        rst_n = 1; 
-        @(posedge clk);
+        repeat (5) @(posedge clk);
 
         // -------------------------------------------------------
         // 1. Verificare reset
