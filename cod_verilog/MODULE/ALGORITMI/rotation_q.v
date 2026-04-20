@@ -53,7 +53,7 @@ module rotation_q #(
     input                               start,          // Pornire calcul rotatie
     input      [2:0]                    rotation,       // Flag selectare tip de rotatie
     input      [INT_BITS+FRAC_BITS-1:0] x, y, z,        // Datele de intrare 
-    input      [9:0]                    angle,
+    input      [9:0]                    angle,          // Unghiul de rotatie
     output reg [INT_BITS+FRAC_BITS-1:0] xr, yr, zr,     // Datele de iesire (coordonatele 3D rotite)
     output reg                          valid,          // Flag finalizare conversie
     output reg                          overflow,       // Indicator depasire domeniu numeric (DEBUG)
@@ -83,7 +83,7 @@ module rotation_q #(
     // ------------------------
 
     localparam IDLE           = 4'b0000,  // Asteapta semnalul de start
-               START_LUT      = 4'b0001
+               START_LUT      = 4'b0001,
                WAIT_LUT       = 4'b0010,
                DONE_LUT       = 4'b0011,
                LOAD           = 4'b0100,  // Incarca datele in registrele interne
@@ -239,7 +239,7 @@ module rotation_q #(
             IDLE:           next_state = start ? START_LUT : IDLE;
             START_LUT:      next_state = WAIT_LUT; 
             WAIT_LUT:       next_state = lut_valid ? DONE_LUT : WAIT_LUT;
-            DONE_LUT:       next_state = LOAD          
+            DONE_LUT:       next_state = LOAD;          
             LOAD:           next_state = CALC_MULT;                         
             CALC_MULT:      next_state = DONE_MULT;                          
             DONE_MULT:      next_state = CALC_SUM_FIRST;    

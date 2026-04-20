@@ -23,6 +23,7 @@ reg  [WIDTH-1:0] f, x, y, z;
 wire [WIDTH-1:0] xp, yp;
 wire valid;
 wire [2:0] dbg_state;
+wire overflow;
 integer error_count = 0;
 integer test_count = 0;
 real error_rate;

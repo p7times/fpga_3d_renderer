@@ -25,11 +25,12 @@ Module implementate:
 - modul conversie sist. coord. NDC -> sist. coord. monitor, implementat cu FSM, detectie overflow
 - testbench ptr NDC_to_screen, cu testare random (doar ptr lungime fixa Q16.16)
 
-- modul rotatie 3D
+- modul rotatie 3D + testbench
+
+- modul vpu 3D
 
 DE FACUT:
 
-- testbench rotatie 3D
 - implementare parametri de clampare (valori z foarte mici sau foarte mari) - clip space
 - saturare valori monitor intre latime si lungime 
 - aproximare xs/ys ptr coordonate pixeli
