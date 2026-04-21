@@ -1,46 +1,74 @@
+//---------------------------------------------------------------
+// Proiect    : Grafica 3D implementata pe FPGA
+//
+// Autor      : Petru-Andrei BRASOVEANU 
+// An         : 2026
+//---------------------------------------------------------------
+// Descriere  : Testbench pentru Vertex Processing Unit (VPU)
+//              Verifica functionalitatea etapelor de Rotatie, Proiectie
+//              si Mapare prin comparatie cu un model de referinta (Golden Model)
+//---------------------------------------------------------------
+
 `timescale 1ns/1ps
 
 module tb_vpu_q;
 
 
     // ------------------------
-    // Parametri
+    // Parametri de configurare
     // ------------------------
 
-    parameter INT_BITS  = 16;    
-    parameter FRAC_BITS = 16;
-    parameter WIDTH     = INT_BITS + FRAC_BITS;
-    parameter PER       = 4;
-    parameter NUM_RAND  = 2000;
-    parameter THRESHOLD = 5.0 / 65536.0;
-    parameter ONE = 1 << FRAC_BITS;  // = 65536
-
-
-    // ------------------------
-    // Semnale
-    // ------------------------
-
-    wire clk;                 
-    wire rst_n;
-
-    // Semnale de control
-    reg  start;
-    wire valid;
-
-    // Datele de intrare
-    reg  [2:0] rotation;
-    reg  [9:0] angle;
-    reg  [WIDTH-1:0] f, x, y, z, w, h;
+    parameter INT_BITS      = 16;            // Biti pentru partea intreaga
+    parameter FRAC_BITS     = 16;            // Biti pentru partea fractionara
+    parameter WIDTH         = INT_BITS + FRAC_BITS; // Latime totala cuvant
+    parameter PER           = 4;             // Perioada ceasului (4ns => 250MHz)
+    parameter NUM_RAND      = 2000;          // Numarul de teste aleatorii
+    parameter THRESHOLD     = 0.1;           // Toleranta acceptata pentru erori (pixeli)
+    parameter MAX_R         = 32'h7111_1111; // Valoare maxima pentru saturatie
+    parameter MIN_R         = 32'h8000_0000; // Valoare minima pentru saturatie
+    parameter SCALE         = 65536.0;       // Factor de scalare pentru Q16.16 (2^16)
     
-    // Datele de iesire
-    wire [WIDTH-1:0] xs, ys;
-    wire [3:0]       dbg_state;
-    wire             overflow;
+    // Constante geometrice in format Q16.16
+    parameter CAMERA_Z      = 32'h0001_8000; // Distanta camera = 1.5
+    parameter FOCAL_LENGHT  = 32'h0000_0ccd; // Lungime focala = 0.05 (aprox 50mm)
+    parameter SCREEN_WIDTH  = 32'h0140_0000; // Latime ecran = 320.0
+    parameter SCREEN_HEIGHT = 32'h00f0_0000; // Inaltime ecran = 240.0
 
-    integer error_count = 0;
-    integer test_count = 0;
-    real    error_rate;
 
+    // ------------------------
+    // Semnale de interfata
+    // ------------------------
+
+    wire clk, rst_n;                 
+    reg  start;                              // Semnal start catre DUT
+    wire valid;                              // Semnal valid de la DUT
+
+    // Registre pentru intrarile DUT
+    reg [2:0] rotation;                      // Tipul de rotatie (X, Y, Z)
+    reg [9:0] angle;                         // Unghiul de rotatie
+    reg [WIDTH-1:0] f, x, y, z, w, h;        // Parametrii geometrici
+    reg [WIDTH-1:0] cam_z;                   // Pozitia camerei
+    
+    // Fire pentru iesirile DUT
+    wire [WIDTH-1:0] xs, ys;                 // Coordonate ecran rezultate
+    wire [3:0]       dbg_state;              // Starea interna a FSM-ului DUT
+    wire              overflow;               // Indicator depasire domeniu numeric
+
+    // Variabile statistice pentru raportare
+    integer error_count = 0;                 // Numar de erori detectate
+    integer overflow_count = 0;              // Numar de cazuri cu overflow
+    integer test_count = 0;                  // Numar total de teste rulate
+    real    error_rate;                      // Rata de eroare procentuala
+    
+    // Setari pentru precizia datelor generate aleatoriu
+    integer precision_x_int  = 4;
+    integer precision_x_frac = 16;
+    integer precision_y_int  = 4;
+    integer precision_y_frac = 16;
+    integer precision_z_int  = 4;
+    integer precision_z_frac = 16;
+    integer precision_f_int  = 8;
+    integer precision_f_frac = 16;
 
     // ------------------------
     // Ceas
@@ -68,6 +96,7 @@ module tb_vpu_q;
         .rotation(rotation),
         .angle(angle),
         .f(f), .x(x), .y(y), .z(z), .w(w), .h(h),
+        .cam_z(cam_z),
         .xs(xs), .ys(ys),
         .valid(valid),
         .overflow(overflow),
@@ -78,95 +107,50 @@ module tb_vpu_q;
     // ------------------------
     // Task 1: Start operatie
     // ------------------------
-
+    
+    // Lanseaza un ciclu de procesare prin activarea semnalului start
     task start_op(
-        input [2:0] in_rot,
-        input [9:0] in_ang,
-        input [WIDTH-1:0] in_w,
-        input [WIDTH-1:0] in_h,
-        input [WIDTH-1:0] in_f,
-        input [WIDTH-1:0] in_x,
-        input [WIDTH-1:0] in_y,
-        input [WIDTH-1:0] in_z
+        input [2:0] in_rot, input [9:0] in_ang,
+        input [WIDTH-1:0] in_w, in_h, in_f, in_x, in_y, in_z, in_cam_z
     );
     begin
-        angle    = in_ang;
-        rotation = in_rot;
-        w        = in_w;
-        h        = in_h;
-        f        = in_f;
-        x        = in_x;
-        y        = in_y;
-        z        = in_z;
+        // initializam datele de intrare
+        angle = in_ang; rotation = in_rot;
+        w = in_w; 
+        h = in_h;
+        f = in_f;
+        x = in_x;
+        y = in_y;
+        z = in_z;
+        cam_z = in_cam_z;
         
-        start = 1'b1;
-        @(posedge clk);
-        #1;
-        start = 1'b0;
+        start = 1'b1;       // Activeaza start
+        @(posedge clk); #1;
+        start = 1'b0;       // Dezactiveaza start dupa un ciclu
     end
     endtask
 
 
     // ------------------------
-    // Task 2: Verifica rezultat cu date introduse manual
+    // Task 2: Definirea Modelului de Referinta (Task-ul de calcul)
     // ------------------------
 
-    task run_test(
-        input [9:0] in_ang,
-        input [2:0] in_rot,
-        input [WIDTH-1:0] in_w,
-        input [WIDTH-1:0] in_h,
-
-        input [WIDTH-1:0] in_f,
-        input [WIDTH-1:0] in_x,
-        input [WIDTH-1:0] in_y,
-        input [WIDTH-1:0] in_z,
-
-        input [WIDTH-1:0] exp_xs,
-        input [WIDTH-1:0] exp_ys,
-        input [127:0] test_name
-    );
-        reg [WIDTH-1:0] got_xs, got_ys;
-    begin
-        start_op(in_rot, in_ang, in_w, in_h, in_f, in_x, in_y, in_z);
-
-        // asteapta valid (important!)
-        wait(valid == 1'b1);
-        @(posedge clk);
-        #1;
-
-        got_xs = xs;
-        got_ys = ys;
-
-        if (got_xs !== exp_xs || got_ys !== exp_ys) begin
-            error_count = error_count + 1;
-            $display("EROARE [%s]: xs=%h (asteptat %h), ys=%h (asteptat %h)",
-                     test_name, got_xs, exp_xs, got_ys, exp_ys);
-        end else begin
-            $display("OK [%s]: xs=%h ys=%h",
-                     test_name, got_xs, got_ys);
-        end
-    end
-    endtask
-
-
-    // ------------------------
-    // Task 3: Definirea Modelului de Referinta (Task-ul de calcul)
-    // ------------------------
-
+    // Calculeaza rezultatul ideal folosind aritmetica 'real' (floating point)
     task calculate_vpu_gold(
         input [2:0] r_rot, input [9:0] r_ang,
         input real rx, input real ry, input real rz,
         input real rf, input real rw, input real rh,
+        input real r_cam_z,
         output real exp_xs_r, output real exp_ys_r
     );
         real xr, yr, zr, xp, yp;
         real ra, r_sin, r_cos;
+    begin
+        
 
         // ETAPA 1: ROTATIE
         ra = (r_ang / 2.0) * (3.14159265 / 180.0); // exprimata in radiani
-        r_sin = $sin(ra);
-        r_cos = $cos(ra);
+        r_sin = $sin(ra); r_cos = $cos(ra);
 
         case (r_rot)
             3'b000:  begin xr = rx; yr = ry * r_cos - rz * r_sin; zr = ry * r_sin + rz * r_cos;  end
@@ -177,156 +161,153 @@ module tb_vpu_q;
             3'b101:  begin xr = rx * r_cos + ry * r_sin; yr = -rx * r_sin + ry * r_cos; zr = rz; end
             default: begin xr = rx; yr = ry; zr = rz; end
         endcase
-
+        
+        zr = zr + r_cam_z;  // Translatie pe axa Z (pozitia camerei)
+        
         // ETAPA 2: PROIECTIE
         if (zr == 0.0) begin
-            // Simulare saturatie la diviziune cu zero
-            xp = (rf >= 0.0) ? 32767.0 : -32768.0;
-            yp = (rf >= 0.0) ? 32767.0 : -32768.0;
+            xp = (rf >= 0.0) ? MAX_R : MIN_R;
+            yp = (rf >= 0.0) ? MAX_R : MIN_R;
         end else begin
-            xp = xr * (rf / zr);
-            yp = yr * (rf / zr);
+            xp = xr * (rf / zr);    // Formula proiectie X
+            yp = yr * (rf / zr);    // Formula proiectie Y
         end
 
         // --- ETAPA 3: NDC TO SCREEN ---
-        exp_xs_r = (xp * rh + rw) / 2.0;
-        exp_ys_r = (rh - yp * rh) / 2.0;
+        exp_xs_r = (xp * rh + rw) / 2.0;    // Mapare X pe latime
+        exp_ys_r = (rh - yp * rh) / 2.0;    // Mapare Y cu inversare (axa Y ecran e in jos)
+    end
     endtask
 
 
-
-
-
-
-
     // ------------------------
-    // Task: un singur test random (intern)
+    // Task: Generator numere in virgula fixa
     // ------------------------
-task run_one_random;
-    input [2:0] r_rot;
-    input [9:0] r_ang;
-    input [WIDTH-1:0] r_w, r_h, r_f, r_x, r_y, r_z;
-    input integer     idx;
-
-    real rrot, ra, rw, rh, rf, rx, ry, rz, factor, exp_xs_r, exp_ys_r;
-    real exp_xr_r, exp_yr_r, exp_zr_r;
-    real exp_xp_r, exp_yp_r;
-    real SCALE, MAX_R, MIN_R;
     
-    real err_x, err_y;
+    // Produce o valoare aleatorie incadrata in bitii de precizie specificati
+    task rand_fp;
+        input integer rand_int_bits;
+        input integer rand_frac_bits;
+        output reg [WIDTH-1:0] result;
     
-    reg signed [WIDTH-1:0] exp_xs, exp_ys;
-    reg signed [WIDTH-1:0] got_xs_s, got_ys_s;
-    integer diff_x, diff_y;
-begin
-    SCALE =  65536.0;                 // 2^FRAC_BITS
-    MAX_R =  2147483647.0 / SCALE;    // +32767.99998...
-    MIN_R = -2147483648.0 / SCALE;    // -32768.0
+        reg signed [31:0]      raw;
+        reg signed [WIDTH-1:0] extended;
+        integer                rand_max;
+    begin
 
-    // ------------------------
-    // Conversie fixed-point -> real (cu semn)
-    // ------------------------
-    rf = $itor($signed(r_f)) / SCALE;
-    rw = $itor($signed(r_w)) / SCALE;
-    rh = $itor($signed(r_h)) / SCALE;
-    ra = (r_ang / 2.0) * (3.14159265 / 180.0); // Unghiul este angle/2 grade
-
-    rf = $itor($signed(r_f)) / SCALE;
-    rx = $itor($signed(r_x)) / SCALE;
-    ry = $itor($signed(r_y)) / SCALE;
-    rz = $itor($signed(r_z)) / SCALE;
-    
-    // ------------------------
-    // Calcul referinta gold
-    // ------------------------
-    if (rz == 0.0) begin
-        // Saturare: semn determinat de f (z -> 0+)
-        exp_xp = (rf >= 0.0) ? 32'h7FFF_FFFF : 32'h8000_0000;
-        exp_yp = (rf >= 0.0) ? 32'h7FFF_FFFF : 32'h8000_0000;
-    end else begin
-        factor    = rf / rz;
-        //exp_xp_r  = factor * rx;
-       // exp_yp_r  = factor * ry;
-       exp_xp_r = (rf * rx) / rz;
-       exp_yp_r = (rf * ry) / rz;
-
-        // Saturare xp
-        if      (exp_xp_r >= MAX_R) exp_xp = 32'h7FFF_FFFF;
-        else if (exp_xp_r <= MIN_R) exp_xp = 32'h8000_0000;
-        else                        exp_xp = $rtoi(exp_xp_r * SCALE);
-
-        // Saturare yp
-        if      (exp_yp_r >= MAX_R) exp_yp = 32'h7FFF_FFFF;
-        else if (exp_yp_r <= MIN_R) exp_yp = 32'h8000_0000;
-        else                        exp_yp = $rtoi(exp_yp_r * SCALE);
+        rand_max = 1 << (rand_int_bits + rand_frac_bits - 1);
+        raw      = $random % rand_max;   // Generare valoare bruta cu semn
+        
+        // Aliniere la formatul Q16.16: se shifteaza pentru a umple partea fractionara
+        result = $signed(raw) << (FRAC_BITS - rand_frac_bits);
     end
-
-    // ------------------------
-    // Stimulare DUT
-    // ------------------------
-    start_op(r_rot, r_ang, r_w, r_h, r_f, r_x, r_y, r_z);
-    wait(valid == 1'b1);
-    @(posedge clk); #2;
-
-    // ------------------------
-    // Verificare cu toleranta ±1 LSB (erori de rotunjire)
-    // ------------------------
-    got_xs_s = $signed(xs);
-    got_ys_s = $signed(ys);
+    endtask
     
-    diff_x   = $signed(got_xs_s) - $signed(exp_xs);
-    diff_y   = $signed(got_ys_s) - $signed(exp_ys);
-        
-    err_x = $itor(diff_x)/SCALE;
-    err_y = $itor(diff_y)/SCALE;
 
+    // ------------------------
+    // Task 3: Un singur test random (intern)
+    // ------------------------
+
+    // Ruleaza o singura iteratie: calculeaza gold, ruleaza DUT, compara
+    task run_one_random;
+        input [2:0] r_rot;
+        input [9:0] r_ang;
+        input [WIDTH-1:0] r_w, r_h, r_f, r_x, r_y, r_z;
+        input [WIDTH-1:0] r_cam_z;
+        input integer idx;
+
+        real rw_r, rh_r, rf_r, rx_r, ry_r, rz_r, ex_xs, ex_ys;
+        real r_cam_z_r;
+        reg signed [WIDTH-1:0] v_exp_xs, v_exp_ys;
+      
+        integer diff_x, diff_y;
+        real err_x, err_y;
+    begin
+
+        // 1. Conversie din Fixed-Point (DUT) in Real (Golden Model)
+        r_cam_z_r = $itor($signed(r_cam_z)) / SCALE;
+        rf_r      = $itor($signed(r_f))     / SCALE;
+        rx_r      = $itor($signed(r_x))     / SCALE;
+        ry_r      = $itor($signed(r_y))     / SCALE;
+        rz_r      = $itor($signed(r_z))     / SCALE;
+        rw_r      = $itor($signed(r_w))     / SCALE;
+        rh_r      = $itor($signed(r_h))     / SCALE;
+       
         
-    if ((err_x > THRESHOLD) || (err_x < -THRESHOLD) || (err_y > THRESHOLD) || (err_y < -THRESHOLD)) begin
-        error_count = error_count + 1;
-        $display("EROARE [%0d]: f=%h x=%h y=%h z=%h | xp=%h(exp %h, DIFERENTA=%f) yp=%h(exp %h, DIFERENTA=%f)",
-                 idx, r_f, r_x, r_y, r_z,
-                 xp, exp_xp, err_x,
-                 yp, exp_yp, err_y);
-    end else begin
-        $display("OK    RANDOM [%0d]: f=%h x=%h y=%h z=%h -> xp=%h yp=%h",
-                 idx, r_f, r_x, r_y, r_z, xp, yp);
+        // 2. Calcul model de referinta
+        calculate_vpu_gold(r_rot, r_ang, rx_r, ry_r, rz_r, rf_r, rw_r, rh_r, r_cam_z_r, ex_xs, ex_ys);
+
+        // 3. Conversie inapoi in Fixed-Point pentru comparatie directa
+        v_exp_xs = $rtoi(ex_xs * SCALE);
+        v_exp_ys = $rtoi(ex_ys * SCALE);
+
+
+        // 4. Stimulare DUT si asteptare semnal valid
+        start_op(r_rot, r_ang, r_w, r_h, r_f, r_x, r_y, r_z, r_cam_z);
+        wait(valid == 1'b1);
+        @(posedge clk); #2;
+
+
+        // 5. Verificare eroare fata de pragul THRESHOLD      
+        diff_x   = $signed(xs) - $signed(v_exp_xs);
+        diff_y   = $signed(ys) - $signed(v_exp_ys);
+            
+        err_x = $itor(diff_x)/SCALE;    // Eroare X in unitati reale (pixeli)
+        err_y = $itor(diff_y)/SCALE;    // Eroare Y in unitati reale (pixeli)
+        
+        $display("--------------------------------");
+        $display("DATE INTRARE [%0d]: Width = %f Height = %f | Rot = %0d Ang = %0.1f | f = %h x = %h y = %h z = %h", 
+                    idx, $itor($signed(r_w)) / SCALE, $itor($signed(r_h)) / SCALE, r_rot, r_ang, r_f, r_x, r_y, r_z);
+        
+        if (overflow) begin
+            $display("SKIP [%0d]: Overflow detectat", idx);
+            overflow_count = overflow_count + 1;
+        end else if ((err_x > THRESHOLD) || (err_x < -THRESHOLD) || (err_y > THRESHOLD) || (err_y < -THRESHOLD)) begin
+            error_count = error_count + 1;
+            $display("EROARE [%0d]: xs=%h(exp %h, DIFERENTA=%f) ys=%h(exp %h, DIFERENTA=%f)",
+                     idx, xs, v_exp_xs, err_x, ys, v_exp_ys, err_y);
+        end else begin
+            $display("OK [%0d]: ScreenX=%h ScreenY=%h", idx, xs, ys);
+        end
     end
-end
-endtask
+    endtask
 
 
     // ------------------------
-    // Task: ruleaza NUM_RAND teste random
+    // Task: Bucla de teste aleatorii
     // ------------------------
-task run_random_tests;
-    input integer seed;
-    integer i;
-    reg [WIDTH-1:0] r_f, r_x, r_y, r_z;
-    integer dummy; // seed local modificabil
-begin
-    dummy = $random(seed);
-    $display("--- START %0d TESTE RANDOM (seed=%0d) ---", NUM_RAND, seed);
-        
-    for (i = 0; i < NUM_RAND; i = i + 1) begin
-     // $random actualizeaza seed-ul automat la fiecare apel
-     // primul apel seteaza seed-ul
-        
-       r_z = $urandom_range(-50000, 50000); 
-       //r_z = $random; 
-       r_f = $urandom_range(-50000, 50000);
-    //   r_f = $random; 
-       r_x = $urandom_range(-50000, 50000);
-   //  r_x = $random;
-       r_y = $urandom_range(-50000, 50000);
-    //   r_y = $random;
-         
-       run_one_random(r_f, r_x, r_y, r_z, i);
-       test_count = test_count + 1;
-    end
+    task run_random_tests;
+        input integer seed;
+        integer i;
+        reg [WIDTH-1:0] rf_t, rx_t, ry_t, rz_t, rw_t, rh_t;
+        reg [9:0] ang_t;
+        reg [2:0] rot_t;
+    begin
+        $display("--- START TESTE RANDOM ---");
+            
+        for (i = 0; i < NUM_RAND; i = i + 1) begin
+            // Initializare parametri fixi ptr ecran
+            rw_t = SCREEN_WIDTH;
+            rh_t = SCREEN_HEIGHT;
+            rf_t = FOCAL_LENGHT;
+            
+            // Generare unghi si tip rotatie
+            rot_t = $urandom % 6;
+            ang_t = $urandom % 720;
+            
+            // Generare coordonate Vertex aleatorii
+            rand_fp(precision_x_int, precision_x_frac, rx_t); 
+            rand_fp(precision_y_int, precision_y_frac, ry_t);
+            rand_fp(precision_z_int, precision_z_frac, rz_t);   
+            //rand_fp(precision_f_int, precision_f_frac, rf_t);  
 
-    $display("--- SFARSIT TESTE RANDOM: %0d erori ---", error_count);
-end
-endtask
+            run_one_random(rot_t, ang_t, rw_t, rh_t, rf_t, rx_t, ry_t, rz_t, CAMERA_Z, i);
+            test_count = test_count + 1;
+        end
+
+        $display("--- SFARSIT TESTE RANDOM (seed=%0d) ---", seed);
+    end
+    endtask
 
 
     // ------------------------
@@ -336,24 +317,33 @@ endtask
     initial begin
         $display("=== START TEST VERTEX PROCESSING UNIT ===");
 
-        // RESET
-        start = 0;
-        angle = 0; rotation = 0; w = 0; h = 0; f = 0; x = 0; y = 0; z = 0;
+        // Initializare semnale si registre
+        start = 0; cam_z = CAMERA_Z;
+        h = 0; w = 0; f = 0; angle = 0; rotation = 0; x = 0; y = 0; z = 0;
+        
         repeat(5) @(posedge clk);
-
-        // Rezolutie fixa pentru toate testele de mai jos: 320x240
-        w = 32'h0780_0000; // 320.0 in Q16.16
-        h = 32'h0438_0000; // 240.0 in Q16.16
     
-        run_random_tests(402);     // seed fix => reproductibil
+        // Rularea testelor
+        run_random_tests(402);  // seed fix => reproductibil
+        
+        // Calcul statistici finale
         error_rate = (error_count * 100.0) / test_count;
 
         $display("--------------------------------");
         $display("=== TEST VPU FINALIZAT ===");
+        $display("Format Q       = Q%0d.%0d", INT_BITS, FRAC_BITS);
+        $display("Focala         = %0g m", $itor(FOCAL_LENGHT) / SCALE);
+        $display("Latime ecran   = %0d px", $itor(SCREEN_WIDTH) / SCALE);
+        $display("Inaltime ecran = %0d px", $itor(SCREEN_HEIGHT) / SCALE);
+        $display("Biti random X  = %0d INT, %0d FRAC", precision_x_int, precision_x_frac);
+        $display("Biti random Y  = %0d INT, %0d FRAC", precision_y_int, precision_y_frac);
+        $display("Biti random Z  = %0d INT, %0d FRAC", precision_z_int, precision_z_frac);
+        //$display("Biti random F  = %0d INT, %0d FRAC", precision_f_int, precision_f_frac);
+        $display("Prag eroare    = %g pixeli", THRESHOLD);
         $display("Teste totale   = %0d", test_count);
-        $display("Erori          = %0d", error_count);
-        $display("Threshold      = %f", THRESHOLD);
-        $display("Error rate     = %f %%", error_rate);
+        $display("Overflow-uri   = %0d", overflow_count);
+        $display("ERORI          = %0d", error_count);
+        $display("Rata de erori  = %f %%", error_rate);
         $finish;
     end
 

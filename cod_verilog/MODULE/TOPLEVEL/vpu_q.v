@@ -21,7 +21,7 @@ module vpu_q #(
     input      [2:0]                    rotation,         // Flag selectare tip de rotatie
     input      [9:0]                    angle,            // Unghiul de rotatie
 
-    input      [INT_BITS+FRAC_BITS-1:0] f, x, y, z, w, h, // Datele de intrare (NDC + dimensiuni ecran)
+    input      [INT_BITS+FRAC_BITS-1:0] f, x, y, z, w, h, cam_z, // Datele de intrare (NDC + dimensiuni ecran)
 
     output reg [INT_BITS+FRAC_BITS-1:0] xs, ys,           // Datele de iesire (coordonate ecran)
     output reg                          valid,            // Flag finalizare conversie
@@ -56,7 +56,7 @@ module vpu_q #(
     // ------------------------
     
     // Registre de intrare
-    reg [WIDTH-1:0] reg_x, reg_y, reg_z, reg_f, reg_w, reg_h;
+    reg [WIDTH-1:0] reg_x, reg_y, reg_z, reg_f, reg_w, reg_h, reg_cam_z;
     reg [9:0] reg_angle;
     reg [2:0] reg_rotation;
 
@@ -174,7 +174,7 @@ module vpu_q #(
             reg_x        <= 0; reg_y    <= 0; reg_z  <= 0;
             reg_f        <= 0; reg_w    <= 0; reg_h  <= 0;
             reg_angle    <= 0; reg_rotation <= 0;
-
+            reg_cam_z    <= 0;
             reg_xr       <= 0; reg_yr  <= 0; reg_zr <= 0;
             reg_xp       <= 0; reg_yp  <= 0;
 
@@ -210,7 +210,8 @@ module vpu_q #(
                     reg_w        <= w;
                     reg_h        <= h;
                     reg_angle    <= angle;
-                    reg_rotation <= rotation;                   
+                    reg_rotation <= rotation;   
+                    reg_cam_z    <= cam_z;                
                 end
                 
                 START_ROT: begin
@@ -224,7 +225,7 @@ module vpu_q #(
                 DONE_ROT: begin
                     reg_xr     <= xr_w;
                     reg_yr     <= yr_w;
-                    reg_zr     <= zr_w;
+                    reg_zr     <= zr_w + reg_cam_z; // translatie camera pe Z
                     ovf_rot_r  <= ovf_rot_w;
                 end
 

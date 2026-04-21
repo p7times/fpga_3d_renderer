@@ -1,3 +1,13 @@
+//---------------------------------------------------------------
+// Proiect    : Grafica 3D implementata pe FPGA
+//
+// Autor      : Dan NICULA
+// An         : 2026
+//---------------------------------------------------------------
+// Descriere  : Generator de semnal ceas si reset asincron, activ in 0
+//              Preluat din Cartea de Invatatura a domnului Nicula
+//---------------------------------------------------------------
+
 module ck_rst_tb #(
     parameter CK_SEMIPERIOD = 'd5   // semi-perioada ceas
 )(
