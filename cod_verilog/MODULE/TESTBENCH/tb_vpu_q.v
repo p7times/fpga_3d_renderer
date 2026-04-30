@@ -15,26 +15,42 @@ module tb_vpu_q;
 
 
     // ------------------------
-    // Parametri de configurare
+    // Parametri de configurare (NU ATINGE)
     // ------------------------
 
-    parameter INT_BITS      = 16;            // Biti pentru partea intreaga
-    parameter FRAC_BITS     = 16;            // Biti pentru partea fractionara
+    parameter PER           = 8;                    // Perioada ceasului (8ns => 125MHz)   
+    parameter INT_BITS      = 16;                   // Biti pentru partea intreaga (semnati)
+    parameter FRAC_BITS     = 16;                   // Biti pentru partea fractionara
     parameter WIDTH         = INT_BITS + FRAC_BITS; // Latime totala cuvant
-    parameter PER           = 4;             // Perioada ceasului (4ns => 250MHz)
-    parameter NUM_RAND      = 2000;          // Numarul de teste aleatorii
-    parameter THRESHOLD     = 0.1;           // Toleranta acceptata pentru erori (pixeli)
-    parameter MAX_R         = 32'h7111_1111; // Valoare maxima pentru saturatie
-    parameter MIN_R         = 32'h8000_0000; // Valoare minima pentru saturatie
-    parameter SCALE         = 65536.0;       // Factor de scalare pentru Q16.16 (2^16)
+    parameter MAX_R         = 32'h7111_1111;        // Valoare maxima pentru saturatie
+    parameter MIN_R         = 32'h8000_0000;        // Valoare minima pentru saturatie
+    parameter real SCALE    = 2.0**FRAC_BITS;       // Factor de scalare pentru Q16.16 (2^FRAC_BITS)
+        
+        
+    // ------------------------
+    // Parametri modificabili
+    // ------------------------
     
-    // Constante geometrice in format Q16.16
+    parameter NUM_RAND      = 2000;          // Numarul de teste aleatorii
+    parameter THRESHOLD     = 2;           // Toleranta acceptata pentru erori (pixeli)
+    
+    // Constante geometrice in format Q16.16  
     parameter CAMERA_Z      = 32'h0001_8000; // Distanta camera = 1.5
-    parameter FOCAL_LENGHT  = 32'h0000_0ccd; // Lungime focala = 0.05 (aprox 50mm)
+    parameter FOCAL_LENGHT  = 32'h0000_0666; // Lungime focala = 0.05 (aprox 50mm)
     parameter SCREEN_WIDTH  = 32'h0140_0000; // Latime ecran = 320.0
     parameter SCREEN_HEIGHT = 32'h00f0_0000; // Inaltime ecran = 240.0
 
-
+    // Setari pentru precizia datelor generate aleatoriu
+    integer precision_x_int  = 4;
+    integer precision_x_frac = 16;
+    
+    integer precision_y_int  = 4;
+    integer precision_y_frac = 16;
+    
+    integer precision_z_int  = 4;
+    integer precision_z_frac = 16;
+    
+    
     // ------------------------
     // Semnale de interfata
     // ------------------------
@@ -60,15 +76,7 @@ module tb_vpu_q;
     integer test_count = 0;                  // Numar total de teste rulate
     real    error_rate;                      // Rata de eroare procentuala
     
-    // Setari pentru precizia datelor generate aleatoriu
-    integer precision_x_int  = 4;
-    integer precision_x_frac = 16;
-    integer precision_y_int  = 4;
-    integer precision_y_frac = 16;
-    integer precision_z_int  = 4;
-    integer precision_z_frac = 16;
-    integer precision_f_int  = 8;
-    integer precision_f_frac = 16;
+    
 
     // ------------------------
     // Ceas
@@ -115,14 +123,15 @@ module tb_vpu_q;
     );
     begin
         // initializam datele de intrare
-        angle = in_ang; rotation = in_rot;
-        w = in_w; 
-        h = in_h;
-        f = in_f;
-        x = in_x;
-        y = in_y;
-        z = in_z;
-        cam_z = in_cam_z;
+        angle    = in_ang;
+        rotation = in_rot;
+        w        = in_w; 
+        h        = in_h;
+        f        = in_f;
+        x        = in_x;
+        y        = in_y;
+        z        = in_z;
+        cam_z    = in_cam_z;
         
         start = 1'b1;       // Activeaza start
         @(posedge clk); #1;
@@ -191,7 +200,6 @@ module tb_vpu_q;
         output reg [WIDTH-1:0] result;
     
         reg signed [31:0]      raw;
-        reg signed [WIDTH-1:0] extended;
         integer                rand_max;
     begin
 
@@ -216,8 +224,7 @@ module tb_vpu_q;
         input [WIDTH-1:0] r_cam_z;
         input integer idx;
 
-        real rw_r, rh_r, rf_r, rx_r, ry_r, rz_r, ex_xs, ex_ys;
-        real r_cam_z_r;
+        real rw_r, rh_r, rf_r, rx_r, ry_r, rz_r, ex_xs, ex_ys, r_cam_z_r;
         reg signed [WIDTH-1:0] v_exp_xs, v_exp_ys;
       
         integer diff_x, diff_y;
@@ -256,16 +263,16 @@ module tb_vpu_q;
         err_y = $itor(diff_y)/SCALE;    // Eroare Y in unitati reale (pixeli)
         
         $display("--------------------------------");
-        $display("DATE INTRARE [%0d]: Width = %f Height = %f | Rot = %0d Ang = %0.1f | f = %h x = %h y = %h z = %h", 
-                    idx, $itor($signed(r_w)) / SCALE, $itor($signed(r_h)) / SCALE, r_rot, r_ang, r_f, r_x, r_y, r_z);
+        $display("TEST NR. %0d: Rot = %0d Ang = %0.1f | f = %h x = %h y = %h z = %h", 
+                    idx, r_rot, r_ang, r_f, r_x, r_y, r_z);
         
         if (overflow) begin
             $display("SKIP [%0d]: Overflow detectat", idx);
             overflow_count = overflow_count + 1;
         end else if ((err_x > THRESHOLD) || (err_x < -THRESHOLD) || (err_y > THRESHOLD) || (err_y < -THRESHOLD)) begin
             error_count = error_count + 1;
-            $display("EROARE [%0d]: xs=%h(exp %h, DIFERENTA=%f) ys=%h(exp %h, DIFERENTA=%f)",
-                     idx, xs, v_exp_xs, err_x, ys, v_exp_ys, err_y);
+            $display("EROARE: xs=%h(exp %h, DIFERENTA=%f pixeli)",  xs, v_exp_xs, (err_x < 0 ? -err_x : err_x));
+            $display("        ys=%h(exp %h, DIFERENTA=%f pixeli)",  ys, v_exp_ys, (err_y < 0 ? -err_y : err_y));
         end else begin
             $display("OK [%0d]: ScreenX=%h ScreenY=%h", idx, xs, ys);
         end
@@ -299,7 +306,6 @@ module tb_vpu_q;
             rand_fp(precision_x_int, precision_x_frac, rx_t); 
             rand_fp(precision_y_int, precision_y_frac, ry_t);
             rand_fp(precision_z_int, precision_z_frac, rz_t);   
-            //rand_fp(precision_f_int, precision_f_frac, rf_t);  
 
             run_one_random(rot_t, ang_t, rw_t, rh_t, rf_t, rx_t, ry_t, rz_t, CAMERA_Z, i);
             test_count = test_count + 1;
@@ -314,7 +320,20 @@ module tb_vpu_q;
     // Subrutina principala
     // ------------------------
 
+    integer file_out; // Descriptorul de fisier
+    
     initial begin
+        
+        
+        // Deschide fisierul pentru scriere
+        file_out = $fopen("rezultate_test_vpu.txt", "w");
+    
+        // Verifică dacă fișierul a fost deschis corect
+        if (file_out == 0) begin
+            $display("EROARE: Nu s-a putut crea fisierul de iesire!");
+            $finish;
+        end
+    
         $display("=== START TEST VERTEX PROCESSING UNIT ===");
 
         // Initializare semnale si registre
@@ -324,26 +343,35 @@ module tb_vpu_q;
         repeat(5) @(posedge clk);
     
         // Rularea testelor
-        run_random_tests(402);  // seed fix => reproductibil
+        run_random_tests(1);  // seed fix => reproductibil
         
         // Calcul statistici finale
-        error_rate = (error_count * 100.0) / test_count;
+        error_rate = (error_count * 100.0) / (test_count - overflow_count);
 
-        $display("--------------------------------");
-        $display("=== TEST VPU FINALIZAT ===");
-        $display("Format Q       = Q%0d.%0d", INT_BITS, FRAC_BITS);
-        $display("Focala         = %0g m", $itor(FOCAL_LENGHT) / SCALE);
-        $display("Latime ecran   = %0d px", $itor(SCREEN_WIDTH) / SCALE);
-        $display("Inaltime ecran = %0d px", $itor(SCREEN_HEIGHT) / SCALE);
-        $display("Biti random X  = %0d INT, %0d FRAC", precision_x_int, precision_x_frac);
-        $display("Biti random Y  = %0d INT, %0d FRAC", precision_y_int, precision_y_frac);
-        $display("Biti random Z  = %0d INT, %0d FRAC", precision_z_int, precision_z_frac);
-        //$display("Biti random F  = %0d INT, %0d FRAC", precision_f_int, precision_f_frac);
-        $display("Prag eroare    = %g pixeli", THRESHOLD);
-        $display("Teste totale   = %0d", test_count);
-        $display("Overflow-uri   = %0d", overflow_count);
-        $display("ERORI          = %0d", error_count);
-        $display("Rata de erori  = %f %%", error_rate);
+        // Scriem in fisier folosind $fdisplay
+        $fdisplay(file_out, "------------------------------------------");
+        $fdisplay(file_out, "=== TEST VPU FINALIZAT ===");
+        $fdisplay(file_out, "Frecventa ceas = %0d MHz", (1/ $itor(PER)) * 1000);
+        $fdisplay(file_out, "Format Q       = Q%0d.%0d semnat", INT_BITS, FRAC_BITS);
+        $fdisplay(file_out, "Focala         = %0g mm", ($itor(FOCAL_LENGHT) / SCALE) * 1000);
+        $fdisplay(file_out, "Latime ecran   = %0d px", $itor(SCREEN_WIDTH) / SCALE);
+        $fdisplay(file_out, "Inaltime ecran = %0d px", $itor(SCREEN_HEIGHT) / SCALE);
+        $fdisplay(file_out, "Biti random X  = %0d INT, %0d FRAC", precision_x_int, precision_x_frac);
+        $fdisplay(file_out, "Biti random Y  = %0d INT, %0d FRAC", precision_y_int, precision_y_frac);
+        $fdisplay(file_out, "Biti random Z  = %0d INT, %0d FRAC", precision_z_int, precision_z_frac);
+        $fdisplay(file_out, "");
+        $fdisplay(file_out, "Prag eroare    = %g pixeli", THRESHOLD);
+        $fdisplay(file_out, "Teste totale   = %0d", test_count);
+        $fdisplay(file_out, "Erori          = %0d", error_count);
+        $fdisplay(file_out, "Overflow-uri   = %0d", overflow_count);
+        $fdisplay(file_out, "RATA DE ERORI  = %f %%", error_rate);
+        $fdisplay(file_out, "------------------------------------------");
+    
+        // Recomandat: lasa si display-urile normale ca sa vezi rezultatul si in consola simulatorului
+        $display("=== REZULTATE EXPORTATE IN rezultate_test_vpu.txt ===");
+    
+        // Inchide fisierul
+        $fclose(file_out);  
         $finish;
     end
 

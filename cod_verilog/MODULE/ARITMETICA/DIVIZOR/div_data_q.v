@@ -40,8 +40,8 @@ module div_data_q #(
     reg [WIDTH:0]   P;              // Rest partial
     reg [WIDTH-1:0] A;              // Cat
     reg [WIDTH-1:0] B;              // Divizor
-    reg [WIDTH-1:0] count;          // Contor pentru numarul de iteratii (WIDTH iteratii)
-
+   // reg [WIDTH-1:0] count;          // Contor pentru numarul de iteratii (WIDTH iteratii)
+    reg [$clog2(WIDTH)-1:0] count;
     reg [WIDTH:0]   P_next;         // Rest intermediar
     reg [WIDTH-1:0] A_next;         // Cat intermediar
 

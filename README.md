@@ -1,4 +1,4 @@
-# FPGA 3D Renderer
+# Grafica 3D, implementata pe FPGA
 **Randare 3D în timp real implementată hardware pe FPGA (Verilog).**
 
 ## Descriere Proiect

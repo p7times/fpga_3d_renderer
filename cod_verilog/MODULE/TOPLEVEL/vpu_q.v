@@ -63,8 +63,7 @@ module vpu_q #(
     // Registre intermediare
     reg [WIDTH-1:0] reg_xr, reg_yr, reg_zr; // Dupa rotatie
     reg [WIDTH-1:0] reg_xp, reg_yp;         // Dupa proiectie
-
-    reg ovf_rot_r, ovf_proj_r;  // Acumulatoare overflow intermediare
+    reg ovf_rot_r, ovf_proj_r;              // Acumulatoare overflow intermediare
 
     
     // ------------------------
@@ -186,7 +185,7 @@ module vpu_q #(
             rot_start   <= 1'b0;
             proj_start  <= 1'b0;
             ndc_start   <= 1'b0;
-
+                        
             valid       <= 1'b0;
             overflow    <= 1'b0;
         end else begin
