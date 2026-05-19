@@ -1,7 +1,10 @@
 //---------------------------------------------------------------
-// Proiect    : Grafica 3D implementata pe FPGA
+// Universitatea Transilvania din Brasov
+// Facultatea IESC
 //
-// Autor      : Dan NICULA
+// Proiect    : Grafica 3D implementata pe FPGA
+// Modul      : ck_rst_tb
+// Autor      : Dan NICULA  
 // An         : 2026
 //---------------------------------------------------------------
 // Descriere  : Generator de semnal ceas si reset asincron, activ in 0

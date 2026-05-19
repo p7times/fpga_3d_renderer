@@ -1,6 +1,9 @@
 //---------------------------------------------------------------
-// Proiect    : Grafica 3D implementata pe FPGA
+// Universitatea Transilvania din Brasov
+// Facultatea IESC
 //
+// Proiect    : Grafica 3D implementata pe FPGA
+// Modul      : sin_cos_lut_q
 // Autor      : Petru-Andrei BRASOVEANU  
 // An         : 2026
 //---------------------------------------------------------------

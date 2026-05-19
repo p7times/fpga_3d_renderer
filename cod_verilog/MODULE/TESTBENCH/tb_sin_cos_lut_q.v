@@ -16,6 +16,7 @@ wire [INT_BITS+FRAC_BITS-1:0] sin_out;
 wire [INT_BITS+FRAC_BITS-1:0] cos_out;
 wire             valid;
 wire [2:0] dbg_state;
+
     // ------------------------
     // Ceas
     // ------------------------

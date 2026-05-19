@@ -1,7 +1,10 @@
 //---------------------------------------------------------------
-// Proiect    : Grafica 3D implementata pe FPGA
+// Universitatea Transilvania din Brasov
+// Facultatea IESC
 //
-// Autor      : Petru-Andrei BRASOVEANU 
+// Proiect    : Grafica 3D implementata pe FPGA
+// Modul      : vpu_q
+// Autor      : Petru-Andrei BRASOVEANU  
 // An         : 2026
 //---------------------------------------------------------------
 // Descriere  : Vertex Processing Unit (VPU), sau Unitate de Procesare Vertex-uri
