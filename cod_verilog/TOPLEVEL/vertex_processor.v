@@ -23,25 +23,24 @@
 //---------------------------------------------------------------
 
 module vertex_processor #(
-    parameter INT_BITS  = 16,                             // Numar de biti parte intreaga (include semnul) 
-    parameter FRAC_BITS = 16                              // Numar de biti parte fractionara
+    parameter INT_BITS  = 16,                                    // Numar de biti parte intreaga (include semnul) 
+    parameter FRAC_BITS = 16,                                    // Numar de biti parte fractionara
+    parameter DATA_WIDTH = INT_BITS + FRAC_BITS                  // Latime date, biti
 )(
-    input                               clk,              // Semnal de ceas
-    input                               rst_n,            // Reset asincron (activ in 0)
-    input                               start,            // Pornire proces conversie
+    input                               clk,                     // Semnal de ceas
+    input                               rst_n,                   // Reset asincron (activ in 0)
+    input                               start,                   // Pornire proces conversie
     
-    input      [2:0]                    rotation,         // Flag selectare tip de rotatie
-    input      [9:0]                    angle,            // Unghiul de rotatie
+    input      [2:0]                    rotation,                // Flag selectare tip de rotatie
+    input      [9:0]                    angle,                   // Unghiul de rotatie
 
-    input      [INT_BITS+FRAC_BITS-1:0] f, x, y, z, w, h, cam_z, // Datele de intrare (NDC + dimensiuni ecran)
+    input      [DATA_WIDTH-1:0]         f, x, y, z, w, h, cam_z, // Datele de intrare (NDC + dimensiuni ecran)
 
-    output reg [INT_BITS+FRAC_BITS-1:0] xs, ys,           // Datele de iesire (coordonate ecran)
-    output reg                          valid,            // Flag finalizare conversie
-    output reg                          overflow,         // Indicator depasire domeniu numeric (DEBUG)
-    output     [3:0]                    dbg_state         // Flag stare FSM (DEBUG)
+    output reg [DATA_WIDTH-1:0]         xs, ys,                  // Datele de iesire (coordonate ecran)
+    output reg                          valid,                   // Flag finalizare conversie
+    output reg                          overflow,                // Indicator depasire domeniu numeric (DEBUG)
+    output     [3:0]                    dbg_state                // Flag stare FSM (DEBUG)
 );
-
-    localparam WIDTH = INT_BITS + FRAC_BITS;
 
     // ------------------------
     // Definitie stari FSM
@@ -68,33 +67,31 @@ module vertex_processor #(
     // ------------------------
     
     // Registre de intrare
-    reg [WIDTH-1:0] reg_x, reg_y, reg_z, reg_f, reg_w, reg_h, reg_cam_z;
-    reg [9:0] reg_angle;
-    reg [2:0] reg_rotation;
+    reg [DATA_WIDTH-1:0] reg_x, reg_y, reg_z, reg_f, reg_w, reg_h, reg_cam_z;
+    reg [9:0]       reg_angle;
+    reg [2:0]       reg_rotation;
 
     // Registre intermediare
-    reg [WIDTH-1:0] reg_xr, reg_yr, reg_zr; // Dupa rotatie
-    reg [WIDTH-1:0] reg_xp, reg_yp;         // Dupa proiectie
-    reg ovf_rot_r, ovf_proj_r;              // Acumulatoare overflow intermediare
+    reg [DATA_WIDTH-1:0] reg_xr, reg_yr, reg_zr; // Dupa rotatie
+    reg [DATA_WIDTH-1:0] reg_xp, reg_yp;         // Dupa proiectie
+    reg ovf_rot_r, ovf_proj_r;                   // Acumulatoare overflow intermediare
 
     
     // ------------------------
     // Semnale interfata submodule aritmetice
     // ------------------------ 
     
-    reg rot_start, proj_start, ndc_start;     // Pulsuri de start (1 ciclu)
+    reg  rot_start, proj_start, ndc_start;    // Pulsuri de start (1 ciclu)
     wire rot_valid, proj_valid, ndc_valid;    // Semnale rezultat valid
     
     // Iesiri wire din submodule
-    wire [WIDTH-1:0] xr_w, yr_w, zr_w;
-    wire [WIDTH-1:0] xp_w, yp_w;
-    wire [WIDTH-1:0] xs_w, ys_w;
+    wire [DATA_WIDTH-1:0] xr_w, yr_w, zr_w;
+    wire [DATA_WIDTH-1:0] xp_w, yp_w;
+    wire [DATA_WIDTH-1:0] xs_w, ys_w;
 
     wire ovf_rot_w, ovf_proj_w, ovf_ndc_w; // Semnale overflow din submodule (DEBUG)
 
     
-
-
     // ------------------------
     // Instantiere submodule aritmetice
     // ------------------------
@@ -275,4 +272,4 @@ module vertex_processor #(
         end
     end
 
-endmodule
+endmodule // vertex_processor

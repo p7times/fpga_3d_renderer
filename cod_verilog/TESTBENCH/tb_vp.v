@@ -24,7 +24,7 @@ module tb_vp;
     parameter PER           = 8;                    // Perioada ceasului (8ns => 125MHz)   
     parameter INT_BITS      = 16;                   // Biti pentru partea intreaga (semnati)
     parameter FRAC_BITS     = 16;                   // Biti pentru partea fractionara
-    parameter WIDTH         = INT_BITS + FRAC_BITS; // Latime totala cuvant
+    parameter DATA_WIDTH    = INT_BITS + FRAC_BITS; // Latime totala cuvant
     parameter MAX_R         = 32'h7111_1111;        // Valoare maxima pentru saturatie
     parameter MIN_R         = 32'h8000_0000;        // Valoare minima pentru saturatie
     parameter real SCALE    = 2.0**FRAC_BITS;       // Factor de scalare pentru Q16.16 (2^FRAC_BITS)
@@ -65,11 +65,11 @@ module tb_vp;
     // Registre pentru intrarile DUT
     reg [2:0]       rotation;                       // Tipul de rotatie (X, Y, Z)
     reg [9:0]       angle;                          // Unghiul de rotatie
-    reg [WIDTH-1:0] f, x, y, z, w, h;               // Parametrii geometrici
-    reg [WIDTH-1:0] cam_z;                          // Pozitia camerei
+    reg [DATA_WIDTH-1:0] f, x, y, z, w, h;          // Parametrii geometrici
+    reg [DATA_WIDTH-1:0] cam_z;                     // Pozitia camerei
     
     // Fire pentru iesirile DUT
-    wire [WIDTH-1:0] xs, ys;                        // Coordonate ecran rezultate
+    wire [DATA_WIDTH-1:0] xs, ys;                   // Coordonate ecran rezultate
     wire [3:0]       dbg_state;                     // Starea interna a FSM-ului DUT
     wire             overflow;                      // Indicator depasire domeniu numeric
 
@@ -122,7 +122,7 @@ module tb_vp;
     // Lanseaza un ciclu de procesare prin activarea semnalului start
     task start_op(
         input [2:0] in_rot, input [9:0] in_ang,
-        input [WIDTH-1:0] in_w, in_h, in_f, in_x, in_y, in_z, in_cam_z
+        input [DATA_WIDTH-1:0] in_w, in_h, in_f, in_x, in_y, in_z, in_cam_z
     );
     begin
         // initializam datele de intrare
@@ -198,9 +198,9 @@ module tb_vp;
     
     // Produce o valoare aleatorie incadrata in bitii de precizie specificati
     task rand_fp;
-        input integer rand_int_bits;
-        input integer rand_frac_bits;
-        output reg [WIDTH-1:0] result;
+        input integer               rand_int_bits;
+        input integer               rand_frac_bits;
+        output reg [DATA_WIDTH-1:0] result;
     
         reg signed [31:0]      raw;
         integer                rand_max;
@@ -223,12 +223,12 @@ module tb_vp;
     task run_one_random;
         input [2:0] r_rot;
         input [9:0] r_ang;
-        input [WIDTH-1:0] r_w, r_h, r_f, r_x, r_y, r_z;
-        input [WIDTH-1:0] r_cam_z;
+        input [DATA_WIDTH-1:0] r_w, r_h, r_f, r_x, r_y, r_z;
+        input [DATA_WIDTH-1:0] r_cam_z;
         input integer idx;
 
         real rw_r, rh_r, rf_r, rx_r, ry_r, rz_r, ex_xs, ex_ys, r_cam_z_r;
-        reg signed [WIDTH-1:0] v_exp_xs, v_exp_ys;
+        reg signed [DATA_WIDTH-1:0] v_exp_xs, v_exp_ys;
       
         integer diff_x, diff_y;
         real err_x, err_y;
@@ -289,7 +289,7 @@ module tb_vp;
     task run_random_tests;
         input integer seed;
         integer i;
-        reg [WIDTH-1:0] rf_t, rx_t, ry_t, rz_t, rw_t, rh_t;
+        reg [DATA_WIDTH-1:0] rf_t, rx_t, ry_t, rz_t, rw_t, rh_t;
         reg [9:0] ang_t;
         reg [2:0] rot_t;
     begin

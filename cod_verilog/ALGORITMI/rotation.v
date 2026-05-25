@@ -50,24 +50,23 @@
 
 module rotation #(
     parameter INT_BITS  = 16,                           // Numar de biti parte intreaga (include semnul) 
-    parameter FRAC_BITS = 16                            // Numar de biti parte fractionara
+    parameter FRAC_BITS = 16,                           // Numar de biti parte fractionara
+    parameter DATA_WIDTH = INT_BITS + FRAC_BITS         // Latime date, biti
 )(
     input                               clk,            // Semnal de ceas
     input                               rst_n,          // Reset asincron (activ in 0)
     input                               start,          // Pornire calcul rotatie
     input      [2:0]                    rotation,       // Flag selectare tip de rotatie
-    input      [INT_BITS+FRAC_BITS-1:0] x, y, z,        // Datele de intrare 
+    input      [DATA_WIDTH-1:0]         x, y, z,        // Datele de intrare 
     input      [9:0]                    angle,          // Unghiul de rotatie
-    output reg [INT_BITS+FRAC_BITS-1:0] xr, yr, zr,     // Datele de iesire (coordonatele 3D rotite)
+    output reg [DATA_WIDTH-1:0]         xr, yr, zr,     // Datele de iesire (coordonatele 3D rotite)
     output reg                          valid,          // Flag finalizare conversie
     output reg                          overflow,       // Indicator depasire domeniu numeric (DEBUG)
     output     [3:0]                    dbg_state       // Flag stare FSM (DEBUG)
 );
-
-    localparam WIDTH = INT_BITS + FRAC_BITS;
     
-    localparam [WIDTH-1:0] ONE  = {{(INT_BITS-1){1'b0}}, 1'b1, {FRAC_BITS{1'b0}}};
-    localparam [WIDTH-1:0] ZERO = {WIDTH{1'b0}};
+    localparam [DATA_WIDTH-1:0] ONE  = {{(INT_BITS-1){1'b0}}, 1'b1, {FRAC_BITS{1'b0}}};
+    localparam [DATA_WIDTH-1:0] ZERO = {DATA_WIDTH{1'b0}};
 
 
     // ------------------------
@@ -107,23 +106,23 @@ module rotation #(
     // ------------------------
 
     // Datele de intrare
-    reg [WIDTH-1:0] reg_x, reg_y, reg_z;
+    reg [DATA_WIDTH-1:0] reg_x, reg_y, reg_z;
 
     // Elementele matricei de rotatie 3x3
     // | a  b  c |   | x |   | a*x + b*y + c*z |   | xr |
     // | d  e  f | * | y | = | d*x + e*y + f*z | = | yr |
     // | g  h  i |   | z |   | g*x + h*y + i*z |   | zr |
-    reg [WIDTH-1:0] reg_a, reg_b, reg_c;
-    reg [WIDTH-1:0] reg_d, reg_e, reg_f;
-    reg [WIDTH-1:0] reg_g, reg_h, reg_i;
+    reg [DATA_WIDTH-1:0] reg_a, reg_b, reg_c;
+    reg [DATA_WIDTH-1:0] reg_d, reg_e, reg_f;
+    reg [DATA_WIDTH-1:0] reg_g, reg_h, reg_i;
 
     // Registre de pipeline: rezultate multiplicatoare
-    reg [WIDTH-1:0] reg_ax, reg_by, reg_cz;
-    reg [WIDTH-1:0] reg_dx, reg_ey, reg_fz;
-    reg [WIDTH-1:0] reg_gx, reg_hy, reg_iz; 
+    reg [DATA_WIDTH-1:0] reg_ax, reg_by, reg_cz;
+    reg [DATA_WIDTH-1:0] reg_dx, reg_ey, reg_fz;
+    reg [DATA_WIDTH-1:0] reg_gx, reg_hy, reg_iz; 
 
     // Registre de pipeline: rezultate prima etapa de sumare
-    reg [WIDTH-1:0] reg_ax_by, reg_dx_ey, reg_gx_hy;
+    reg [DATA_WIDTH-1:0] reg_ax_by, reg_dx_ey, reg_gx_hy;
 
     // ------------------------
     // Interfata LUT
@@ -136,26 +135,26 @@ module rotation #(
     // ------------------------
 
     // LUT sin/cos (combinational)
-    reg [WIDTH-1:0] reg_sin, reg_cos, reg_neg_sin;
-    wire [WIDTH-1:0] lut_sin, lut_cos;    
+    reg  [DATA_WIDTH-1:0] reg_sin, reg_cos, reg_neg_sin;
+    wire [DATA_WIDTH-1:0] lut_sin, lut_cos;    
     
     // Negari combinationale (complement fata de 2)
-    wire [WIDTH-1:0] neg_sin = ~lut_sin + 1'b1;
+    wire [DATA_WIDTH-1:0] neg_sin = ~lut_sin + 1'b1;
 
     // Multiplicatoare (output registrat, latenta 1 ciclu)
-    wire [WIDTH-1:0] mult_ax_result, mult_by_result, mult_cz_result;
-    wire [WIDTH-1:0] mult_dx_result, mult_ey_result, mult_fz_result;
-    wire [WIDTH-1:0] mult_gx_result, mult_hy_result, mult_iz_result;
+    wire [DATA_WIDTH-1:0] mult_ax_result, mult_by_result, mult_cz_result;
+    wire [DATA_WIDTH-1:0] mult_dx_result, mult_ey_result, mult_fz_result;
+    wire [DATA_WIDTH-1:0] mult_gx_result, mult_hy_result, mult_iz_result;
     wire             ovf_ax, ovf_by, ovf_cz;
     wire             ovf_dx, ovf_ey, ovf_fz;
     wire             ovf_gx, ovf_hy, ovf_iz;
  
     // Sumatoare prima etapa (output registrat, latenta 1 ciclu)
-    wire [WIDTH-1:0] sum_ax_by_result, sum_dx_ey_result, sum_gx_hy_result;
+    wire [DATA_WIDTH-1:0] sum_ax_by_result, sum_dx_ey_result, sum_gx_hy_result;
     wire             ovf_ax_by, ovf_dx_ey, ovf_gx_hy;
  
     // Sumatoare finale (output registrat, latenta 1 ciclu)
-    wire [WIDTH-1:0] res_xr, res_yr, res_zr;
+    wire [DATA_WIDTH-1:0] res_xr, res_yr, res_zr;
     wire             ovf_xr, ovf_yr, ovf_zr;
 
     reg ovf_mult, ovf_add_first;      // Acumulatoare overflow intermediare
@@ -460,4 +459,4 @@ module rotation #(
         end
     end
 
-endmodule
+endmodule // rotation

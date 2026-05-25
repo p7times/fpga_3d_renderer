@@ -30,19 +30,18 @@
 
 module ndc_to_screen #(
     parameter INT_BITS  = 16,                           // Numar de biti parte intreaga (include semnul) 
-    parameter FRAC_BITS = 16                            // Numar de biti parte fractionara
+    parameter FRAC_BITS = 16,                           // Numar de biti parte fractionara
+    parameter DATA_WIDTH = INT_BITS + FRAC_BITS         // Latime date, biti
 )(
     input                               clk,            // Semnal de ceas
     input                               rst_n,          // Reset asincron (activ in 0)
     input                               start,          // Pornire proces conversie
-    input      [INT_BITS+FRAC_BITS-1:0] xp, yp, w, h,   // Datele de intrare (NDC + dimensiuni ecran)
-    output reg [INT_BITS+FRAC_BITS-1:0] xs, ys,         // Datele de iesire (coordonate ecran)
+    input      [DATA_WIDTH-1:0]         xp, yp, w, h,   // Datele de intrare (NDC + dimensiuni ecran)
+    output reg [DATA_WIDTH-1:0]         xs, ys,         // Datele de iesire (coordonate ecran)
     output reg                          valid,          // Flag finalizare conversie
     output reg                          overflow,       // Indicator depasire domeniu numeric (DEBUG)
-    output [2:0]                        dbg_state       // Flag stare FSM (DEBUG)
+    output     [2:0]                    dbg_state       // Flag stare FSM (DEBUG)
 );
-
-    localparam WIDTH = INT_BITS + FRAC_BITS;
 
     // ------------------------
     // Definitie stari FSM
@@ -65,25 +64,25 @@ module ndc_to_screen #(
     // Registrele interne ptr pipeline
     // ------------------------
 
-    reg [WIDTH-1:0] reg_xp, reg_yp;     // Coordonate NDC
-    reg [WIDTH-1:0] reg_w, reg_h;       // Dimensiuni ecran
+    reg [DATA_WIDTH-1:0] reg_xp, reg_yp;     // Coordonate NDC
+    reg [DATA_WIDTH-1:0] reg_w, reg_h;       // Dimensiuni ecran
 
-    reg [WIDTH-1:0] reg_xph, reg_yph;   // Rezultate multiplicare
-    reg [WIDTH-1:0] reg_add;            // Rezultat intermediar: (xp * h) + w
-    reg [WIDTH-1:0] reg_sub;            // Rezultat intermediar: h - (yp * h)
+    reg [DATA_WIDTH-1:0] reg_xph, reg_yph;   // Rezultate multiplicare
+    reg [DATA_WIDTH-1:0] reg_add;            // Rezultat intermediar: (xp * h) + w
+    reg [DATA_WIDTH-1:0] reg_sub;            // Rezultat intermediar: h - (yp * h)
 
 
     // ------------------------
     // Semnale interfata submodule aritmetice
     // ------------------------
 
-    wire [WIDTH-1:0] mult_xph_result;  
-    wire [WIDTH-1:0] mult_yph_result;  
-    wire [WIDTH-1:0] add_result;   
-    wire [WIDTH-1:0] sub_result;  
+    wire [DATA_WIDTH-1:0] mult_xph_result;  
+    wire [DATA_WIDTH-1:0] mult_yph_result;  
+    wire [DATA_WIDTH-1:0] add_result;   
+    wire [DATA_WIDTH-1:0] sub_result;  
     
     wire ovf_add, ovf_sub, ovf_mult_xp, ovf_mult_yp; // Semnale overflow din submodule (DEBUG)
-    reg ovf_mult, ovf_add_sub;                       // Acumulatoare overflow intermediare
+    reg  ovf_mult, ovf_add_sub;                      // Acumulatoare overflow intermediare
 
 
     // ------------------------
@@ -247,4 +246,4 @@ module ndc_to_screen #(
         end
     end
 
-endmodule
+endmodule // ndc_to_screen

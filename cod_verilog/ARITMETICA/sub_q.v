@@ -16,17 +16,15 @@
 
 module sub_q #(
     parameter INT_BITS  = 16,                       // Numar de biti parte intreaga (include semnul)
-    parameter FRAC_BITS = 16                        // Numar de biti parte fractionara
+    parameter FRAC_BITS = 16,                       // Numar de biti parte fractionara
+    parameter DATA_WIDTH = INT_BITS + FRAC_BITS     // Latime date, biti
 )(
-    input                               clk,        // Semnal de ceas
-    input                               rst_n,      // Reset asincron (activ in 0)
-    input [INT_BITS+FRAC_BITS-1:0]      a, b,       // Operanzi in format Q (semnati)
-    output reg                          overflow,   // Indicator depasire domeniu numeric (pentru debug/saturatie)
-    output reg [INT_BITS+FRAC_BITS-1:0] dif         // Rezultat saturat
+    input                       clk,                // Semnal de ceas
+    input                       rst_n,              // Reset asincron (activ in 0)
+    input      [DATA_WIDTH-1:0] a, b,               // Operanzi in format Q (semnati)
+    output reg                  overflow,           // Indicator depasire domeniu numeric (pentru debug/saturatie)
+    output reg [DATA_WIDTH-1:0] dif                 // Rezultat saturat
 );  
-
-    localparam TOTAL = INT_BITS + FRAC_BITS;
-
 
     // ------------------------
     // Limite reprezentabile in format Q (Complement de 2)
@@ -34,18 +32,18 @@ module sub_q #(
 
     // MAX: 0 urmat de 1-uri (cel mai mare numar pozitiv)
     // MIN: 1 urmat de 0-uri (cel mai mic numar negativ)
-    localparam [TOTAL-1:0] MAX = {1'b0, {(TOTAL-1){1'b1}}};
-    localparam [TOTAL-1:0] MIN = {1'b1, {(TOTAL-1){1'b0}}}; 
+    localparam [DATA_WIDTH-1:0] MAX = {1'b0, {(DATA_WIDTH-1){1'b1}}};
+    localparam [DATA_WIDTH-1:0] MIN = {1'b1, {(DATA_WIDTH-1){1'b0}}}; 
 
 
     // ------------------------
     // Semnale pentru calculul aritmetic
     // ------------------------
 
-    wire [TOTAL-1:0] raw_dif;       // Rezultatul brut al scaderii
-    wire             sub_overflow;  // Flag intern pentru detectare overflow
+    wire [DATA_WIDTH-1:0] raw_dif;      // Rezultatul brut al scaderii
+    wire             sub_overflow; // Flag intern pentru detectare overflow
     
-    assign raw_dif = a - b;         // Scadere aritmetica standard
+    assign raw_dif = a - b;        // Scadere aritmetica standard
 
 
     // ------------------------
@@ -55,7 +53,7 @@ module sub_q #(
     // 1. Operanzii au semne diferite: (a[MSB] ^ b[MSB])
     // 2. Semnul rezultatului difera de semnul descazutului: (raw_dif[MSB] ^ a[MSB])
     // Daca ambele conditii sunt adevarate, inseamna ca am depasit domeniul numeric
-    assign sub_overflow = (a[TOTAL-1] ^ b[TOTAL-1]) & (raw_dif[TOTAL-1] ^ a[TOTAL-1]);
+    assign sub_overflow = (a[DATA_WIDTH-1] ^ b[DATA_WIDTH-1]) & (raw_dif[DATA_WIDTH-1] ^ a[DATA_WIDTH-1]);
 
 
     // ------------------------
@@ -69,7 +67,8 @@ module sub_q #(
         end else begin
             // Saturatie: daca add_overflow e activ, limitam rezultatul la extreme
             // Semnul lui 'a' indica directia reala a overflow-ului
-            dif      <= sub_overflow ? (a[TOTAL-1] ? MIN : MAX) : raw_dif;
+            dif      <= sub_overflow ? (a[DATA_WIDTH-1] ? MIN : MAX) : raw_dif;
             overflow <= sub_overflow;
         end
-endmodule
+
+endmodule // sub_q

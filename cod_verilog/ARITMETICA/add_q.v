@@ -16,17 +16,15 @@
 
 module add_q #(
     parameter INT_BITS  = 16,                       // Numar de biti parte intreaga (include semnul)
-    parameter FRAC_BITS = 16                        // Numar de biti parte fractionara
+    parameter FRAC_BITS = 16,                       // Numar de biti parte fractionara
+    parameter DATA_WIDTH = INT_BITS + FRAC_BITS     // Latime date, biti
 )(
-    input                               clk,        // Semnal de ceas
-    input                               rst_n,      // Reset asincron (activ in 0)
-    input [INT_BITS+FRAC_BITS-1:0]      a, b,       // Operanzi in format Q (semnati)
-    output reg                          overflow,   // Indicator depasire domeniu numeric (pentru debug/saturatie)
-    output reg [INT_BITS+FRAC_BITS-1:0] sum         // Rezultat saturat
+    input                       clk,                // Semnal de ceas
+    input                       rst_n,              // Reset asincron (activ in 0)
+    input      [DATA_WIDTH-1:0] a, b,               // Operanzi in format Q (semnati)
+    output reg                  overflow,           // Indicator depasire domeniu numeric (pentru debug/saturatie)
+    output reg [DATA_WIDTH-1:0] sum                 // Rezultat saturat
 );
-
-    localparam WIDTH = INT_BITS + FRAC_BITS;
-
 
     // ------------------------
     // Limite reprezentabile in format Q (Complement de 2)
@@ -34,16 +32,16 @@ module add_q #(
 
     // MAX: 0 urmat de 1-uri (cel mai mare numar pozitiv)
     // MIN: 1 urmat de 0-uri (cel mai mic numar negativ)
-    localparam [WIDTH-1:0] MAX = {1'b0, {(WIDTH-1){1'b1}}};
-    localparam [WIDTH-1:0] MIN = {1'b1, {(WIDTH-1){1'b0}}}; 
+    localparam [DATA_WIDTH-1:0] MAX = {1'b0, {(DATA_WIDTH-1){1'b1}}};
+    localparam [DATA_WIDTH-1:0] MIN = {1'b1, {(DATA_WIDTH-1){1'b0}}}; 
 
 
     // ------------------------
     // Semnale pentru calculul aritmetic
     // ------------------------
 
-    wire [WIDTH-1:0] raw_sum;      // Rezultatul brut al adunarii
-    wire             add_overflow; // Flag intern pentru detectare overflow
+    wire [DATA_WIDTH-1:0] raw_sum;      // Rezultatul brut al adunarii
+    wire                  add_overflow; // Flag intern pentru detectare overflow
 
     assign raw_sum = a + b;        // Adunare aritmetica standard
 
@@ -55,7 +53,7 @@ module add_q #(
     // 1. Operanzii au acelasi semn: (~(a[MSB] ^ b[MSB]))
     // 2. Semnul rezultatului difera de semnul operanzilor: (raw_sum[MSB] ^ a[MSB])
     // Daca ambele conditii sunt adevarate, inseamna ca am depasit domeniul numeric
-    assign add_overflow = (~(a[WIDTH-1] ^ b[WIDTH-1])) & (raw_sum[WIDTH-1] ^ a[WIDTH-1]);
+    assign add_overflow = (~(a[DATA_WIDTH-1] ^ b[DATA_WIDTH-1])) & (raw_sum[DATA_WIDTH-1] ^ a[DATA_WIDTH-1]);
 
 
     // ------------------------
@@ -69,7 +67,8 @@ module add_q #(
         end else begin
             // Saturatie: daca add_overflow e activ, alegem MIN sau MAX in functie
             // de semnul operandului 'a' (care este acelasi cu semnul lui 'b')
-            sum      <= add_overflow ? (a[WIDTH-1] ? MIN : MAX) : raw_sum;
+            sum      <= add_overflow ? (a[DATA_WIDTH-1] ? MIN : MAX) : raw_sum;
             overflow <= add_overflow;
         end
-endmodule
+
+endmodule // add_q

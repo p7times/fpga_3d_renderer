@@ -38,19 +38,18 @@
 
 module persp_proj #(
     parameter INT_BITS  = 16,                       // Numar de biti parte intreaga (include semnul) 
-    parameter FRAC_BITS = 16                        // Numar de biti parte fractionara
+    parameter FRAC_BITS = 16,                       // Numar de biti parte fractionara
+    parameter DATA_WIDTH = INT_BITS + FRAC_BITS     // Latime date, biti
 )(
     input                               clk,        // Semnal de ceas
     input                               rst_n,      // Reset asincron (activ in 0)
     input                               start,      // Pornire calcul proiectie
-    input      [INT_BITS+FRAC_BITS-1:0] f, x, y, z, // Datele de intrare (distanta focala + coordonate 3D)
-    output reg [INT_BITS+FRAC_BITS-1:0] xp, yp,     // Datele de iesire (coordonatele 2D proiectate)
+    input      [DATA_WIDTH-1:0]         f, x, y, z, // Datele de intrare (distanta focala + coordonate 3D)
+    output reg [DATA_WIDTH-1:0]         xp, yp,     // Datele de iesire (coordonatele 2D proiectate)
     output reg                          valid,      // Flag finalizare conversie
     output reg                          overflow,   // Indicator depasire domeniu numeric (DEBUG)
-    output [2:0]                        dbg_state   // Flag stare FSM (DEBUG)
+    output     [2:0]                    dbg_state   // Flag stare FSM (DEBUG)
 );
-
-    localparam WIDTH = INT_BITS + FRAC_BITS;
 
     // ------------------------
     // Definitie stari FSM
@@ -72,17 +71,17 @@ module persp_proj #(
     // Registrele interne ptr pipeline
     // ------------------------
 
-    reg [WIDTH-1:0] reg_f, reg_x, reg_y, reg_z;  // Datele de intrare
-    reg [WIDTH-1:0] reg_fz;                      // Rezultat intermediar f/z
+    reg [DATA_WIDTH-1:0] reg_f, reg_x, reg_y, reg_z;  // Datele de intrare
+    reg [DATA_WIDTH-1:0] reg_fz;                      // Rezultat intermediar f/z
 
 
     // ------------------------
     // Interfata divizor
     // ------------------------
 
-    reg              div_start;     // Puls de start (1 ciclu)
-    wire [WIDTH-1:0] div_result;    // Rezultat impartire
-    wire             div_valid;     // Semnal rezultat valid
+    reg                   div_start;     // Puls de start (1 ciclu)
+    wire [DATA_WIDTH-1:0] div_result;    // Rezultat impartire
+    wire                  div_valid;     // Semnal rezultat valid
     
     
     // ------------------------
@@ -91,8 +90,8 @@ module persp_proj #(
 
     // mult_xp : (f/z) * x
     // mult_yp : (f/z) * y
-    wire [WIDTH-1:0] mult_xp_result, mult_yp_result;
-    wire             ovf_xp, ovf_yp;   // Flaguri overflow (DEBUG)
+    wire [DATA_WIDTH-1:0] mult_xp_result, mult_yp_result;
+    wire                  ovf_xp, ovf_yp;   // Flaguri overflow (DEBUG)
 
 
     // ------------------------
@@ -232,4 +231,4 @@ module persp_proj #(
         end
     end
 
-endmodule
+endmodule // persp_proj

@@ -13,24 +13,22 @@
 
 module div_top_level_q #(
     parameter INT_BITS  = 16,                     // Numar de biti parte intreaga (include semnul) 
-    parameter FRAC_BITS = 16                      // Numar de biti parte fractionara
+    parameter FRAC_BITS = 16,                     // Numar de biti parte fractionara
+    parameter DATA_WIDTH = INT_BITS + FRAC_BITS   // Latime date, biti
 )(
     input                               clk,      // Semnal de ceas
     input                               rst_n,    // Reset asincron (activ in 0)
     input                               start,    // Semnal pentru pornirea operatiei de impărtire
-    input  [INT_BITS+FRAC_BITS-1:0]     op1, op2, // Operanzi in format Q (semnati)
-    output [INT_BITS+FRAC_BITS-1:0]     rezultat, // Rezultatul final
+    input  [DATA_WIDTH-1:0]             op1, op2, // Operanzi in format Q (semnati)
+    output [DATA_WIDTH-1:0]             rezultat, // Rezultatul final
     output                              valid     // Flag finalizare calcul
 );
     
-    localparam WIDTH = INT_BITS + FRAC_BITS;
-
-
     // ------------------------
     // Interfata submodule divizor
     // ------------------------
 
-    wire [WIDTH-1:0] cat;
+    wire [DATA_WIDTH-1:0] cat;
     wire ld;
     wire done;
 
@@ -63,5 +61,5 @@ module div_top_level_q #(
     // Rezultatul final este catul calculat
     assign rezultat = cat;
 
-endmodule
+endmodule // div_top_level_q
 

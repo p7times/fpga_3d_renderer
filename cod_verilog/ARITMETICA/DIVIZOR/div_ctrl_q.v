@@ -72,5 +72,5 @@ module div_ctrl_q (
         endcase
     end
 
-endmodule
+endmodule // div_ctrl_q
 

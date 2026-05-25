@@ -11,7 +11,7 @@
 //              Fiecare intrare contine doua coordonate (X, Y) sau rezultate intermediare
 //              ale transformarii geometrice.
 //
-//              Valorile sunt stocate in format Q(INT_BITS.FRAC_BITS), permitand reprezentare
+//              Valorile sunt stocate in format signed Q(INT_BITS.FRAC_BITS), permitand reprezentare
 //              precisa a coordonatelor sub-pixel.
 //
 //              Este utilizat ca buffer intermediar intre unitatile de transformare (Vertex Processor)
@@ -19,30 +19,31 @@
 //---------------------------------------------------------------
 
 module point_buffer #(
-    parameter ADDR_WIDTH = 10,
-    parameter INT_BITS   = 16,
-    parameter FRAC_BITS  = 16,
-    parameter DATA_WIDTH = INT_BITS + FRAC_BITS
+    parameter ADDR_WIDTH = 10,                  // Latime adrese, in biti (10 biti==> max 1024 vertecsi de mapat)
+    parameter INT_BITS   = 16,                  // Numar de biti parte intreaga (include semnul)
+    parameter FRAC_BITS  = 16,                  // Numar de biti parte fractionara
+    parameter DATA_WIDTH = INT_BITS + FRAC_BITS // Latime date, in biti
 )(
-    input                         clk,
-    input                         rst_n,  // reset asincron, activ 0
-    input                         cs,
-    input                         wr,
-    input      [ADDR_WIDTH-1:0]   addr,
-    input      [2*DATA_WIDTH-1:0] dataIn, // [ys | xs] din VPU
-    output reg [2*DATA_WIDTH-1:0] dataOut
+    input                         clk,          // Semnal de ceas
+    input                         rst_n,        // Reset asincron (activ in 0)
+    input                         cs,           // Chip select
+    input                         wr,           // Comanda scriere/citire
+    input      [ADDR_WIDTH-1:0]   addr,         // Adresa unui punct
+    input      [2*DATA_WIDTH-1:0] dataIn,       // Date de intrare: [ys | xs] din vertex_processor
+    output reg [2*DATA_WIDTH-1:0] dataOut       // Date de iesire
 );
 
+    // Datele memoriei BRAM - matrice bidimensionala
     reg [2*DATA_WIDTH-1:0] mem [(2**ADDR_WIDTH)-1:0];
 
-    // scriere in memorie
+    // Scriere in memorie
     always @(posedge clk)
     begin
         if (cs & wr)
             mem[addr] <= dataIn;
     end
 
-    // citire din memorie
+    // Citire din memorie
     always @(posedge clk or negedge rst_n)
     begin
         if (!rst_n)
@@ -51,4 +52,4 @@ module point_buffer #(
             dataOut <= mem[addr];
     end
 
-endmodule
+endmodule // point_buffer

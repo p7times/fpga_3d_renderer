@@ -24,28 +24,26 @@
 
 module sin_cos_lut #(
     parameter INT_BITS  = 2,                        // Minim 2 biti (1 semn + 1 parte intreaga pentru valoarea "1.0")
-    parameter FRAC_BITS = 16                        // Numar de biti parte fractionara
+    parameter FRAC_BITS = 16,                       // Numar de biti parte fractionara
+    parameter DATA_WIDTH = INT_BITS + FRAC_BITS     // Latime date, biti
 )(
     input                                clk,       // Semnal de ceas
     input                                rst_n,     // Reset asincron (activ in 0)
     input                                start,     // Pornire proces citire
     input       [9:0]                    angle,     // [9:1] grade intregi, [0] jumatate de grad (0..719)  
     output reg                           valid,     // Flag finalizare citire   
-    output reg  [INT_BITS+FRAC_BITS-1:0] sin_out,    
-    output reg  [INT_BITS+FRAC_BITS-1:0] cos_out,
-    output [2:0]                         dbg_state  // Flag stare FSM (DEBUG)
+    output reg  [DATA_WIDTH-1:0]         sin_out,    
+    output reg  [DATA_WIDTH-1:0]         cos_out,
+    output      [2:0]                    dbg_state  // Flag stare FSM (DEBUG)
 );
-
-    localparam WIDTH = INT_BITS + FRAC_BITS;
-
 
     // ------------------------
     // Constante in format Q 
     // ------------------------
 
-    localparam [WIDTH-1:0] POS_ONE = {{(INT_BITS-1){1'b0}}, 1'b1, {FRAC_BITS{1'b0}}};
-    localparam [WIDTH-1:0] NEG_ONE = ~POS_ONE + 1'b1;
-    localparam [WIDTH-1:0] ZERO    = {WIDTH{1'b0}};
+    localparam [DATA_WIDTH-1:0] POS_ONE = {{(INT_BITS-1){1'b0}}, 1'b1, {FRAC_BITS{1'b0}}};
+    localparam [DATA_WIDTH-1:0] NEG_ONE = ~POS_ONE + 1'b1;
+    localparam [DATA_WIDTH-1:0] ZERO    = {DATA_WIDTH{1'b0}};
 
 
     // ------------------------
@@ -78,7 +76,7 @@ module sin_cos_lut #(
     reg [15:0] sin_mag;    
     reg [15:0] cos_mag;   
     
-    reg [WIDTH-1:0] sin_scaled, cos_scaled; 
+    reg [DATA_WIDTH-1:0] sin_scaled, cos_scaled; 
 
 
 
@@ -391,4 +389,4 @@ module sin_cos_lut #(
         end
     end
 
-endmodule
+endmodule // sin_cos_lut
