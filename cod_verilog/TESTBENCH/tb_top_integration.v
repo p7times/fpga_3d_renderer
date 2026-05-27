@@ -18,22 +18,23 @@ module tb_top_integration;
     // -------------------------------------------------------------------------
     // Parametrii Globali ai Sistemului
     // -------------------------------------------------------------------------
-    parameter INT_BITS     = 16;
-    parameter FRAC_BITS    = 16;
-    parameter DATA_WIDTH   = 32; // INT_BITS + FRAC_BITS (Q16.16)
-    parameter COORD_BITS   = 12; // Pentru Bresenham (-2048 .. 2047)
-    parameter H_RES        = 1920;
-    parameter V_RES        = 1080;
+    
+    parameter CK_SEMIPERIOD = 5;  // Ceas 100 MHz (perioadă 10ns)
+    
+    parameter INT_BITS      = 16;
+    parameter FRAC_BITS     = 16;
+    parameter DATA_WIDTH    = INT_BITS + FRAC_BITS;
+    
+    parameter COORD_BITS    = 12;  // Pentru Bresenham (-2048 .. 2047)
+    parameter H_RES         = 320;
+    parameter V_RES         = 240;
     
     // Dimensiuni BRAM
-    parameter VERT_ADDR    = 8;  // max 256 varfuri
-    parameter EDGE_COUNT   = 10; // max 1024 muchii
-    parameter POINT_ADDR   = 10; // max 1024 puncte transformate
+    parameter VERT_COUNT    = 8;  // max 256 varfuri de procesat
+    parameter EDGE_COUNT    = 10; // max 1024 muchii
     
     localparam FB_TOTAL_WORDS = (H_RES * V_RES) / 32;
-    localparam FB_ADDR_WIDTH  = 16; // $clog2(64800) = 16
-
-
+    localparam FB_ADDR_WIDTH  = $clog2(FB_TOTAL_WORDS);
 
     // Q16.16 scaling: 0.5 = 32'h0000_8000
 
@@ -48,29 +49,29 @@ module tb_top_integration;
     
     // 1. Vertex Buffer
     reg  vb_cs, vb_wr;
-    reg  [VERT_ADDR-1:0]    vb_addr;
-    reg  [3*DATA_WIDTH-1:0] vb_dataIn;
-    wire [3*DATA_WIDTH-1:0] vb_dataOut;
+    reg  [VERT_COUNT-1:0]    vb_addr;
+    reg  [3*DATA_WIDTH-1:0]  vb_dataIn;
+    wire [3*DATA_WIDTH-1:0]  vb_dataOut;
 
     // 2. Vertex Processor
     reg  vp_start;
-    reg  [2:0] vp_rotation;
-    reg  [9:0] vp_angle;
-    reg  [DATA_WIDTH-1:0] vp_f, vp_w, vp_h, vp_cam_z;
-    wire [DATA_WIDTH-1:0] vp_xs, vp_ys;
+    reg  [2:0]              vp_rotation;
+    reg  [9:0]              vp_angle;
+    reg  [DATA_WIDTH-1:0]   vp_f, vp_w, vp_h, vp_cam_z;
+    wire [DATA_WIDTH-1:0]   vp_xs, vp_ys;
     wire vp_valid, vp_overflow;
 
     // 3. Point Buffer
     reg  pb_cs, pb_wr;
-    reg  [POINT_ADDR-1:0]   pb_addr;
+    reg  [VERT_COUNT-1:0]   pb_addr;
     reg  [2*DATA_WIDTH-1:0] pb_dataIn;
     wire [2*DATA_WIDTH-1:0] pb_dataOut;
 
     // 4. Edge Buffer
     reg  eb_cs, eb_wr;
-    reg  [EDGE_COUNT-1:0]  eb_addr;
-    reg  [2*VERT_ADDR-1:0] eb_dataIn;
-    wire [2*VERT_ADDR-1:0] eb_dataOut;
+    reg  [EDGE_COUNT-1:0]   eb_addr;
+    reg  [2*VERT_COUNT-1:0] eb_dataIn;
+    wire [2*VERT_COUNT-1:0] eb_dataOut;
 
     // 5. Bresenham Unit
     reg  bu_start;
@@ -89,11 +90,23 @@ module tb_top_integration;
 
 
     // -------------------------------------------------------------------------
+    // Generare Ceas
+    // -------------------------------------------------------------------------
+
+    ck_rst_tb #(
+        .CK_SEMIPERIOD(CK_SEMIPERIOD)
+    ) u_ck_rst (
+        .clk(clk),
+        .rst_n(rst_n)
+    );
+    
+    
+    // -------------------------------------------------------------------------
     // Instanțierea Modulelor (Units Under Test)
     // -------------------------------------------------------------------------
 
     vertex_buffer #(
-        .ADDR_WIDTH(VERT_ADDR), .INT_BITS(INT_BITS), .FRAC_BITS(FRAC_BITS)
+        .ADDR_WIDTH(VERT_COUNT), .INT_BITS(INT_BITS), .FRAC_BITS(FRAC_BITS)
     ) u_vertex_buffer (
         .clk(clk), .rst_n(rst_n), .cs(vb_cs), .wr(vb_wr),
         .addr(vb_addr), .dataIn(vb_dataIn), .dataOut(vb_dataOut)
@@ -114,14 +127,14 @@ module tb_top_integration;
     );
 
     point_buffer #(
-        .ADDR_WIDTH(POINT_ADDR), .INT_BITS(INT_BITS), .FRAC_BITS(FRAC_BITS)
+        .ADDR_WIDTH(VERT_COUNT), .INT_BITS(INT_BITS), .FRAC_BITS(FRAC_BITS)
     ) u_point_buffer (
         .clk(clk), .rst_n(rst_n), .cs(pb_cs), .wr(pb_wr),
         .addr(pb_addr), .dataIn(pb_dataIn), .dataOut(pb_dataOut)
     );
 
     edge_buffer #(
-        .EDGE_COUNT(EDGE_COUNT), .VERT_ADDR(VERT_ADDR)
+        .EDGE_COUNT(EDGE_COUNT), .VERT_ADDR(VERT_COUNT)
     ) u_edge_buffer (
         .clk(clk), .rst_n(rst_n), .cs(eb_cs), .wr(eb_wr),
         .addr(eb_addr), .dataIn(eb_dataIn), .dataOut(eb_dataOut)
@@ -145,17 +158,6 @@ module tb_top_integration;
         .pixel_in(1'b1), // Pixel alb
         .rd_adresa(hdmi_rd_addr), .rd_dataOut(hdmi_rd_data),
         .busy(fb_busy), .dbg_clear_addr(), .dbg_state()
-    );
-
-    // -------------------------------------------------------------------------
-    // Generare Ceas
-    // -------------------------------------------------------------------------
-
-    ck_rst_tb #(
-        .CK_SEMIPERIOD(5)
-    ) u_ck_rst (
-        .clk(clk),
-        .rst_n(rst_n)
     );
 
     // -------------------------------------------------------------------------
@@ -183,8 +185,14 @@ module tb_top_integration;
         
         // Parametri geometrici constanti
         vp_f     = 32'h0001_0000; // 1.0
-        vp_w     = 32'h0780_0000; // 1920.0
-        vp_h     = 32'h0438_0000; // 1080.0
+        //vp_w     = 32'h0780_0000; // 1920.0
+        //vp_h     = 32'h0438_0000; // 1080.0
+        
+        
+        vp_w      = 32'h0140_0000; // 320.0
+        vp_h      = 32'h00f0_0000; // 240.0
+
+        
         vp_cam_z = 32'h0001_8000; // 1.5
         vp_rotation = 3'b010; vp_angle = 80;
 
@@ -200,8 +208,10 @@ module tb_top_integration;
         // =====================================================================
         $display("--- ETAPA 1: Incarcare geometrie ---");
                 
+            vb_cs = 1; vb_wr = 1; 
+            
             // v0: (-0.5, -0.5, -0.5)
-            vb_cs = 1; vb_wr = 1; vb_addr = 0;
+            vb_addr = 0;
             vb_dataIn = {N, N, N};
             @(posedge clk);
             
@@ -274,23 +284,34 @@ module tb_top_integration;
         $display("--- ETAPA 2: Transformari Geometrice ---");
         for (v_idx = 0; v_idx < 8; v_idx = v_idx + 1) begin
             // 2.1. Citire din Vertex Buffer
-            vb_cs = 1; vb_wr = 0; vb_addr = v_idx;
+            vb_cs = 1; 
+            vb_wr = 0; 
+            vb_addr = v_idx;
+            
             @(posedge clk); // Setam adresa
             @(posedge clk); // Asteptam 1 ciclu latenta BRAM
+            
             vb_cs = 0;
+
 
             // 2.2. Pornire transformari
             vp_start = 1;
-            @(posedge clk); vp_start = 0;
+            @(posedge clk); 
+            vp_start = 0;
             
             // 2.3. Asteptare finalizare
             while (vp_valid == 0) @(posedge clk);
             
             // 2.4. Scriere rezultate in Point Buffer
-            pb_cs = 1; pb_wr = 1; pb_addr = v_idx;
+            pb_cs = 1; 
+            pb_wr = 1; 
+            pb_addr = v_idx;
             pb_dataIn = {vp_ys, vp_xs}; // Format {Y, X}
             @(posedge clk);
-            pb_cs = 0; pb_wr = 0;
+            
+            pb_cs = 0; 
+            pb_wr = 0;
+            
             $display("[t=%0t] Varful %0d transformat si stocat in Point Buffer.", $time, v_idx);
         end
 

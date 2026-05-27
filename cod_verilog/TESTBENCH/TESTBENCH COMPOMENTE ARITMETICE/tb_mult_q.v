@@ -56,7 +56,7 @@ module tb_mult_q;
         .a        (a),
         .b        (b),
         .overflow (overflow),
-        .result      (result)
+        .result   (result)
     );
 
     // ---------------------------------------------------

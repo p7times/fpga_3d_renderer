@@ -61,7 +61,8 @@ module persp_proj #(
                CALC_DIV  = 3'b011,  // Asteapta rezultatul divizorului (f/z)
                DONE_DIV  = 3'b100,  // Salveaza rezultatul divizarii
                CALC_PROJ = 3'b101,  // Asteapta rezultatul multiplicarilor (f/z)*x si (f/z)*y
-               DONE      = 3'b110;  // Rezultate finale valide
+               WAIT_PROJ = 3'b110,  // Latenta +1 tact de ceas
+               DONE      = 3'b111;  // Rezultate finale valide
 
     reg [2:0] state, next_state;
     assign dbg_state = state;
@@ -155,7 +156,8 @@ module persp_proj #(
             START_DIV: next_state = CALC_DIV;                          
             CALC_DIV:  next_state = div_valid ? DONE_DIV : CALC_DIV;    
             DONE_DIV:  next_state = CALC_PROJ;
-            CALC_PROJ: next_state = DONE;                          
+            CALC_PROJ: next_state = WAIT_PROJ;
+            WAIT_PROJ: next_state = DONE;                          
             DONE:      next_state = IDLE;                         
             default:   next_state = IDLE;
         endcase
@@ -219,7 +221,10 @@ module persp_proj #(
                 // Stare de asteptare pentru latenta multiplicatoarelor
                 CALC_PROJ: begin
                 end
-
+                
+                WAIT_PROJ: begin
+                end
+                
                 // Rezultat final disponibil
                 DONE: begin
                     xp       <= mult_xp_result;

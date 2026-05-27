@@ -37,21 +37,23 @@
 //---------------------------------------------------------------
 
 module master_controller #(
-    parameter INT_BITS     = 16,                // Numar de biti parte intreaga (include semnul) 
-    parameter FRAC_BITS    = 16,                // Numar de biti parte fractionara
-    parameter ADDR_WIDTH   = 10,                // Dimensiune adrese buffere: max 2^ADDR_WIDTH locatii
-    parameter COORD_BITS   = 12,                // Biti coordonate integer pentru Bresenham [-2048, +2047]
-    parameter DATA_WIDTH = INT_BITS + FRAC_BITS // Latime date, biti
+    parameter INT_BITS     = 16,                   // Numar de biti parte intreaga (include semnul) 
+    parameter FRAC_BITS    = 16,                   // Numar de biti parte fractionara
+    parameter DATA_WIDTH   = INT_BITS + FRAC_BITS, // Latime date, biti
+
+    parameter VERT_COUNT    = 8,                   // Dimensiune adrese buffere: max 2^ADDR_WIDTH locatii    
+    parameter EDGE_COUNT    = 10,                  // Dimensiune adrese buffere: max 2^ADDR_WIDTH locatii
+    parameter COORD_BITS    = 12                   // Biti coordonate integer pentru Bresenham [-2048, +2047]
 )(
-    input               clk,                    // Semnal de ceas
-    input               rst_n,                  // Reset asincron (activ in 0)
+    input               clk,                       // Semnal de ceas
+    input               rst_n,                     // Reset asincron (activ in 0)
 
     //------------------------------------------------------------
     // Control (de la PS sau Top)
     //------------------------------------------------------------
     input                           start_frame,    // Puls: porneste randarea unui frame
-    input  [ADDR_WIDTH-1:0]         vertex_count,   // Numarul de vertecsi din mesh
-    input  [ADDR_WIDTH-1:0]         edge_count,     // Numarul de muchii din mesh
+    input  [VERT_COUNT-1:0]         vertex_count,   // Numarul de vertecsi din mesh
+    input  [EDGE_COUNT-1:0]         edge_count,     // Numarul de muchii din mesh
     input  [9:0]                    angle,          // Unghi rotatie: jumatati de grade [0..719]
     input  [2:0]                    rotation_type,  // Tip rotatie (SW[2:0])
     output reg                      frame_done,     // Puls: frame complet randat
@@ -68,7 +70,7 @@ module master_controller #(
     // Interfata vertex_buffer (doar citire)
     // Format: mem[addr] = { z[DW-1:0], y[DW-1:0], x[DW-1:0] }
     //------------------------------------------------------------
-    output reg [ADDR_WIDTH-1:0]         vb_addr,
+    output reg [VERT_COUNT-1:0]         vb_addr,
     output reg                          vb_cs,
     input      [3*DATA_WIDTH-1:0]       vb_data,
 
@@ -76,15 +78,15 @@ module master_controller #(
     // Interfata edge_buffer (doar citire)
     // Format: mem[addr] = { idx_b[AW-1:0], idx_a[AW-1:0] }
     //------------------------------------------------------------
-    output reg [ADDR_WIDTH-1:0]         eb_addr,
+    output reg [EDGE_COUNT-1:0]         eb_addr,
     output reg                          eb_cs,
-    input  [2*ADDR_WIDTH-1:0]           eb_data,
+    input      [2*EDGE_COUNT-1:0]       eb_data,
 
     //------------------------------------------------------------
     // Interfata point_buffer (scriere si citire)
     // Format: mem[addr] = { ys[DW-1:0], xs[DW-1:0] }
     //------------------------------------------------------------
-    output reg [ADDR_WIDTH-1:0]     pb_addr,
+    output reg [VERT_COUNT-1:0]     pb_addr,
     output reg                      pb_cs,
     output reg                      pb_wr,
     output reg [2*DATA_WIDTH-1:0]   pb_dataIn,  // {ys, xs}
@@ -104,9 +106,9 @@ module master_controller #(
     //------------------------------------------------------------
     // Interfata Bresenham Unit (BU)
     //------------------------------------------------------------
-    output reg                       bu_start,
-    output reg signed [COORD_BITS:0] bu_x0, bu_y0, bu_x1, bu_y1,
-    input                            bu_done,
+    output reg                          bu_start,
+    output reg signed [COORD_BITS-1:0]  bu_x0, bu_y0, bu_x1, bu_y1,
+    input                               bu_done,
 
     //------------------------------------------------------------
     // Interfata framebuffer
@@ -138,23 +140,27 @@ module master_controller #(
             // Loop vertices
             READ_VERTEX   = 5'd3,   // Adreseaza vertex_buffer cu v_idx
             WAIT_VERTEX   = 5'd4,   // Latenta BRAM: date disponibile dupa 1 ciclu
-            SEND_VP       = 5'd5,   // Incarca date in VP si trimite puls start
-            WAIT_VP       = 5'd6,   // Asteapta vp_valid (dureaza ~79 cicluri)
-            WRITE_POINT   = 5'd7,   // Scrie {vp_ys, vp_xs} in point_buffer[v_idx]
-            NEXT_VERTEX   = 5'd8,   // Incrementeaza v_idx; verifica terminare loop
+            LATCH_VERTEX  = 5'd5,   // un ciclu extra: vb_data acum valid
+            SEND_VP       = 5'd6,   // Incarca date in VP si trimite puls start
+            WAIT_VP       = 5'd7,   // Asteapta vp_valid (dureaza ~79 cicluri)
+            WRITE_POINT   = 5'd8,   // Scrie {vp_ys, vp_xs} in point_buffer[v_idx]
+            NEXT_VERTEX   = 5'd9,   // Incrementeaza v_idx; verifica terminare loop
 
             // Loop edges
-            READ_EDGE     = 5'd9,   // Adreseaza edge_buffer cu e_idx
-            WAIT_EDGE     = 5'd10,  // Latenta BRAM
-            READ_PT_A     = 5'd11,  // Citeste point_buffer[idx_a]
-            WAIT_PT_A     = 5'd12,  // Latenta BRAM
-            READ_PT_B     = 5'd13,  // Citeste point_buffer[idx_b]
-            WAIT_PT_B     = 5'd14,  // Latenta BRAM
-            SEND_BU       = 5'd15,  // Converteste Q16.16->integer, trimite la BU
-            WAIT_BU       = 5'd16,  // Asteapta bu_done
-            NEXT_EDGE     = 5'd17,  // Incrementeaza e_idx; verifica terminare loop
+            READ_EDGE     = 5'd10,   // Adreseaza edge_buffer cu e_idx
+            WAIT_EDGE     = 5'd11,  // Latenta BRAM
+            LATCH_EDGE    = 5'd12,
+            READ_PT_A     = 5'd13,  // Citeste point_buffer[idx_a]
+            WAIT_PT_A     = 5'd14,  // Latenta BRAM
+            LATCH_PT_A    = 5'd15,
+            READ_PT_B     = 5'd16,  // Citeste point_buffer[idx_b]
+            WAIT_PT_B     = 5'd17,  // Latenta BRAM
+            LATCH_PT_B    = 5'd18,
+            SEND_BU       = 5'd19,  // Converteste Q16.16->integer, trimite la BU
+            WAIT_BU       = 5'd20,  // Asteapta bu_done
+            NEXT_EDGE     = 5'd21,  // Incrementeaza e_idx; verifica terminare loop
 
-            DONE          = 5'd18;  // Ridica frame_done pentru un ciclu
+            DONE          = 5'd22;  // Ridica frame_done pentru un ciclu
 
     reg [4:0]  state, next_state;
     assign dbg_state = state;
@@ -163,18 +169,18 @@ module master_controller #(
     // -------------------------------------------------------
     // Registre interne
     // -------------------------------------------------------
-    reg [ADDR_WIDTH-1:0] v_idx;         // Contor vertex curent
-    reg [ADDR_WIDTH-1:0] e_idx;         // Contor muchie curenta
+    reg [VERT_COUNT-1:0] v_idx;         // Contor vertex curent
+    reg [EDGE_COUNT-1:0] e_idx;         // Contor muchie curenta
 
     // Date latched din vertex_buffer
-    reg [DATA_WIDTH:0] latch_x, latch_y, latch_z;
+    reg [DATA_WIDTH-1:0] latch_x, latch_y, latch_z;
 
     // Indecsi latched din edge_buffer
-    reg [ADDR_WIDTH:0]  latch_idx_a, latch_idx_b;
+    reg [VERT_COUNT-1:0]  latch_idx_a, latch_idx_b;
 
     // Coordonate ecran latched din point_buffer pentru cele 2 capete
-    reg [DATA_WIDTH:0] latch_xs_a, latch_ys_a;
-    reg [DATA_WIDTH:0] latch_xs_b, latch_ys_b;
+    reg [DATA_WIDTH-1:0] latch_xs_a, latch_ys_a;
+    reg [DATA_WIDTH-1:0] latch_xs_b, latch_ys_b;
 
     // -------------------------------------------------------
     // Functie de saturare Q16.16 -> COORD_BITS biti signed
@@ -204,33 +210,37 @@ module master_controller #(
 
     always @(*) begin
         case (state)
-            IDLE:        next_state = start_frame ? CLEAR_FB : IDLE;
-            CLEAR_FB:    next_state = WAIT_CLEAR;
-            WAIT_CLEAR:  next_state = !fb_busy ? READ_VERTEX : WAIT_CLEAR;
+            IDLE:           next_state = start_frame ? CLEAR_FB : IDLE;
+            CLEAR_FB:       next_state = WAIT_CLEAR;
+            WAIT_CLEAR:     next_state = !fb_busy ? READ_VERTEX : WAIT_CLEAR;
 
-            READ_VERTEX: next_state = WAIT_VERTEX;
-            WAIT_VERTEX: next_state = SEND_VP;
-            SEND_VP:     next_state = WAIT_VP;
-            WAIT_VP:     next_state = vp_valid ? WRITE_POINT : WAIT_VP;
-            WRITE_POINT: next_state = NEXT_VERTEX;
-            NEXT_VERTEX: next_state = (v_idx + 1 >= vertex_count) ? READ_EDGE : READ_VERTEX;
+            READ_VERTEX:    next_state = WAIT_VERTEX;
+            WAIT_VERTEX:    next_state = LATCH_VERTEX;
+            LATCH_VERTEX:   next_state = SEND_VP;  
+            SEND_VP:        next_state = WAIT_VP;
+            WAIT_VP:        next_state = vp_valid ? WRITE_POINT : WAIT_VP;
+            WRITE_POINT:    next_state = NEXT_VERTEX;
+            NEXT_VERTEX:    next_state = (v_idx + 1 >= vertex_count) ? READ_EDGE : READ_VERTEX;
 
-            READ_EDGE:   next_state = WAIT_EDGE;
-            WAIT_EDGE:   next_state = READ_PT_A;
-            READ_PT_A:   next_state = WAIT_PT_A;
-            WAIT_PT_A:   next_state = READ_PT_B;
-            READ_PT_B:   next_state = WAIT_PT_B;
-            WAIT_PT_B:   next_state = SEND_BU;
-            SEND_BU:     next_state = WAIT_BU;
-            WAIT_BU:     next_state = bu_done ? NEXT_EDGE : WAIT_BU;
-            NEXT_EDGE:   next_state = (e_idx + 1 >= edge_count) ? DONE : READ_EDGE;
+            READ_EDGE:      next_state = WAIT_EDGE;
+            WAIT_EDGE:      next_state = LATCH_EDGE;
+            LATCH_EDGE:     next_state = READ_PT_A;
+            READ_PT_A:      next_state = WAIT_PT_A;
+            WAIT_PT_A:      next_state = LATCH_PT_A;
+            LATCH_PT_A:     next_state = READ_PT_B;
 
-            DONE:        next_state = IDLE;
+            READ_PT_B:      next_state = WAIT_PT_B;
+            WAIT_PT_B:      next_state = LATCH_PT_B;
+            LATCH_PT_B:     next_state = SEND_BU;
+            SEND_BU:        next_state = WAIT_BU;
+            WAIT_BU:        next_state = bu_done ? NEXT_EDGE : WAIT_BU;
+            NEXT_EDGE:      next_state = (e_idx + 1 >= edge_count) ? DONE : READ_EDGE;
 
-            default:     next_state = IDLE;
+            DONE:           next_state = IDLE;
+
+            default:        next_state = IDLE;
         endcase
     end
-
 
     // ------------------------
     // Logica FSM - Calea de date
@@ -288,11 +298,15 @@ module master_controller #(
                 end
 
                 WAIT_VERTEX: begin
-                    // latch date din BRAM (disponibile dupa 1 ciclu)
+                    // nu face nimic, asteapta ca vertex_buffer sa actualizeze dataOut
+                end
+                
+                LATCH_VERTEX: begin
+                    // ACUM vb_data este valid (actualizat la T1)
                     latch_x <= vb_data[DATA_WIDTH-1:0];
                     latch_y <= vb_data[2*DATA_WIDTH-1:DATA_WIDTH];
                     latch_z <= vb_data[3*DATA_WIDTH-1:2*DATA_WIDTH];
-                end
+                end 
 
                 SEND_VP: begin
                     vp_x        <= latch_x;
@@ -324,8 +338,12 @@ module master_controller #(
                 end
 
                 WAIT_EDGE: begin
-                    latch_idx_a <= eb_data[ADDR_WIDTH-1:0];
-                    latch_idx_b <= eb_data[2*ADDR_WIDTH-1:ADDR_WIDTH];
+
+                end
+         
+                LATCH_EDGE: begin
+                    latch_idx_a <= eb_data[VERT_COUNT-1:0];
+                    latch_idx_b <= eb_data[2*VERT_COUNT-1:VERT_COUNT];
                 end
 
                 READ_PT_A: begin
@@ -334,6 +352,10 @@ module master_controller #(
                 end
 
                 WAIT_PT_A: begin
+
+                end
+                
+                LATCH_PT_A: begin
                     latch_xs_a  <= pb_dataOut[DATA_WIDTH-1:0];
                     latch_ys_a  <= pb_dataOut[2*DATA_WIDTH-1:DATA_WIDTH];
                 end
@@ -344,6 +366,10 @@ module master_controller #(
                 end
 
                 WAIT_PT_B: begin
+  
+                end
+                
+                LATCH_PT_B: begin
                     latch_xs_b <= pb_dataOut[DATA_WIDTH-1:0];
                     latch_ys_b <= pb_dataOut[2*DATA_WIDTH-1:DATA_WIDTH];
                 end
@@ -367,7 +393,5 @@ module master_controller #(
             endcase
         end
     end
-
-    assign dbg_state = state;
 
 endmodule // master_controller

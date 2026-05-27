@@ -66,10 +66,10 @@ module framebuffer #(
     // Definitie stari FSM
     // ------------------------
 
-    localparam IDLE         = 3'b000,   // Asteapta semnalul de start
-               CLEARING     = 3'b001,   // Sterge datele din memorie
-               WRITE_READ   = 3'b010,   // Pas 1: Cere datele de la BRAM (cuvantul care contine pixelul)
-               WRITE_MODIFY = 3'b011;   // Pas 2: Modifica bitul si scrie inapoi
+    localparam IDLE         = 3'd0,   // Asteapta semnalul de start
+               CLEARING     = 3'd1,   // Sterge datele din memorie
+               WRITE_READ   = 3'd2,   // Pas 1: Cere datele de la BRAM (cuvantul care contine pixelul)
+               WRITE_MODIFY = 3'd3;   // Pas 2: Modifica bitul si scrie inapoi
 
     reg [2:0] state, next_state;
     assign dbg_state = state;

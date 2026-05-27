@@ -90,12 +90,13 @@ module rotation #(
                WAIT_LUT       = 4'b0010,
                DONE_LUT       = 4'b0011,
                LOAD           = 4'b0100,  // Incarca datele in registrele interne
-               CALC_MULT      = 4'b0101,  // Multiplicatoarele calculeaza (latenta 1 ciclu)
-               DONE_MULT      = 4'b0110,  // Salveaza rezultatele multiplicatoarelor
-               CALC_SUM_FIRST = 4'b0111,  // Prima etapa de sumare: ax+by, dx+ey, gx+hy
-               DONE_SUM_FIRST = 4'b1000,  // Salveaza rezultatele primei etape
-               CALC_SUM_FINAL = 4'b1001,  // A doua etapa de sumare: +cz, +fz, +iz
-               DONE           = 4'b1010;  // Rezultate finale valide
+               CALC_MULT      = 4'b0101,  // Multiplicatoarele calculeaza (latenta 2 ciclu)
+               WAIT_MULT      = 4'b0110,
+               DONE_MULT      = 4'b0111,  // Salveaza rezultatele multiplicatoarelor
+               CALC_SUM_FIRST = 4'b1000,  // Prima etapa de sumare: ax+by, dx+ey, gx+hy
+               DONE_SUM_FIRST = 4'b1001,  // Salveaza rezultatele primei etape
+               CALC_SUM_FINAL = 4'b1010,  // A doua etapa de sumare: +cz, +fz, +iz
+               DONE           = 4'b1011;  // Rezultate finale valide
 
     reg [3:0] state, next_state;
     assign dbg_state = state;
@@ -244,7 +245,8 @@ module rotation #(
             WAIT_LUT:       next_state = lut_valid ? DONE_LUT : WAIT_LUT;
             DONE_LUT:       next_state = LOAD;          
             LOAD:           next_state = CALC_MULT;                         
-            CALC_MULT:      next_state = DONE_MULT;                          
+            CALC_MULT:      next_state = WAIT_MULT;
+            WAIT_MULT:      next_state = DONE_MULT;                                                    
             DONE_MULT:      next_state = CALC_SUM_FIRST;    
             CALC_SUM_FIRST: next_state = DONE_SUM_FIRST;
             DONE_SUM_FIRST: next_state = CALC_SUM_FINAL;
@@ -405,6 +407,9 @@ module rotation #(
                 // Rezultatele vor fi disponibile pe wire-uri la inceputul lui DONE_MULT.
                 CALC_MULT: begin
                     // (nimic - submodulele lucreaza autonom)
+                end
+                
+                WAIT_MULT: begin
                 end
 
                                 // Captura rezultatele celor 9 multiplicatoare in registrele de pipeline.

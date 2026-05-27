@@ -40,23 +40,24 @@ module ndc_to_screen #(
     output reg [DATA_WIDTH-1:0]         xs, ys,         // Datele de iesire (coordonate ecran)
     output reg                          valid,          // Flag finalizare conversie
     output reg                          overflow,       // Indicator depasire domeniu numeric (DEBUG)
-    output     [2:0]                    dbg_state       // Flag stare FSM (DEBUG)
+    output     [3:0]                    dbg_state       // Flag stare FSM (DEBUG)
 );
 
     // ------------------------
     // Definitie stari FSM
     // ------------------------
 
-    localparam IDLE         = 3'b000,   // Asteapta semnalul de start
-               LOAD         = 3'b001,   // Incarca datele de intrare in registrele interne
-               CALC_MULT    = 3'b010,   // Etapa de multiplicare (xp*h, yp*h)
-               DONE_MULT    = 3'b011,   // Salvare rezultate multiplicare
-               ADD_SUB      = 3'b100,   // Etapa de adunare/scadere (translatie)
-               DONE_ADD_SUB = 3'b101,   // Salvare rezultate adunare/scadere
-               SHIFT_RIGHT  = 3'b110,   // Impartire la 2 prin deplasare bit cu bit
-               DONE         = 3'b111;   // Rezultate finale valide
+    localparam IDLE         = 4'b0000,   // Asteapta semnalul de start
+               LOAD         = 4'b0001,   // Incarca datele de intrare in registrele interne
+               CALC_MULT    = 4'b0010,   // Etapa de multiplicare (xp*h, yp*h)
+               WAIT_MULT    = 4'b0011,  
+               DONE_MULT    = 4'b0100,   // Salvare rezultate multiplicare
+               ADD_SUB      = 4'b0101,   // Etapa de adunare/scadere (translatie)
+               DONE_ADD_SUB = 4'b0110,   // Salvare rezultate adunare/scadere
+               SHIFT_RIGHT  = 4'b0111,   // Impartire la 2 prin deplasare bit cu bit
+               DONE         = 4'b1000;   // Rezultate finale valide
 
-    reg [2:0] state, next_state;
+    reg [3:0] state, next_state;
     assign dbg_state = state;
 
 
@@ -155,7 +156,8 @@ module ndc_to_screen #(
         case (state)
             IDLE:         next_state = start ? LOAD : IDLE; 
             LOAD:         next_state = CALC_MULT;          
-            CALC_MULT:    next_state = DONE_MULT;           
+            CALC_MULT:    next_state = WAIT_MULT;
+            WAIT_MULT:    next_state = DONE_MULT;          
             DONE_MULT:    next_state = ADD_SUB;
             ADD_SUB:      next_state = DONE_ADD_SUB;       
             DONE_ADD_SUB: next_state = SHIFT_RIGHT;
@@ -211,6 +213,9 @@ module ndc_to_screen #(
                 
                 // Multiplicarea este efectuata in modulele dedicate
                 CALC_MULT: begin
+                end
+                
+                WAIT_MULT: begin
                 end
                 
                 // Salveaza rezultate multiplicare

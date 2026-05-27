@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="tb_top_graphics_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="glbl" />
+            <top_module name="tb_top_graphics" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="0.000000 us"></ZoomStartTime>
+      <ZoomEndTime time="736.128001 us"></ZoomEndTime>
+      <Cursor1Time time="263.631545 us"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="164"></NameColumnWidth>
+      <ValueColumnWidth column_width="66"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="8" />
+   <wvobject type="logic" fp_name="/tb_top_graphics/clk">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+      <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top_graphics/rst_n">
+      <obj_property name="ElementShortName">rst_n</obj_property>
+      <obj_property name="ObjectShortName">rst_n</obj_property>
+      <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top_graphics/start_frame">
+      <obj_property name="ElementShortName">start_frame</obj_property>
+      <obj_property name="ObjectShortName">start_frame</obj_property>
+      <obj_property name="CustomSignalColor">#0000FF</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_graphics/fb_rd_addr">
+      <obj_property name="ElementShortName">fb_rd_addr[14:0]</obj_property>
+      <obj_property name="ObjectShortName">fb_rd_addr[14:0]</obj_property>
+      <obj_property name="CustomSignalColor">#0000FF</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_graphics/y">
+      <obj_property name="ElementShortName">y[31:0]</obj_property>
+      <obj_property name="ObjectShortName">y[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="group" fp_name="group159">
+      <obj_property name="label">PS WRITE INTERFACE</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject type="array" fp_name="/tb_top_graphics/vb_wr_addr">
+         <obj_property name="ElementShortName">vb_wr_addr[7:0]</obj_property>
+         <obj_property name="ObjectShortName">vb_wr_addr[7:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/tb_top_graphics/vb_wr_cs">
+         <obj_property name="ElementShortName">vb_wr_cs</obj_property>
+         <obj_property name="ObjectShortName">vb_wr_cs</obj_property>
+         <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/tb_top_graphics/vb_wr_en">
+         <obj_property name="ElementShortName">vb_wr_en</obj_property>
+         <obj_property name="ObjectShortName">vb_wr_en</obj_property>
+         <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_top_graphics/vb_wr_data">
+         <obj_property name="ElementShortName">vb_wr_data[95:0]</obj_property>
+         <obj_property name="ObjectShortName">vb_wr_data[95:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_top_graphics/eb_wr_addr">
+         <obj_property name="ElementShortName">eb_wr_addr[9:0]</obj_property>
+         <obj_property name="ObjectShortName">eb_wr_addr[9:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/tb_top_graphics/eb_wr_cs">
+         <obj_property name="ElementShortName">eb_wr_cs</obj_property>
+         <obj_property name="ObjectShortName">eb_wr_cs</obj_property>
+         <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/tb_top_graphics/eb_wr_en">
+         <obj_property name="ElementShortName">eb_wr_en</obj_property>
+         <obj_property name="ObjectShortName">eb_wr_en</obj_property>
+         <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_top_graphics/eb_wr_data">
+         <obj_property name="ElementShortName">eb_wr_data[19:0]</obj_property>
+         <obj_property name="ObjectShortName">eb_wr_data[19:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject type="group" fp_name="group160">
+      <obj_property name="label">BU+FRAMEBUFFER</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject type="logic" fp_name="/tb_top_graphics/uut/bu_start">
+         <obj_property name="ElementShortName">bu_start</obj_property>
+         <obj_property name="ObjectShortName">bu_start</obj_property>
+         <obj_property name="CustomSignalColor">#FFA500</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/tb_top_graphics/uut/bu_done">
+         <obj_property name="ElementShortName">bu_done</obj_property>
+         <obj_property name="ObjectShortName">bu_done</obj_property>
+         <obj_property name="CustomSignalColor">#FFA500</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_top_graphics/uut/u_bu/x0_in">
+         <obj_property name="ElementShortName">x0_in[11:0]</obj_property>
+         <obj_property name="ObjectShortName">x0_in[11:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FFA500</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_top_graphics/uut/u_bu/y0_in">
+         <obj_property name="ElementShortName">y0_in[11:0]</obj_property>
+         <obj_property name="ObjectShortName">y0_in[11:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FFA500</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_top_graphics/uut/u_bu/x1_in">
+         <obj_property name="ElementShortName">x1_in[11:0]</obj_property>
+         <obj_property name="ObjectShortName">x1_in[11:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FFA500</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_top_graphics/uut/u_bu/y1_in">
+         <obj_property name="ElementShortName">y1_in[11:0]</obj_property>
+         <obj_property name="ObjectShortName">y1_in[11:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FFA500</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject type="group" fp_name="group158">
+      <obj_property name="label">OUTPUTS</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject type="logic" fp_name="/tb_top_graphics/frame_done">
+         <obj_property name="ElementShortName">frame_done</obj_property>
+         <obj_property name="ObjectShortName">frame_done</obj_property>
+         <obj_property name="CustomSignalColor">#0000FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/tb_top_graphics/busy">
+         <obj_property name="ElementShortName">busy</obj_property>
+         <obj_property name="ObjectShortName">busy</obj_property>
+         <obj_property name="CustomSignalColor">#0000FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_top_graphics/fb_rd_data">
+         <obj_property name="ElementShortName">fb_rd_data[31:0]</obj_property>
+         <obj_property name="ObjectShortName">fb_rd_data[31:0]</obj_property>
+         <obj_property name="CustomSignalColor">#0000FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_top_graphics/uut/dbg_mc_state">
+         <obj_property name="ElementShortName">dbg_mc_state[4:0]</obj_property>
+         <obj_property name="ObjectShortName">dbg_mc_state[4:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_top_graphics/uut/dbg_vp_state">
+         <obj_property name="ElementShortName">dbg_vp_state[3:0]</obj_property>
+         <obj_property name="ObjectShortName">dbg_vp_state[3:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/tb_top_graphics/uut/dbg_vp_valid">
+         <obj_property name="ElementShortName">dbg_vp_valid</obj_property>
+         <obj_property name="ObjectShortName">dbg_vp_valid</obj_property>
+         <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/tb_top_graphics/uut/dbg_bu_done">
+         <obj_property name="ElementShortName">dbg_bu_done</obj_property>
+         <obj_property name="ObjectShortName">dbg_bu_done</obj_property>
+         <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_top_graphics/uut/dbg_bu_state">
+         <obj_property name="ElementShortName">dbg_bu_state[2:0]</obj_property>
+         <obj_property name="ObjectShortName">dbg_bu_state[2:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_top_graphics/uut/dbg_fb_state">
+         <obj_property name="ElementShortName">dbg_fb_state[2:0]</obj_property>
+         <obj_property name="ObjectShortName">dbg_fb_state[2:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_top_graphics/uut/dbg_v_idx">
+         <obj_property name="ElementShortName">dbg_v_idx[7:0]</obj_property>
+         <obj_property name="ObjectShortName">dbg_v_idx[7:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_top_graphics/uut/dbg_e_idx">
+         <obj_property name="ElementShortName">dbg_e_idx[9:0]</obj_property>
+         <obj_property name="ObjectShortName">dbg_e_idx[9:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/tb_top_graphics/uut/dbg_overflow">
+         <obj_property name="ElementShortName">dbg_overflow</obj_property>
+         <obj_property name="ObjectShortName">dbg_overflow</obj_property>
+         <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+   </wvobject>
+</wave_config>
