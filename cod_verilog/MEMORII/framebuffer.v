@@ -35,11 +35,11 @@
 //---------------------------------------------------------------
 
 module framebuffer #(
-    parameter H_RES       = 1920,                           // Rezolutie orizontala in pixeli
-    parameter V_RES       = 1080,                           // Rezolutie verticala in pixeli
-    parameter WORD_BITS   = 32,                             // Numar de biti per cuvant BRAM (32 biti = 32 pixeli monocromi)
-    parameter TOTAL_WORDS = (H_RES * V_RES) / WORD_BITS,    // Numarul total de cuvinte in memorie (64800)
-    parameter ADDR_WIDTH = $clog2(TOTAL_WORDS)              // Numarul minim de biti necesari pentru adresare
+    parameter H_RES       = 1920,                               // Rezolutie orizontala in pixeli
+    parameter V_RES       = 1080,                               // Rezolutie verticala in pixeli
+    parameter WORD_BITS   = 32,                                 // Numar de biti per cuvant BRAM (32 biti = 32 pixeli monocromi)
+    parameter TOTAL_WORDS = (H_RES * V_RES) / WORD_BITS,        // Numarul total de cuvinte in memorie (64800)
+    parameter ADDR_WIDTH = $clog2((H_RES * V_RES) / WORD_BITS)  // Numarul minim de biti necesari pentru adresarea cuvintelor
 )(
     input                       clk,                        // Semnal de ceas
     input                       rst_n,                      // Reset asincron (activ in 0)
@@ -73,7 +73,6 @@ module framebuffer #(
 
     reg [2:0] state, next_state;
     assign dbg_state = state;
-    assign dbg_clear_addr = clear_addr;
 
 
     // ------------------------------------------------
@@ -131,6 +130,7 @@ module framebuffer #(
     reg                  latched_pixel;
 
     assign busy = (state != IDLE);          // Modul ocupat daca FSM nu este in IDLE
+    assign dbg_clear_addr = clear_addr;
 
 
     // ------------------------
@@ -182,10 +182,11 @@ module framebuffer #(
                     end
                 end
 
-                // Incrementare adresa clear
+                // Incrementare adresa clear               
                 CLEARING: begin
-                    clear_addr <= clear_addr + 1'b1;
-                end
+                    if (clear_addr != TOTAL_WORDS - 1)
+                        clear_addr <= clear_addr + 1'b1;
+                end 
 
             endcase
 

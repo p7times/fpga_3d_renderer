@@ -100,7 +100,7 @@ module ndc_to_screen #(
         .a       (reg_xp), 
         .b       (reg_h),    
         .overflow(ovf_mult_xp),
-        .result  (mult_xph_result)
+        .product  (mult_xph_result)
     );
 
     // Multiplicator pentru axa Y: yp * h
@@ -113,7 +113,7 @@ module ndc_to_screen #(
         .a       (reg_yp),
         .b       (reg_h),
         .overflow(ovf_mult_yp),
-        .result  (mult_yph_result)
+        .product  (mult_yph_result)
     );
 
     // Sumator pentru X: (xp * h) + w

@@ -15,8 +15,8 @@
 //---------------------------------------------------------------
 
 module sub_q #(
-    parameter INT_BITS  = 16,                       // Numar de biti parte intreaga (include semnul)
-    parameter FRAC_BITS = 16,                       // Numar de biti parte fractionara
+    parameter INT_BITS   = 16,                      // Numar de biti parte intreaga (include semnul)
+    parameter FRAC_BITS  = 16,                      // Numar de biti parte fractionara
     parameter DATA_WIDTH = INT_BITS + FRAC_BITS     // Latime date, biti
 )(
     input                       clk,                // Semnal de ceas
@@ -41,13 +41,13 @@ module sub_q #(
     // ------------------------
 
     wire [DATA_WIDTH-1:0] raw_dif;      // Rezultatul brut al scaderii
-    wire             sub_overflow; // Flag intern pentru detectare overflow
+    wire                  sub_overflow; // Flag intern pentru detectare overflow
     
-    assign raw_dif = a - b;        // Scadere aritmetica standard
+    assign raw_dif = a - b;             // Scadere aritmetica standard
 
 
     // ------------------------
-    // Detectie overflow (Logica pentru numere semnate)
+    // Detectie overflow
     // ------------------------
 
     // 1. Operanzii au semne diferite: (a[MSB] ^ b[MSB])

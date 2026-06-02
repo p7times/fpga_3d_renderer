@@ -107,9 +107,9 @@ module persp_proj #(
         .clk     (clk),
         .rst_n   (rst_n),
         .start   (div_start),
-        .op1     (reg_f),
-        .op2     (reg_z),
-        .rezultat(div_result),
+        .a       (reg_f),
+        .b       (reg_z),
+        .quotient(div_result),
         .valid   (div_valid)
     );
 
@@ -123,7 +123,7 @@ module persp_proj #(
         .a       (reg_fz),
         .b       (reg_x),
         .overflow(ovf_xp),
-        .result  (mult_xp_result)
+        .product (mult_xp_result)
     );
 
     // Multiplicator axa Y: = (f/z) * y
@@ -136,7 +136,7 @@ module persp_proj #(
         .a       (reg_fz),
         .b       (reg_y),
         .overflow(ovf_yp),
-        .result  (mult_yp_result)
+        .product  (mult_yp_result)
     );
 
 

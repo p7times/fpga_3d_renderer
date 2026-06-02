@@ -79,3 +79,4 @@ Fiecare modul a fost verificat independent prin simulări exhaustive (**Random T
 **Tehnologii:** Verilog 2001/SystemVerilog, Xilinx Vivado, FPGA (Zynq-7000), Fixed-Point DSP
 
 
+

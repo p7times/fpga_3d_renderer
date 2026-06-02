@@ -15,8 +15,8 @@
 //---------------------------------------------------------------
 
 module add_q #(
-    parameter INT_BITS  = 16,                       // Numar de biti parte intreaga (include semnul)
-    parameter FRAC_BITS = 16,                       // Numar de biti parte fractionara
+    parameter INT_BITS   = 16,                      // Numar de biti parte intreaga (include semnul)
+    parameter FRAC_BITS  = 16,                      // Numar de biti parte fractionara
     parameter DATA_WIDTH = INT_BITS + FRAC_BITS     // Latime date, biti
 )(
     input                       clk,                // Semnal de ceas
@@ -43,11 +43,11 @@ module add_q #(
     wire [DATA_WIDTH-1:0] raw_sum;      // Rezultatul brut al adunarii
     wire                  add_overflow; // Flag intern pentru detectare overflow
 
-    assign raw_sum = a + b;        // Adunare aritmetica standard
+    assign raw_sum = a + b;             // Adunare aritmetica standard
 
 
     // ------------------------
-    // Detectie overflow (Logica pentru numere semnate)
+    // Detectie overflow
     // ------------------------
 
     // 1. Operanzii au acelasi semn: (~(a[MSB] ^ b[MSB]))

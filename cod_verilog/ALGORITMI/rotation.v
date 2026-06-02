@@ -191,27 +191,27 @@ module rotation #(
         .a(reg_a), 
         .b(reg_x),
         .overflow(ovf_ax), 
-        .result(mult_ax_result)
+        .product(mult_ax_result)
     );
 
     mult_q #(.INT_BITS(INT_BITS), .FRAC_BITS(FRAC_BITS)) u_mult_by
-        (.clk(clk), .rst_n(rst_n), .a(reg_b), .b(reg_y), .overflow(ovf_by), .result(mult_by_result));
+        (.clk(clk), .rst_n(rst_n), .a(reg_b), .b(reg_y), .overflow(ovf_by), .product(mult_by_result));
     mult_q #(.INT_BITS(INT_BITS), .FRAC_BITS(FRAC_BITS)) u_mult_cz
-        (.clk(clk), .rst_n(rst_n), .a(reg_c), .b(reg_z), .overflow(ovf_cz), .result(mult_cz_result));
+        (.clk(clk), .rst_n(rst_n), .a(reg_c), .b(reg_z), .overflow(ovf_cz), .product(mult_cz_result));
  
     mult_q #(.INT_BITS(INT_BITS), .FRAC_BITS(FRAC_BITS)) u_mult_dx
-        (.clk(clk), .rst_n(rst_n), .a(reg_d), .b(reg_x), .overflow(ovf_dx), .result(mult_dx_result));
+        (.clk(clk), .rst_n(rst_n), .a(reg_d), .b(reg_x), .overflow(ovf_dx), .product(mult_dx_result));
     mult_q #(.INT_BITS(INT_BITS), .FRAC_BITS(FRAC_BITS)) u_mult_ey
-        (.clk(clk), .rst_n(rst_n), .a(reg_e), .b(reg_y), .overflow(ovf_ey), .result(mult_ey_result));
+        (.clk(clk), .rst_n(rst_n), .a(reg_e), .b(reg_y), .overflow(ovf_ey), .product(mult_ey_result));
     mult_q #(.INT_BITS(INT_BITS), .FRAC_BITS(FRAC_BITS)) u_mult_fz
-        (.clk(clk), .rst_n(rst_n), .a(reg_f), .b(reg_z), .overflow(ovf_fz), .result(mult_fz_result));
+        (.clk(clk), .rst_n(rst_n), .a(reg_f), .b(reg_z), .overflow(ovf_fz), .product(mult_fz_result));
  
     mult_q #(.INT_BITS(INT_BITS), .FRAC_BITS(FRAC_BITS)) u_mult_gx
-        (.clk(clk), .rst_n(rst_n), .a(reg_g), .b(reg_x), .overflow(ovf_gx), .result(mult_gx_result));
+        (.clk(clk), .rst_n(rst_n), .a(reg_g), .b(reg_x), .overflow(ovf_gx), .product(mult_gx_result));
     mult_q #(.INT_BITS(INT_BITS), .FRAC_BITS(FRAC_BITS)) u_mult_hy
-        (.clk(clk), .rst_n(rst_n), .a(reg_h), .b(reg_y), .overflow(ovf_hy), .result(mult_hy_result));
+        (.clk(clk), .rst_n(rst_n), .a(reg_h), .b(reg_y), .overflow(ovf_hy), .product(mult_hy_result));
     mult_q #(.INT_BITS(INT_BITS), .FRAC_BITS(FRAC_BITS)) u_mult_iz
-        (.clk(clk), .rst_n(rst_n), .a(reg_i), .b(reg_z), .overflow(ovf_iz), .result(mult_iz_result));
+        (.clk(clk), .rst_n(rst_n), .a(reg_i), .b(reg_z), .overflow(ovf_iz), .product(mult_iz_result));
  
     // 3 Sumatoare prima etapa: (ax+by), (dx+ey), (gx+hy)
     add_q #(.INT_BITS(INT_BITS), .FRAC_BITS(FRAC_BITS)) u_add_ax_by

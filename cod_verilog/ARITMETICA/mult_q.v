@@ -19,11 +19,11 @@ module mult_q #(
     parameter FRAC_BITS  = 16,                      // Numar de biti parte fractionara
     parameter DATA_WIDTH = INT_BITS + FRAC_BITS     // Latime date, biti
 )(
-    input                        clk,               // Semnal de ceas
-    input                        rst_n,             // Reset asincron (activ in 0)
-    input      [DATA_WIDTH-1:0]  a, b,              // Operanzi in format Q (semnati)
-    output reg                   overflow,          // Indicator depasire domeniu numeric (pentru debug/saturatie)
-    output reg [DATA_WIDTH-1:0]  result             // Rezultat saturat
+    input                       clk,                // Semnal de ceas
+    input                       rst_n,              // Reset asincron (activ in 0)
+    input      [DATA_WIDTH-1:0] a, b,               // Operanzi in format Q (semnati)
+    output reg                  overflow,           // Indicator depasire domeniu numeric (pentru debug/saturatie)
+    output reg [DATA_WIDTH-1:0] product             // Rezultat saturat
 );
 
     // Definirea limitelor pentru saturare (Q16.16)
@@ -45,7 +45,7 @@ module mult_q #(
 
     // Calculam semnul si valoarea absoluta in mod combinational
     // inainte de a le stoca in registre.
-    wire sign_w  = a[DATA_WIDTH-1] ^ b[DATA_WIDTH-1];
+    wire                  sign_w  = a[DATA_WIDTH-1] ^ b[DATA_WIDTH-1];
     wire [DATA_WIDTH-1:0] abs_a_w = a[DATA_WIDTH-1] ? (~a + 1) : a;
     wire [DATA_WIDTH-1:0] abs_b_w = b[DATA_WIDTH-1] ? (~b + 1) : b;
 
@@ -63,8 +63,6 @@ module mult_q #(
 
     // -------------------------------------------------------
     // Etapa 2: Multiplicare, Shiftare, Overflow si Saturare
-    // Folosim intrarile inregistrate din Etapa 1 pentru a
-    // executa calculul matematic.
     // -------------------------------------------------------
     
     // Multiplicarea numerelor in format virgula fixa
@@ -73,12 +71,24 @@ module mult_q #(
     // Shiftare la dreapta pentru a realinia virgula fixa
     wire [2*DATA_WIDTH-1:0] shifted     = raw_product >> FRAC_BITS;
 
-    // Detectia overflow-ului
-    // Un numar pozitiv overflow-eaza daca bitii de peste limita integer sunt setati.
+    // ------------------------
+    // Detectie overflow
+    // ------------------------
+
+    // 1. OVERFLOW POZITIV:
+    // Activ dacă rezultatul teoretic este pozitiv (!sign_r) ȘI există biți de 1 
+    // în zona superioară a ferestrei Q (de la bitul de semn DATA_WIDTH-1 în sus).
+    // Orice bit de 1 detectat prin operatia de OR-reduction (|) în acest interval
+    // înseamnă că valoarea a invadat bitul de semn sau a depășit partea întreagă.
     wire pos_overflow = !sign_r && (|shifted[2*DATA_WIDTH-1:DATA_WIDTH-1]);
     
-    // Un numar negativ overflow-eaza daca depaseste limitele complementului fata de 2
-    // sau daca rezultatul este diferit de zero in zona de overflow.
+    // 2. OVERFLOW NEGATIV:
+    // Activ dacă rezultatul teoretic este negativ (sign_r) ȘI magnitudinea sa absolută
+    // depășește limita inferioară reprezentabilă. Depășirea se declanșează dacă:
+    //   - Există biți de 1 dincolo de lățimea standard a cuvântului (|shifted[...:DATA_WIDTH])
+    //   - SAU: Valoarea stocată pe cei DATA_WIDTH biți este strict mai mare decât magnitudinea 
+    //     limitei MIN (stocată combinatoric tot ca valoare absolută, ex: 8000_0000). În acest caz, 
+    //     operația ulterioară de complementare (~shifted + 1) ar genera un număr sub limita MIN.
     wire neg_overflow =  sign_r && (|shifted[2*DATA_WIDTH-1:DATA_WIDTH] || 
                                    (shifted[DATA_WIDTH-1:0] > MIN));
     
@@ -88,14 +98,14 @@ module mult_q #(
     wire [DATA_WIDTH-1:0] neg_result   = ~shifted[DATA_WIDTH-1:0] + 1;
     wire [DATA_WIDTH-1:0] final_result = sign_r ? neg_result : shifted[DATA_WIDTH-1:0];
 
-    // Inregistrarea iesirilor finale (result si overflow)
+    // Inregistrarea iesirilor finale (product si overflow)
     // Se aplica saturarea daca comb_overflow este activ.
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            result   <= 0;
+            product  <= 0;
             overflow <= 0;
         end else begin
-            result   <= comb_overflow ? (sign_r ? MIN : MAX) : final_result;
+            product  <= comb_overflow ? (sign_r ? MIN : MAX) : final_result;
             overflow <= comb_overflow;
         end
     end

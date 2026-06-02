@@ -37,40 +37,39 @@
 //---------------------------------------------------------------
 
 module master_controller #(
-    parameter INT_BITS     = 16,                   // Numar de biti parte intreaga (include semnul) 
-    parameter FRAC_BITS    = 16,                   // Numar de biti parte fractionara
-    parameter DATA_WIDTH   = INT_BITS + FRAC_BITS, // Latime date, biti
+    parameter INT_BITS      = 16,                                   // Numar de biti parte intreaga (include semnul) 
+    parameter FRAC_BITS     = 16,                                   // Numar de biti parte fractionara
+    parameter DATA_WIDTH    = INT_BITS + FRAC_BITS,                 // Latime date, biti
 
-    parameter VERT_COUNT    = 8,                   // Dimensiune adrese buffere: max 2^ADDR_WIDTH locatii    
-    parameter EDGE_COUNT    = 10,                  // Dimensiune adrese buffere: max 2^ADDR_WIDTH locatii
-    parameter COORD_BITS    = 12                   // Biti coordonate integer pentru Bresenham [-2048, +2047]
+    parameter VERT_ADDR     = 8,                                    // Dimensiune adrese buffere: max 2^ADDR_WIDTH locatii    
+    parameter EDGE_ADDR     = 10,                                   // Dimensiune adrese buffere: max 2^ADDR_WIDTH locatii
+    
+    parameter COORD_BITS    = 12,                                   // Biti coordonate integer pentru Bresenham [-2048, +2047]
+    parameter H_RES         = 1280,
+    parameter V_RES         = 720,
+    
+    parameter FOCAL         = 1,
+    parameter CAM_Z         = 2
+    
 )(
-    input               clk,                       // Semnal de ceas
-    input               rst_n,                     // Reset asincron (activ in 0)
+    input                               clk,                        // Semnal de ceas
+    input                               rst_n,                      // Reset asincron (activ in 0)
 
     //------------------------------------------------------------
     // Control (de la PS sau Top)
     //------------------------------------------------------------
-    input                           start_frame,    // Puls: porneste randarea unui frame
-    input  [VERT_COUNT-1:0]         vertex_count,   // Numarul de vertecsi din mesh
-    input  [EDGE_COUNT-1:0]         edge_count,     // Numarul de muchii din mesh
-    input  [9:0]                    angle,          // Unghi rotatie: jumatati de grade [0..719]
-    input  [2:0]                    rotation_type,  // Tip rotatie (SW[2:0])
-    output reg                      frame_done,     // Puls: frame complet randat
-
-    //------------------------------------------------------------
-    // Parametri geometrici (din exterior, nu hardcodati)
-    //------------------------------------------------------------
-    input [DATA_WIDTH-1:0]  screen_w,               // Latimea ecranului in Q16.16
-    input [DATA_WIDTH-1:0]  screen_h,               // Inaltimea ecranului in Q16.16
-    input [DATA_WIDTH-1:0]  focal,                  // Distanta focala in Q16.16
-    input [DATA_WIDTH-1:0]  cam_z,                  // Translatie camera pe Z in Q16.16
-
+    input                               start_frame,                // Puls: porneste randarea unui frame
+    input  [VERT_ADDR-1:0]              vertex_count,               // Numarul de vertecsi din mesh
+    input  [EDGE_ADDR-1:0]              edge_count,                 // Numarul de muchii din mesh
+    input  [9:0]                        angle,                      // Unghi rotatie: jumatati de grade [0..719]
+    input  [2:0]                        rotation_type,              // Tip rotatie (SW[2:0])
+    output reg                          frame_done,                 // Puls: frame complet randat
+    
     //------------------------------------------------------------
     // Interfata vertex_buffer (doar citire)
     // Format: mem[addr] = { z[DW-1:0], y[DW-1:0], x[DW-1:0] }
     //------------------------------------------------------------
-    output reg [VERT_COUNT-1:0]         vb_addr,
+    output reg [VERT_ADDR-1:0]          vb_addr,
     output reg                          vb_cs,
     input      [3*DATA_WIDTH-1:0]       vb_data,
 
@@ -78,30 +77,30 @@ module master_controller #(
     // Interfata edge_buffer (doar citire)
     // Format: mem[addr] = { idx_b[AW-1:0], idx_a[AW-1:0] }
     //------------------------------------------------------------
-    output reg [EDGE_COUNT-1:0]         eb_addr,
+    output reg [EDGE_ADDR-1:0]          eb_addr,
     output reg                          eb_cs,
-    input      [2*EDGE_COUNT-1:0]       eb_data,
+    input      [2*VERT_ADDR-1:0]        eb_data,
 
     //------------------------------------------------------------
     // Interfata point_buffer (scriere si citire)
     // Format: mem[addr] = { ys[DW-1:0], xs[DW-1:0] }
     //------------------------------------------------------------
-    output reg [VERT_COUNT-1:0]     pb_addr,
-    output reg                      pb_cs,
-    output reg                      pb_wr,
-    output reg [2*DATA_WIDTH-1:0]   pb_dataIn,  // {ys, xs}
-    input      [2*DATA_WIDTH-1:0]   pb_dataOut,
+    output reg [VERT_ADDR-1:0]          pb_addr,
+    output reg                          pb_cs,
+    output reg                          pb_wr,
+    output reg [2*DATA_WIDTH-1:0]       pb_dataIn,  // {ys, xs}
+    input      [2*DATA_WIDTH-1:0]       pb_dataOut,
 
     //------------------------------------------------------------
     // Interfata Vertex Processor (VP)
     //------------------------------------------------------------
-    output reg                  vp_start,
-    output reg [DATA_WIDTH-1:0] vp_x, vp_y, vp_z, vp_f, vp_w, vp_h, vp_cam_z,
-    output reg [9:0]            vp_angle,
-    output reg [2:0]            vp_rotation,
-    input      [DATA_WIDTH-1:0] vp_xs, vp_ys,
-    input                       vp_valid,
-    input                       vp_overflow,
+    output reg                          vp_start,
+    output reg [DATA_WIDTH-1:0]         vp_x, vp_y, vp_z, vp_f, vp_w, vp_h, vp_cam_z,
+    output reg [9:0]                    vp_angle,
+    output reg [2:0]                    vp_rotation,
+    input      [DATA_WIDTH-1:0]         vp_xs, vp_ys,
+    input                               vp_valid,
+    input                               vp_overflow,
 
     //------------------------------------------------------------
     // Interfata Bresenham Unit (BU)
@@ -113,10 +112,16 @@ module master_controller #(
     //------------------------------------------------------------
     // Interfata framebuffer
     //------------------------------------------------------------
-    output reg        fb_clear,
-    input             fb_busy,
+    output reg                          fb_clear,
+    input                               fb_busy,
+    
+    //------------------------------------------------------------
+    // Semnale DEBUG
+    //------------------------------------------------------------    
+    output [4:0]                        dbg_state,
+    output [VERT_ADDR-1:0]              dbg_v_idx,
+    output [EDGE_ADDR-1:0]              dbg_e_idx
 
-    output [4:0]      dbg_state
 );
 
     // -------------------------------------------------------
@@ -124,8 +129,14 @@ module master_controller #(
     // -------------------------------------------------------
 
     // Valori extreme pentru saturarea coordonatelor la COORD_BITS biti signed
-    localparam signed [COORD_BITS-1:0] COORD_MAX =  (1 << (COORD_BITS-1)) - 1;
-    localparam signed [COORD_BITS-1:0] COORD_MIN = -(1 << (COORD_BITS-1));
+    localparam signed [COORD_BITS-1:0] COORD_MAX    =  (1 << (COORD_BITS-1)) - 1;
+    localparam signed [COORD_BITS-1:0] COORD_MIN    = -(1 << (COORD_BITS-1));
+    
+    localparam [DATA_WIDTH-1:0] SCREEN_W_FP         = H_RES << FRAC_BITS;
+    localparam [DATA_WIDTH-1:0] SCREEN_H_FP         = V_RES << FRAC_BITS;
+    
+    localparam [DATA_WIDTH-1:0] FOCAL_FP    = FOCAL << FRAC_BITS;
+    localparam [DATA_WIDTH-1:0] CAM_Z_FP    = CAM_Z << FRAC_BITS;
 
     // ------------------------
     // Definitie stari FSM
@@ -142,7 +153,7 @@ module master_controller #(
             WAIT_VERTEX   = 5'd4,   // Latenta BRAM: date disponibile dupa 1 ciclu
             LATCH_VERTEX  = 5'd5,   // un ciclu extra: vb_data acum valid
             SEND_VP       = 5'd6,   // Incarca date in VP si trimite puls start
-            WAIT_VP       = 5'd7,   // Asteapta vp_valid (dureaza ~79 cicluri)
+            WAIT_VP       = 5'd7,   // Asteapta vp_valid (dureaza ~80 cicluri)
             WRITE_POINT   = 5'd8,   // Scrie {vp_ys, vp_xs} in point_buffer[v_idx]
             NEXT_VERTEX   = 5'd9,   // Incrementeaza v_idx; verifica terminare loop
 
@@ -169,14 +180,16 @@ module master_controller #(
     // -------------------------------------------------------
     // Registre interne
     // -------------------------------------------------------
-    reg [VERT_COUNT-1:0] v_idx;         // Contor vertex curent
-    reg [EDGE_COUNT-1:0] e_idx;         // Contor muchie curenta
+    reg [VERT_ADDR-1:0] v_idx;         // Contor vertex curent
+    reg [EDGE_ADDR-1:0] e_idx;         // Contor muchie curenta
+    assign dbg_v_idx = v_idx;
+    assign dbg_e_idx = e_idx;
 
     // Date latched din vertex_buffer
     reg [DATA_WIDTH-1:0] latch_x, latch_y, latch_z;
 
     // Indecsi latched din edge_buffer
-    reg [VERT_COUNT-1:0]  latch_idx_a, latch_idx_b;
+    reg [VERT_ADDR-1:0]  latch_idx_a, latch_idx_b;
 
     // Coordonate ecran latched din point_buffer pentru cele 2 capete
     reg [DATA_WIDTH-1:0] latch_xs_a, latch_ys_a;
@@ -187,8 +200,7 @@ module master_controller #(
     // Extrage partea intreaga [DATA_WIDTH-1:FRAC_BITS] si satureaza
     // la intervalul [COORD_MIN, COORD_MAX]
     // -------------------------------------------------------
-    function signed [COORD_BITS-1:0] saturate;
-        input      [DATA_WIDTH-1:0] q_val;
+    function signed [COORD_BITS-1:0] saturate (input [DATA_WIDTH-1:0] q_val);
         reg signed [INT_BITS-1:0] int_part;
     begin
         int_part = $signed(q_val[DATA_WIDTH-1:FRAC_BITS]);
@@ -248,28 +260,28 @@ module master_controller #(
 
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            v_idx      <= 0;
-            e_idx      <= 0;
+            v_idx       <= 0;
+            e_idx       <= 0;
 
-            vb_addr    <= 0; vb_cs    <= 0;
-            eb_addr    <= 0; eb_cs    <= 0;
-            pb_addr    <= 0; pb_cs    <= 0; pb_wr <= 0; pb_dataIn <= 0;
+            vb_addr     <= 0; vb_cs    <= 0;
+            eb_addr     <= 0; eb_cs    <= 0;
+            pb_addr     <= 0; pb_cs    <= 0; pb_wr <= 0; pb_dataIn <= 0;
 
-            vp_start   <= 0;
-            vp_x       <= 0; vp_y  <= 0; vp_z     <= 0;
-            vp_f       <= 0; vp_w  <= 0; vp_h     <= 0; vp_cam_z <= 0;
-            vp_angle   <= 0; vp_rotation <= 0;
+            vp_start    <= 0;
+            vp_x        <= 0; vp_y  <= 0; vp_z     <= 0;
+            vp_f        <= 0; vp_w  <= 0; vp_h     <= 0; vp_cam_z <= 0;
+            vp_angle    <= 0; vp_rotation <= 0;
 
-            bu_start   <= 0;
-            bu_x0      <= 0; bu_y0 <= 0; bu_x1 <= 0; bu_y1 <= 0;
+            bu_start    <= 0;
+            bu_x0       <= 0; bu_y0 <= 0; bu_x1 <= 0; bu_y1 <= 0;
 
-            fb_clear   <= 0;
-            frame_done <= 0;
+            fb_clear    <= 0;
+            frame_done  <= 0;
 
-            latch_x    <= 0; latch_y <= 0; latch_z <= 0;
+            latch_x     <= 0; latch_y <= 0; latch_z <= 0;
             latch_idx_a <= 0; latch_idx_b <= 0;
-            latch_xs_a <= 0; latch_ys_a  <= 0;
-            latch_xs_b <= 0; latch_ys_b  <= 0;
+            latch_xs_a  <= 0; latch_ys_a  <= 0;
+            latch_xs_b  <= 0; latch_ys_b  <= 0;
         end else begin
 
             // Semnale cu durata de un ciclu -- reset implicit in fiecare ciclu
@@ -312,10 +324,12 @@ module master_controller #(
                     vp_x        <= latch_x;
                     vp_y        <= latch_y;
                     vp_z        <= latch_z;
-                    vp_f        <= focal;
-                    vp_w        <= screen_w;
-                    vp_h        <= screen_h;
-                    vp_cam_z    <= cam_z;
+                    
+                    vp_w        <= SCREEN_W_FP;
+                    vp_h        <= SCREEN_H_FP;
+                    vp_f        <= FOCAL_FP;
+                    vp_cam_z    <= CAM_Z_FP;
+                    
                     vp_angle    <= angle;
                     vp_rotation <= rotation_type;
                     vp_start    <= 1;
@@ -342,8 +356,8 @@ module master_controller #(
                 end
          
                 LATCH_EDGE: begin
-                    latch_idx_a <= eb_data[VERT_COUNT-1:0];
-                    latch_idx_b <= eb_data[2*VERT_COUNT-1:VERT_COUNT];
+                    latch_idx_a <= eb_data[VERT_ADDR-1:0];
+                    latch_idx_b <= eb_data[2*VERT_ADDR-1:VERT_ADDR];
                 end
 
                 READ_PT_A: begin

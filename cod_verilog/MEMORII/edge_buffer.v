@@ -17,20 +17,20 @@
 //---------------------------------------------------------------
 
 module edge_buffer #(
-    parameter EDGE_COUNT = 10,              // Latime adrese muchii, in biti (10 biti==> max 1024 muchii de mapat)
+    parameter EDGE_ADDR  = 10,              // Latime adrese muchii, in biti (10 biti==> max 1024 muchii de mapat)
     parameter VERT_ADDR  = 8                // Latimea adresei de memorie a unui vertex, in biti (= ADDR_WIDTH din vertex_buffer)
 )(
     input                        clk,       // Semnal de ceas
     input                        rst_n,     // Reset asincron (activ in 0)
     input                        cs,        // Chip select
     input                        wr,        // Comanda scriere/citire
-    input      [EDGE_COUNT-1:0]  addr,      // Adresa unei muchii
+    input      [EDGE_ADDR-1:0]  addr,       // Adresa unei muchii
     input      [2*VERT_ADDR-1:0] dataIn,    // Date de intrare: [idx_B | idx_A]
     output reg [2*VERT_ADDR-1:0] dataOut    // Date de iesire
 );
 
     // Datele memoriei BRAM - matrice bidimensionala
-    reg [2*VERT_ADDR-1:0] mem [(2**EDGE_COUNT)-1:0];
+    reg [2*VERT_ADDR-1:0] mem [(2**EDGE_ADDR)-1:0];
 
     // Scriere in memorie
     always @(posedge clk)

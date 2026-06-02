@@ -20,16 +20,17 @@
 //---------------------------------------------------------------
 
 module top_graphics #(
-    parameter INT_BITS      = 16,
-    parameter FRAC_BITS     = 16,
-    parameter DATA_WIDTH    = INT_BITS + FRAC_BITS,
+    parameter INT_BITS      = 16,                       // Numar de biti parte intreaga (include semnul)
+    parameter FRAC_BITS     = 16,                       // Numar de biti parte fractionara
+    parameter DATA_WIDTH    = INT_BITS + FRAC_BITS,     // Latime date coordinate (Q16.16)
 
-    parameter VERT_COUNT    = 8,
-    parameter EDGE_COUNT    = 10,
+    parameter VERT_ADDR     = 8,
+    parameter EDGE_ADDR     = 10,
     
     parameter COORD_BITS    = 12,
     parameter H_RES         = 1280,
     parameter V_RES         = 720,
+    
     parameter FOCAL         = 1,
     parameter CAM_Z         = 2,
     
@@ -41,71 +42,65 @@ module top_graphics #(
     input                       clk,
     input                       rst_n,
     
-    input                       ps_buffer_mode,
+    input                       ps_buffer_mode,    
     input                       start_frame,
+    input  [FB_ADDR_WIDTH-1:0]  fb_rd_addr,
   
-    input  [VERT_COUNT-1:0]     vertex_count,
-    input  [EDGE_COUNT-1:0]     edge_count,
+    // ---------------- DATE ----------------
+
+    input  [VERT_ADDR-1:0]      vertex_count,
+    input  [EDGE_ADDR-1:0]      edge_count,
     
     input  [9:0]                angle,
     input  [2:0]                rotation_type,
+    
+    input  [3*DATA_WIDTH-1:0]   vb_wr_data,
+    input  [2*VERT_ADDR-1:0]    eb_wr_data,
+
 
     // ---------------- PS WRITE INTERFACE ----------------
-    input  [VERT_COUNT-1:0]     vb_wr_addr,
+    input  [VERT_ADDR-1:0]      vb_wr_addr,
     input                       vb_wr_cs,
     input                       vb_wr_en,
-    input  [3*DATA_WIDTH-1:0]   vb_wr_data,
 
-    input  [EDGE_COUNT-1:0]     eb_wr_addr,
+    input  [EDGE_ADDR-1:0]      eb_wr_addr,
     input                       eb_wr_cs,
     input                       eb_wr_en,
-    input  [2*EDGE_COUNT-1:0]   eb_wr_data,
-
-    // ---------------- FB READ ----------------
-    input  [FB_ADDR_WIDTH-1:0]  fb_rd_addr,
     
-    // ---------------- OUTPUTS ----------------    
+    // ---------------- OUTPUT-URI ----------------    
     output                      frame_done,      
     output                      busy,
     output [WORD_BITS-1:0]      fb_rd_data
 );
-
-    localparam [DATA_WIDTH-1:0] SCREEN_W_FP = H_RES << FRAC_BITS;
-    localparam [DATA_WIDTH-1:0] SCREEN_H_FP = V_RES << FRAC_BITS;
-    localparam [DATA_WIDTH-1:0] FOCAL_FP    = FOCAL << FRAC_BITS;
-    localparam [DATA_WIDTH-1:0] CAM_Z_FP    = CAM_Z << FRAC_BITS;
-
     
-    // ---------------- Debug ----------------
-    wire [4:0]            dbg_mc_state;   // starea master_controller-ului
-    wire [3:0]            dbg_vp_state;   // starea procesorului de vertecsi
-    wire [2:0]            dbg_bu_state;   // starea unitatii Bresenham
-    wire [2:0]            dbg_fb_state;   // starea framebuffer-ului
+    // ---------------- DEBUG ----------------
+    wire [4:0]              dbg_mc_state;   // starea master_controller-ului
+    wire [3:0]              dbg_vp_state;   // starea procesorului de vertecsi
+    wire [2:0]              dbg_bu_state;   // starea unitatii Bresenham
+    wire [2:0]              dbg_fb_state;   // starea framebuffer-ului
     
-    wire [VERT_COUNT-1:0] dbg_v_idx;      // ce vertex se proceseaza
-    wire [EDGE_COUNT-1:0] dbg_e_idx;      // ce muchie se proceseaza
+    wire [VERT_ADDR-1:0]    dbg_v_idx;      // ce vertex se proceseaza
+    wire [EDGE_ADDR-1:0]    dbg_e_idx;      // ce muchie se proceseaza
     
-    wire                  dbg_vp_valid;   // semnal finalizare VP
-    wire                  dbg_bu_done;    // semnal finalizare BU
-    wire                  dbg_overflow;
+    wire                    dbg_vp_valid;   // semnal finalizare VP
+    wire                    dbg_bu_done;    // semnal finalizare BU
+    wire                    dbg_overflow;
 
 
     // ---------------- VERTEX BUFFER ----------------
-    wire [VERT_COUNT-1:0]   vb_addr_mc;
+    wire [VERT_ADDR-1:0]    vb_addr_mc;
     wire                    vb_cs_mc;
     wire [3*DATA_WIDTH-1:0] vb_data_mc;
     wire [3*DATA_WIDTH-1:0] vb_din_mux;
 
-    wire [VERT_COUNT-1:0] vb_addr = ps_buffer_mode ? vb_wr_addr : vb_addr_mc;
-
-    wire vb_cs = ps_buffer_mode ? vb_wr_cs : vb_cs_mc;  
-    wire vb_wr = ps_buffer_mode ? vb_wr_en : 1'b0;
+    wire [VERT_ADDR-1:0]    vb_addr = ps_buffer_mode ? vb_wr_addr : vb_addr_mc;
+    wire                    vb_cs   = ps_buffer_mode ? vb_wr_cs : vb_cs_mc;  
+    wire                    vb_wr   = ps_buffer_mode ? vb_wr_en : 1'b0;
         
     assign vb_din_mux = ps_buffer_mode ? vb_wr_data : 0;
-    
 
     vertex_buffer #(
-        .ADDR_WIDTH(VERT_COUNT),
+        .ADDR_WIDTH(VERT_ADDR),
         .INT_BITS(INT_BITS),
         .FRAC_BITS(FRAC_BITS)
     ) u_vertex_buffer (
@@ -120,21 +115,20 @@ module top_graphics #(
 
 
     // ---------------- EDGE BUFFER ----------------
-    wire [EDGE_COUNT-1:0]   eb_addr_mc;
+    wire [EDGE_ADDR-1:0]    eb_addr_mc;
     wire                    eb_cs_mc;
-    wire [2*EDGE_COUNT-1:0] eb_data_mc;
-    wire [2*EDGE_COUNT-1:0] eb_din_mux;
+    wire [2*VERT_ADDR-1:0]  eb_data_mc;
+    wire [2*VERT_ADDR-1:0]  eb_din_mux;
 
-    wire [EDGE_COUNT-1:0] eb_addr = ps_buffer_mode ? eb_wr_addr : eb_addr_mc;
-    
-    wire eb_cs = ps_buffer_mode ? eb_wr_cs : eb_cs_mc;   
-    wire eb_wr = ps_buffer_mode ? eb_wr_en : 1'b0;
+    wire [EDGE_ADDR-1:0]    eb_addr = ps_buffer_mode ? eb_wr_addr : eb_addr_mc;   
+    wire                    eb_cs   = ps_buffer_mode ? eb_wr_cs : eb_cs_mc;   
+    wire                    eb_wr   = ps_buffer_mode ? eb_wr_en : 1'b0;
     
     assign eb_din_mux = ps_buffer_mode ? eb_wr_data : 0;
 
     edge_buffer #(
-        .EDGE_COUNT(EDGE_COUNT),
-        .VERT_ADDR(VERT_COUNT)
+        .EDGE_ADDR(EDGE_ADDR),
+        .VERT_ADDR(VERT_ADDR)
     ) u_edge_buffer (
         .clk(clk),
         .rst_n(rst_n),
@@ -147,12 +141,12 @@ module top_graphics #(
 
 
     // ---------------- POINT BUFFER ----------------
-    wire [VERT_COUNT-1:0]   pb_addr;
+    wire [VERT_ADDR-1:0]    pb_addr;
     wire                    pb_cs, pb_wr;
     wire [2*DATA_WIDTH-1:0] pb_dataIn, pb_dataOut;
 
     point_buffer #(
-        .ADDR_WIDTH(VERT_COUNT),
+        .ADDR_WIDTH(VERT_ADDR),
         .INT_BITS(INT_BITS),
         .FRAC_BITS(FRAC_BITS)
     ) u_point_buffer (
@@ -167,13 +161,13 @@ module top_graphics #(
 
 
     // ---------------- VERTEX PROCESSOR ----------------
-    wire vp_start;
-    wire [DATA_WIDTH-1:0] vp_x, vp_y, vp_z;
-    wire [DATA_WIDTH-1:0] vp_f, vp_w, vp_h, vp_cam_z;
-    wire [9:0] vp_angle;
-    wire [2:0] vp_rotation;
-    wire [DATA_WIDTH-1:0] vp_xs, vp_ys;
-    wire vp_valid, vp_overflow;
+    wire                    vp_start;
+    wire [DATA_WIDTH-1:0]   vp_x, vp_y, vp_z;
+    wire [DATA_WIDTH-1:0]   vp_f, vp_w, vp_h, vp_cam_z;
+    wire [9:0]              vp_angle;
+    wire [2:0]              vp_rotation;
+    wire [DATA_WIDTH-1:0]   vp_xs, vp_ys;
+    wire                    vp_valid, vp_overflow;
 
     vertex_processor #(
         .INT_BITS(INT_BITS),
@@ -212,10 +206,10 @@ module top_graphics #(
         .clk(clk),
         .rst_n(rst_n),
         .start(bu_start),
-        .x0_in(bu_x0), .y0_in(bu_y0),
-        .x1_in(bu_x1), .y1_in(bu_y1),
-        .fb_x(fb_x), .fb_y(fb_y),
-        .fb_cs(fb_cs), .fb_wr(fb_wr),
+        .x0_in(bu_x0),  .y0_in(bu_y0),
+        .x1_in(bu_x1),  .y1_in(bu_y1),
+        .fb_x(fb_x),    .fb_y(fb_y),
+        .fb_cs(fb_cs),  .fb_wr(fb_wr),
         .fb_busy(fb_busy),
         .done(bu_done),
         .dbg_state(dbg_bu_state)
@@ -231,8 +225,8 @@ module top_graphics #(
         .cs(fb_cs),
         .wr(fb_wr),
         .clear(fb_clear),
-        .x_in(fb_x[10:0]),
-        .y_in(fb_y[10:0]),
+        .x_in(fb_x[COORD_BITS-2:0]),
+        .y_in(fb_y[COORD_BITS-2:0]),
         .pixel_in(1'b1),
         .rd_adresa(fb_rd_addr),
         .rd_dataOut(fb_rd_data),
@@ -246,9 +240,14 @@ module top_graphics #(
     master_controller #(
         .INT_BITS(INT_BITS),
         .FRAC_BITS(FRAC_BITS),
-        .VERT_COUNT(VERT_COUNT),
-        .EDGE_COUNT(EDGE_COUNT),
-        .COORD_BITS(COORD_BITS)
+        
+        .VERT_ADDR(VERT_ADDR),
+        .EDGE_ADDR(EDGE_ADDR),
+        
+        .COORD_BITS(COORD_BITS),
+        .H_RES(H_RES),
+        .V_RES(V_RES)
+        
     ) u_mc (
         .clk(clk),
         .rst_n(rst_n),
@@ -258,12 +257,7 @@ module top_graphics #(
         .edge_count(edge_count),
         .angle(angle),
         .rotation_type(rotation_type),
-
-        .screen_w(SCREEN_W_FP),
-        .screen_h(SCREEN_H_FP),
-        .focal(FOCAL_FP),
-        .cam_z(CAM_Z_FP),
-
+       
         .vb_addr(vb_addr_mc),
         .vb_cs(vb_cs_mc),
         .vb_data(vb_data_mc),
@@ -297,11 +291,10 @@ module top_graphics #(
         .fb_busy(fb_busy),
 
         .dbg_state(dbg_mc_state),
+        .dbg_v_idx(dbg_v_idx),
+        .dbg_e_idx(dbg_e_idx),
         .frame_done(frame_done)
     );
-
-    assign dbg_v_idx    = u_mc.v_idx;
-    assign dbg_e_idx    = u_mc.e_idx;
     
     assign dbg_vp_valid = vp_valid;
     assign dbg_bu_done  = bu_done;
