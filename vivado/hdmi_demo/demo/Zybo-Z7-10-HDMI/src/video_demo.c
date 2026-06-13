@@ -1,26 +1,3 @@
-/************************************************************************/
-/*																		*/
-/*	video_demo.c	--	ZYBO Video demonstration 						*/
-/*																		*/
-/************************************************************************/
-/*	Author: Sam Bobrowicz												*/
-/*	Copyright 2015, Digilent Inc.										*/
-/************************************************************************/
-/*  Module Description: 												*/
-/*																		*/
-/*		This file contains code for running a demonstration of the		*/
-/*		Video input and output capabilities on the ZYBO. It is a good	*/
-/*		example of how to properly use the display_ctrl and				*/
-/*		video_capture drivers.											*/
-/*																		*/
-/*																		*/
-/************************************************************************/
-/*  Revision History:													*/
-/* 																		*/
-/*		11/25/2015(SamB): Created										*/
-/*																		*/
-/************************************************************************/
-
 #include "video_demo.h"
 #include "display_ctrl/display_ctrl.h"
 #include "intc/intc.h"

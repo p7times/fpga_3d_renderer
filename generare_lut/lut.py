@@ -20,7 +20,7 @@ def to_q0_16(x):
     return int(round(x * (1 << 16))) & 0xFFFF
 
 
-# Genereaza reprezentarea unghiului in formatul tau:
+# Genereaza reprezentarea unghiului in formatul:
 # [7:1] = grade intregi, [0] = bit de 0.5
 # afisat ca: 8'bxxxxxxx_y
 def angle_to_bin8_split(i):

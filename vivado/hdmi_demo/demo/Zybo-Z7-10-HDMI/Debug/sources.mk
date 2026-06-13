@@ -19,6 +19,7 @@ SUBDIRS := \
 src/display_ctrl \
 src/dynclk \
 src/intc \
+src/meshes \
 src/timer_ps \
 src/video_capture \
 src \

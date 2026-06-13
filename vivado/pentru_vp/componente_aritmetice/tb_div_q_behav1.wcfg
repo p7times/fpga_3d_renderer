@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="tb_div_q_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="glbl" />
+            <top_module name="tb_div_q" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="0.000 ns"></ZoomStartTime>
+      <ZoomEndTime time="611.536 ns"></ZoomEndTime>
+      <Cursor1Time time="167.000 ns"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="137"></NameColumnWidth>
+      <ValueColumnWidth column_width="99"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="15" />
+   <wvobject type="logic" fp_name="/tb_div_q/clk">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_div_q/rst_n">
+      <obj_property name="ElementShortName">rst_n</obj_property>
+      <obj_property name="ObjectShortName">rst_n</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_div_q/start">
+      <obj_property name="ElementShortName">start</obj_property>
+      <obj_property name="ObjectShortName">start</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_div_q/op1">
+      <obj_property name="ElementShortName">op1[31:0]</obj_property>
+      <obj_property name="ObjectShortName">op1[31:0]</obj_property>
+      <obj_property name="Radix">REALRADIX</obj_property>
+      <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+      <obj_property name="radix_fractionWidth">12</obj_property>
+      <obj_property name="radix_otherWidth">0</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_div_q/op2">
+      <obj_property name="ElementShortName">op2[31:0]</obj_property>
+      <obj_property name="ObjectShortName">op2[31:0]</obj_property>
+      <obj_property name="Radix">REALRADIX</obj_property>
+      <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+      <obj_property name="radix_fractionWidth">12</obj_property>
+      <obj_property name="radix_otherWidth">0</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_div_q/rezultat">
+      <obj_property name="ElementShortName">rezultat[31:0]</obj_property>
+      <obj_property name="ObjectShortName">rezultat[31:0]</obj_property>
+      <obj_property name="Radix">REALRADIX</obj_property>
+      <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+      <obj_property name="radix_fractionWidth">12</obj_property>
+      <obj_property name="radix_otherWidth">0</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_div_q/valid">
+      <obj_property name="ElementShortName">valid</obj_property>
+      <obj_property name="ObjectShortName">valid</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_div_q/error_count">
+      <obj_property name="ElementShortName">error_count[31:0]</obj_property>
+      <obj_property name="ObjectShortName">error_count[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_div_q/INT_BITS">
+      <obj_property name="ElementShortName">INT_BITS[31:0]</obj_property>
+      <obj_property name="ObjectShortName">INT_BITS[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_div_q/FRAC_BITS">
+      <obj_property name="ElementShortName">FRAC_BITS[31:0]</obj_property>
+      <obj_property name="ObjectShortName">FRAC_BITS[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_div_q/WIDTH">
+      <obj_property name="ElementShortName">WIDTH[31:0]</obj_property>
+      <obj_property name="ObjectShortName">WIDTH[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_div_q/PER">
+      <obj_property name="ElementShortName">PER[31:0]</obj_property>
+      <obj_property name="ObjectShortName">PER[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="other" fp_name="/tb_div_q/THRESHOLD">
+      <obj_property name="ElementShortName">THRESHOLD</obj_property>
+      <obj_property name="ObjectShortName">THRESHOLD</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_div_q/MAX_VAL">
+      <obj_property name="ElementShortName">MAX_VAL[31:0]</obj_property>
+      <obj_property name="ObjectShortName">MAX_VAL[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_div_q/MIN_VAL">
+      <obj_property name="ElementShortName">MIN_VAL[31:0]</obj_property>
+      <obj_property name="ObjectShortName">MIN_VAL[31:0]</obj_property>
+   </wvobject>
+</wave_config>

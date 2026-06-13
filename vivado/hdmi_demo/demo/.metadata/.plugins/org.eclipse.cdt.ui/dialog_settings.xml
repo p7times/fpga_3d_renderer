@@ -4,4 +4,20 @@
 	</section>
 	<section name="org.eclipse.cdt.ui.text.hover.CMacroExpansionExploration">
 	</section>
+	<section name="PDOMSearchPage">
+		<item key="caseSensitive" value="false"/>
+		<item key="searchFlags" value="227191"/>
+		<list key="previousPatterns">
+			<item value="back"/>
+			<item value="ă"/>
+			<item value="fRefresh"/>
+			<item value="clearscreen"/>
+			<item value="DisplayIniti"/>
+			<item value="DEMO_PATTERN_1"/>
+		</list>
+	</section>
+	<section name="org.eclipse.cdt.ui.text.hover.CMacroExpansionExploration.internal">
+		<item key="size.width" value="384"/>
+		<item key="size.height" value="180"/>
+	</section>
 </section>
