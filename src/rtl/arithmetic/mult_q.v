@@ -16,7 +16,7 @@
 
 module mult_q #(
     parameter INT_BITS   = 16,                      // Numar de biti parte intreaga (include semnul)
-    parameter FRAC_BITS  = 16,                      // Numar de biti parte fractionara
+    parameter FRAC_BITS  = 12,                      // Numar de biti parte fractionara
     parameter DATA_WIDTH = INT_BITS + FRAC_BITS     // Latime date, biti
 )(
     input                       clk,                // Semnal de ceas
@@ -26,7 +26,10 @@ module mult_q #(
     output reg [DATA_WIDTH-1:0] product             // Rezultat saturat
 );
 
-    // Definirea limitelor pentru saturare (Q16.16)
+    // ------------------------
+    // Limite reprezentabile in format Q (Complement de 2)
+    // ------------------------
+    
     // MAX: 0 urmat de toti 1 (cel mai mare numar pozitiv)
     // MIN: 1 urmat de toti 0 (cel mai mic numar negativ)
     localparam [DATA_WIDTH-1:0] MAX = {1'b0, {(DATA_WIDTH-1){1'b1}}};
@@ -34,11 +37,6 @@ module mult_q #(
 
     // -------------------------------------------------------
     // Etapa 1: Inregistrare abs si semn
-    // Aceasta etapa izoleaza calea combinationala.
-    // In loc sa avem: reg_input -> carry_chain -> DSP,
-    // acum avem: reg_input -> registru -> DSP.
-    // Rezultatul este ca lungimea drumului critic este redusa,
-    // permitand frecvente de ceas mai mari.
     // -------------------------------------------------------
     reg [DATA_WIDTH-1:0] abs_a_r, abs_b_r;
     reg                  sign_r;
@@ -87,8 +85,7 @@ module mult_q #(
     // depășește limita inferioară reprezentabilă. Depășirea se declanșează dacă:
     //   - Există biți de 1 dincolo de lățimea standard a cuvântului (|shifted[...:DATA_WIDTH])
     //   - SAU: Valoarea stocată pe cei DATA_WIDTH biți este strict mai mare decât magnitudinea 
-    //     limitei MIN (stocată combinatoric tot ca valoare absolută, ex: 8000_0000). În acest caz, 
-    //     operația ulterioară de complementare (~shifted + 1) ar genera un număr sub limita MIN.
+    //     limitei MIN. În acest caz, operația ulterioară de complementare (~shifted + 1) ar genera un număr sub limita MIN.
     wire neg_overflow =  sign_r && (|shifted[2*DATA_WIDTH-1:DATA_WIDTH] || 
                                    (shifted[DATA_WIDTH-1:0] > MIN));
     

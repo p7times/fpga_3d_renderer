@@ -23,7 +23,7 @@ module tb_vp;
 
     parameter real PER      = 13.468;               // Ceas 74.25 MHz (perioadă ~13.5 ns) 
     parameter INT_BITS      = 16;                   // Biti pentru partea intreaga (semnati)
-    parameter FRAC_BITS     = 16;                   // Biti pentru partea fractionara
+    parameter FRAC_BITS     = 12;                   // Biti pentru partea fractionara
     parameter DATA_WIDTH    = INT_BITS + FRAC_BITS; // Latime totala cuvant
     parameter MAX_R         = 28'h7111_111;        // Valoare maxima pentru saturatie
     parameter MIN_R         = 28'h8000_000;        // Valoare minima pentru saturatie
@@ -34,24 +34,28 @@ module tb_vp;
     // Parametri modificabili
     // ------------------------
     
-    parameter NUM_RAND      = 500;                 // Numarul de teste aleatorii
-    parameter THRESHOLD     = 2;                    // Toleranta acceptata pentru erori (pixeli)
+    parameter NUM_RAND      = 2000;                 // Numarul de teste aleatorii
+    parameter THRESHOLD     = 1.0;                 // Toleranta acceptata pentru erori (pixeli)
     
     // Constante geometrice in format Q16.16  
     parameter CAMERA_Z      = 28'h0001_800;        // Distanta camera = 1.5
-    parameter FOCAL_LENGHT  = 28'h0000_066;        // Lungime focala = 0.05 (aprox 50mm)
-    parameter SCREEN_WIDTH  = 28'h0140_000;        // Latime ecran = 320.0
-    parameter SCREEN_HEIGHT = 28'h00f0_000;        // Inaltime ecran = 240.0
+    
+   // parameter FOCAL_LENGHT  = 28'h0000_0cc;        // Lungime focala = 0.05 (aprox 50mm)
+    parameter FOCAL_LENGHT  = 28'h0000_066;        // Lungime focala = 0.025
+    //parameter FOCAL_LENGHT  = 28'h0000_033;        // Lungime focala = 0.0125
+
+    parameter SCREEN_WIDTH  = 28'h0500_000;        // Latime ecran = 1280 pixeli
+    parameter SCREEN_HEIGHT = 28'h02d0_000;        // Inaltime ecran = 720 pixeli
 
     // Setari pentru precizia datelor generate aleatoriu
     integer precision_x_int  = 4;
-    integer precision_x_frac = 12;
+    integer precision_x_frac = 4;
     
     integer precision_y_int  = 4;
-    integer precision_y_frac = 12;
+    integer precision_y_frac = 4;
     
     integer precision_z_int  = 4;
-    integer precision_z_frac = 12;
+    integer precision_z_frac = 4;
     
     
     // ------------------------

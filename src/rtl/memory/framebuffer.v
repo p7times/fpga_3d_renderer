@@ -35,8 +35,8 @@
 //---------------------------------------------------------------
 
 module framebuffer #(
-    parameter H_RES       = 1920,                               // Rezolutie orizontala in pixeli
-    parameter V_RES       = 1080,                               // Rezolutie verticala in pixeli
+    parameter H_RES       = 1280,                               // Rezolutie orizontala in pixeli
+    parameter V_RES       = 720,                               // Rezolutie verticala in pixeli
     parameter WORD_BITS   = 32,                                 // Numar de biti per cuvant BRAM (32 biti = 32 pixeli monocromi)
     parameter TOTAL_WORDS = (H_RES * V_RES) / WORD_BITS,        // Numarul total de cuvinte in memorie (64800)
     parameter ADDR_WIDTH = $clog2((H_RES * V_RES) / WORD_BITS)  // Numarul minim de biti necesari pentru adresarea cuvintelor
@@ -53,7 +53,7 @@ module framebuffer #(
     input                       pixel_in,           // Valoare pixel: 0 -> negru, 1 -> alb
 
     // Interfata citire HDMI
-    input      [ADDR_WIDTH-1:0] rd_adresa,
+    input      [ADDR_WIDTH-1:0] rd_address,
     output reg [WORD_BITS-1:0]  rd_dataOut,
 
     // Semnale status/debug
@@ -200,7 +200,7 @@ module framebuffer #(
     // ------------------------------------------------
 
     always @(posedge clk) begin
-        rd_dataOut <= mem[rd_adresa];
+        rd_dataOut <= mem[rd_address];
     end
 
 

@@ -15,7 +15,7 @@
 module tb_div_q;
 
     parameter INT_BITS  = 16;
-    parameter FRAC_BITS = 12;
+    parameter FRAC_BITS = 16;
     parameter WIDTH = INT_BITS + FRAC_BITS; // Latimea datelor
     parameter PER = 4;                      // Perioada ceasului în ns
     
@@ -189,8 +189,11 @@ module tb_div_q;
         
         
        //run_test(28'h0001_000, 28'h0001_000, 28'h0001_000, "");
-       //run_test(32'h0000_1000,32'h0000_1000, 32'h0000_1000,"1/1");
-       run_random_tests_div(42, 3000);
+       //run_test(32'hFFFF_0000,32'h0000_0000, 32'h8000_0000,"-1/0=MIN");
+       //run_test(32'h0005_0000,32'h0000_0000, 32'h7FFF_FFFF,"5/0=MAX");
+       //run_test(32'h0000_0001,32'h7FFF_FFFF, 32'h0000_0001,"RES/MAX=RES");
+       //run_test(32'h0000_0000,32'h0000_0000, 32'h0000_0000,"0/0");
+       run_random_tests_div(42, 2000);
 
         $display("---------------------------------------------");
         $display("=== TEST DIV terminat cu %0d erori ===", error_count);

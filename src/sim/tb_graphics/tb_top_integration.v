@@ -134,7 +134,7 @@ module tb_top_integration;
     );
 
     edge_buffer #(
-        .EDGE_COUNT(EDGE_COUNT), .VERT_ADDR(VERT_COUNT)
+        .EDGE_ADDR(EDGE_COUNT), .VERT_ADDR(VERT_COUNT)
     ) u_edge_buffer (
         .clk(clk), .rst_n(rst_n), .cs(eb_cs), .wr(eb_wr),
         .addr(eb_addr), .dataIn(eb_dataIn), .dataOut(eb_dataOut)
@@ -156,7 +156,7 @@ module tb_top_integration;
         .clk(clk), .rst_n(rst_n), .cs(bres_fb_cs), .wr(bres_fb_wr),
         .clear(fb_clear), .x_in(bres_fb_x[10:0]), .y_in(bres_fb_y[10:0]),
         .pixel_in(1'b1), // Pixel alb
-        .rd_adresa(hdmi_rd_addr), .rd_dataOut(hdmi_rd_data),
+        .rd_address(hdmi_rd_addr), .rd_dataOut(hdmi_rd_data),
         .busy(fb_busy), .dbg_clear_addr(), .dbg_state()
     );
 

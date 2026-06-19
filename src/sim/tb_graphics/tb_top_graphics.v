@@ -6,10 +6,10 @@ module tb_top_graphics;
     // Parametri top_graphics (NU ATINGE)
     // -------------------------------------------------------------------------
     
-    parameter real CK_PER       = 13.468; // Ceas 74.25 MHz: frecventa ceasului ptr FPGA PL (perioadă ~13.5 ns)
-    
+   // parameter real CK_PER       = 13.468; // Ceas 74.25 MHz: frecventa ceasului ptr FPGA PL (perioadă ~13.5 ns)
+    parameter real CK_PER       = 10.0;
     parameter INT_BITS          = 16;
-    parameter FRAC_BITS         = 16;
+    parameter FRAC_BITS         = 12;
     
     parameter DATA_WIDTH        = INT_BITS + FRAC_BITS;
     parameter real SCALE        = 2.0**FRAC_BITS;       // Factor de scalare pentru Q16.16 (2^FRAC_BITS)
@@ -25,13 +25,14 @@ module tb_top_graphics;
     // Parametri modificabili
     // -------------------------------------------------------------------------
     
-    parameter H_RES             = 320;
-    parameter V_RES             = 240; 
+    parameter H_RES             = 1280;
+    parameter V_RES             = 720; 
     
+    parameter FOCAL             = 2;        // Distanta focala
     parameter CAM_Z             = 2;        // Distanta camera
-    parameter FOCAL             = 1;        // Distanta focala
+
     
-    parameter ROTATION          = 3'b001;
+    parameter ROTATION          = 3'b010;
     
     // -------------------------------------------------------------------------
     // Parametri Calculati Automat (NU ATINGE)
@@ -52,7 +53,7 @@ module tb_top_graphics;
     wire                        clk;
     wire                        rst_n;
     
-    reg                         ps_buffer_mode;
+    reg                         buffer_mode;
     reg                         start_frame;
     reg  [VERT_ADDR-1:0]        vertex_count;
     reg  [EDGE_ADDR-1:0]        edge_count;
@@ -105,7 +106,7 @@ module tb_top_graphics;
         .clk(clk),
         .rst_n(rst_n),
         
-        .ps_buffer_mode(ps_buffer_mode),
+        .buffer_mode(buffer_mode),
         .start_frame(start_frame),
         .frame_done(frame_done),
 
@@ -263,65 +264,83 @@ module tb_top_graphics;
     // -------------------------------------------------------------------------
     // Task automatizat pentru încărcarea vertecșilor din fișier
     // -------------------------------------------------------------------------
-    task load_vertices;
-        input [8*50-1:0] filename;       // Suportă nume de fișier de până la 100 caractere
-        output integer total_vertices;
-        
-        integer file_v;
-        integer status;
-        reg [DATA_WIDTH-1:0] tmp_x, tmp_y, tmp_z;
-        
-        begin
-            total_vertices = 0;
-            file_v = $fopen(filename, "r");
-            if (file_v == 0) begin
-                $display("[EROARE] Nu s-a putut deschide fisierul de vertecsi: %s", filename);
-                $finish;
-            end
-
-            while (!$feof(file_v)) begin
-                status = $fscanf(file_v, "%h %h %h\n", tmp_x, tmp_y, tmp_z);
-                if (status == 3) begin
-                    // Apelăm task-ul tău existent de scriere hardware
-                    data_write_vertex(total_vertices[VERT_ADDR-1:0], tmp_x, tmp_y, tmp_z);
-                    total_vertices = total_vertices + 1;
-                end
-            end
-            $fclose(file_v);
-            $display("[SUCCES] Incarcare completa: %0d vertecsi din '%s'.", total_vertices, filename);
+task load_vertices;
+    input [8*50-1:0] filename;
+    output integer total_vertices;
+    
+    integer file_v;
+    integer status;
+    reg [DATA_WIDTH-1:0] tmp_x, tmp_y, tmp_z;
+    
+    // Registru temporar uriaș pentru a citi toată linia concatenată (X, Y, Z împreună)
+    reg [(3*DATA_WIDTH)-1:0] combined_vertex;
+    
+    begin
+        total_vertices = 0;
+        file_v = $fopen(filename, "r");
+        if (file_v == 0) begin
+            $display("[EROARE] Nu s-a putut deschide: %s", filename);
+            $finish;
         end
-    endtask
+
+        while (!$feof(file_v)) begin
+            // Citim un singur bloc hexazecimal (%h) de pe linie
+            status = $fscanf(file_v, "%h\n", combined_vertex);
+            
+            if (status == 1) begin
+                // Tăiem blocul în funcție de ordinea XYZ salvată în scriptul Python
+                tmp_x = combined_vertex[(3*DATA_WIDTH)-1 : 2*DATA_WIDTH]; // Primii 28 biți
+                tmp_y = combined_vertex[(2*DATA_WIDTH)-1 : DATA_WIDTH];   // Următorii 28 biți
+                tmp_z = combined_vertex[DATA_WIDTH-1 : 0];               // Ultimii 28 biți
+                
+                data_write_vertex(total_vertices[VERT_ADDR-1:0], tmp_x, tmp_y, tmp_z);
+                total_vertices = total_vertices + 1;
+            end
+        end
+        $fclose(file_v);
+        $display("[SUCCES] Incarcare completa: %0d vertecsi din '%s'.", total_vertices, filename);
+    end
+endtask
 
     // -------------------------------------------------------------------------
     // Task automatizat pentru încărcarea muchiilor din fișier
     // -------------------------------------------------------------------------
-    task load_edges;
-        input [8*50-1:0] filename;
-        output integer total_edges;
-        
-        integer file_e;
-        integer status;
-        reg [VERT_ADDR-1:0] tmp_idx_a, tmp_idx_b;
-        
-        begin
-            total_edges = 0;
-            file_e = $fopen(filename, "r");
-            if (file_e == 0) begin
-                $display("[EROARE] Nu s-a putut deschide fisierul de muchii: %s", filename);
-                $finish;
-            end
-
-            while (!$feof(file_e)) begin
-                status = $fscanf(file_e, "%d %d\n", tmp_idx_a, tmp_idx_b);
-                if (status == 2) begin
-                    data_write_edge(total_edges[EDGE_ADDR-1:0], tmp_idx_a, tmp_idx_b);
-                    total_edges = total_edges + 1;
-                end
-            end
-            $fclose(file_e);
-            $display("[SUCCES] Incarcare completa: %0d muchii din '%s'.", total_edges, filename);
+task load_edges;
+    input [8*50-1:0] filename;
+    output integer total_edges;
+    
+    integer file_e;
+    integer status;
+    reg [VERT_ADDR-1:0] tmp_idx_a, tmp_idx_b;
+    
+    // Registru temporar pentru a citi ambii indici lipiți
+    reg [(2*VERT_ADDR)-1:0] combined_edge;
+    
+    begin
+        total_edges = 0;
+        file_e = $fopen(filename, "r");
+        if (file_e == 0) begin
+            $display("[EROARE] Nu s-a putut deschide: %s", filename);
+            $finish;
         end
-    endtask
+
+        while (!$feof(file_e)) begin
+            // Citim valoarea hexazecimală lipită
+            status = $fscanf(file_e, "%h\n", combined_edge);
+            
+            if (status == 1) begin
+                // Presupunând că ordinea în mem este V1 urmat de V2:
+                tmp_idx_a = combined_edge[(2*VERT_ADDR)-1 : VERT_ADDR]; // Primul index
+                tmp_idx_b = combined_edge[VERT_ADDR-1 : 0];             // Al doilea index
+                
+                data_write_edge(total_edges[EDGE_ADDR-1:0], tmp_idx_a, tmp_idx_b);
+                total_edges = total_edges + 1;
+            end
+        end
+        $fclose(file_e);
+        $display("[SUCCES] Incarcare completa: %0d muchii din '%s'.", total_edges, filename);
+    end
+endtask
 
 
 
@@ -357,37 +376,31 @@ module tb_top_graphics;
         @(posedge clk);
 
         // 3. Incarcarea geometriei (se face o singura data la inceput)
-        ps_buffer_mode = 1;
+        buffer_mode = 1;
         $display("[INFO] Incarcare geometrie la timpul %0d us.", $time / 1000);
         
         
         
         //load_vertices("vertices_prism_q_16_8.txt", parsed_vertices);
-        load_vertices("vertices_prism.txt", parsed_vertices);
-        load_edges("edges_prism.txt", parsed_edges);
-        
+        //load_vertices("vertices_prism.txt", parsed_vertices);
+        //load_edges("edges_prism.txt", parsed_edges);
+        load_vertices("vertices_teapot.mem", parsed_vertices);
+        load_edges("edges_teapot.mem", parsed_edges);    
         
         
         vertex_count = parsed_vertices[VERT_ADDR-1:0];          
         edge_count   = parsed_edges[EDGE_ADDR-1:0];     
         
         @(posedge clk);
-        ps_buffer_mode = 0; // Cedam controlul nucleului grafic
+        buffer_mode = 0; // Cedam controlul nucleului grafic
         repeat(5) @(posedge clk);
 
         // 4. Bucla de generare cadre (Exemplu: 36 cadre pentru o rotatie completa)
-        for (i = 0; i < 360; i = i + 1) begin
+        for (i = 0; i < 720; i = i + 1) begin
             $display("\n[FRAME %0d] Randare unghi: %0d grade", i, angle);
 
-            // --- LOGICA DE SCHIMBARE DINAMICA A ROTATIEI ---
-            if (i < 100) begin
-                rotation_type = 3'b000; // Rotește pe X
-            end else if (i < 190) begin
-                rotation_type = 3'b010; // Rotește pe Y
-            end else begin
-                rotation_type = 3'b100; // Rotește pe Z
-            end
-            
+            rotation_type = 3'b010; 
+
             // Trigger start_frame
             start_frame = 1;
             @(posedge clk);
@@ -403,7 +416,6 @@ module tb_top_graphics;
 
             // Incrementam unghiul pentru cadrul urmator
             angle = angle + 10'd1; 
-            
             repeat(10) @(posedge clk);
         end
 

@@ -9,11 +9,9 @@
 //---------------------------------------------------------------
 // Descriere  : Bloc de configurare si incarcare automata a 
 //              geometriei din memorii ROM interne (fisiere .mem)
-//              catre nucleul grafic 3D. Gestioneaza animatia
+//              catre acceleratorul grafic 3D. Gestioneaza animatia
 //              prin incrementarea unghiului si controlul cadrelor.
 //---------------------------------------------------------------
-
-`timescale 1ns / 1ps
 
 module config_block #(
     parameter INT_BITS      = 16,                       // Numar de biti parte intreaga (include semnul)
@@ -35,7 +33,6 @@ module config_block #(
     
     parameter FOCAL         = 1,
     parameter CAM_Z         = 2,
-    parameter FRAME_PAUSE   = 10,
     
     parameter WORD_BITS     = 32    
 )(
@@ -44,7 +41,7 @@ module config_block #(
     input [3:0]                     sw,                   // Switch-uri fizice placa
     
     // Semnale de control catre top_graphics
-    output reg                      ps_buffer_mode,       // Control mod magistrala (1 = Config, 0 = Hardware)
+    output reg                      buffer_mode,          // Control mod magistrala (1 = Config, 0 = Hardware)
     output reg                      start_frame,          // Impuls pornire cadru nou
     output reg  [VERT_ADDR-1:0]     vertex_count,         // Numarul total de varfuri transmise
     output reg  [EDGE_ADDR-1:0]     edge_count,           // Numarul total de muchii transmise
@@ -136,7 +133,7 @@ module config_block #(
         if (!rst_n) begin
             // Reset complet al tuturor registrelor de iesire si interne
             start_frame    <= 1'b0;
-            ps_buffer_mode <= 1'b1;
+            buffer_mode <= 1'b1;
             vertex_count   <= NUM_VERTICES[VERT_ADDR-1:0];
             edge_count     <= NUM_EDGES   [EDGE_ADDR-1:0];
             angle          <= 10'd0;
@@ -162,7 +159,7 @@ module config_block #(
 
             case (state)
                 INIT: begin
-                    ps_buffer_mode <= 1'b1; // Se izoleaza top_graphics, preluam controlul memoriei
+                    buffer_mode <= 1'b1; // Se izoleaza top_graphics, preluam controlul memoriei
                     init_counter   <= 0;
                 end
 
@@ -193,11 +190,11 @@ module config_block #(
                 end
 
                 FINISH_LOAD: begin
-                    ps_buffer_mode <= 1'b0; // Cedam controlul magistralelor catre Master Controller-ul hardware
+                    buffer_mode <= 1'b0; // Cedam controlul magistralelor catre Master Controller-ul hardware
                     init_counter   <= 0;
                 end
                 
-                WAIT_SETTLE: begin // NOU: Incrementeaza pana la 7 (asigura exact 8 cicli de ceas de pauza)
+                WAIT_SETTLE: begin // Incrementeaza pana la 7 (asigura exact 8 cicli de ceas de pauza)
                     if (init_counter == 10'd7) begin
                         init_counter <= 0;  // Reset pentru urmatoarele utilizari
                     end else begin

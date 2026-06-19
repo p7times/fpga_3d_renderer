@@ -204,7 +204,7 @@ module tb_add_q;
         run_test(MAX_VAL, MIN_VAL, 32'hFFFF_FFFF, 1'b0,             "MAX+MIN   ");
         run_test(MIN_VAL, MAX_VAL, 32'hFFFF_FFFF, 1'b0,             "MIN+MAX   ");
         // La sfarsitul blocului initial, dupa testele fixe:
-        run_random_tests_add(42,  200);   // sau sub / mult / div
+        run_random_tests_add(42,  2000);   // sau sub / mult / div
         // run_random_tests_add($time, 200); // seed dinamic
         $display("---------------------------------------------");
         $display("=== TEST ADD terminat cu %0d erori ===", error_count);

@@ -21,15 +21,15 @@
 
 module top_graphics #(
     parameter INT_BITS      = 16,                       // Numar de biti parte intreaga (include semnul)
-    parameter FRAC_BITS     = 12,                       // Numar de biti parte fractionara
+    parameter FRAC_BITS     = 16,                       // Numar de biti parte fractionara
     parameter DATA_WIDTH    = INT_BITS + FRAC_BITS,     // Latime date coordinate (Q16.16)
 
     parameter VERT_ADDR     = 8,
     parameter EDGE_ADDR     = 10,
     
     parameter COORD_BITS    = 12,
-    parameter H_RES         = 640,
-    parameter V_RES         = 480,
+    parameter H_RES         = 1280,
+    parameter V_RES         = 720,
     
     parameter FOCAL         = 1,
     parameter CAM_Z         = 2,
@@ -42,7 +42,7 @@ module top_graphics #(
     input                       clk,
     input                       rst_n,
     
-    input                       ps_buffer_mode,    
+    input                       buffer_mode,    
     input                       start_frame,
     input  [FB_ADDR_WIDTH-1:0]  fb_rd_addr,
   
@@ -58,7 +58,7 @@ module top_graphics #(
     input  [2*VERT_ADDR-1:0]    eb_wr_data,
 
 
-    // ---------------- PS WRITE INTERFACE ----------------
+    // ---------------- BUFFER WRITE INTERFACE ----------------
     input  [VERT_ADDR-1:0]      vb_wr_addr,
     input                       vb_wr_cs,
     input                       vb_wr_en,
@@ -91,13 +91,13 @@ module top_graphics #(
     wire [VERT_ADDR-1:0]    vb_addr_mc;
     wire                    vb_cs_mc;
     wire [3*DATA_WIDTH-1:0] vb_data_mc;
-    wire [3*DATA_WIDTH-1:0] vb_din_mux;
+    wire [3*DATA_WIDTH-1:0] vb_buffer_mode;
 
-    wire [VERT_ADDR-1:0]    vb_addr = ps_buffer_mode ? vb_wr_addr : vb_addr_mc;
-    wire                    vb_cs   = ps_buffer_mode ? vb_wr_cs : vb_cs_mc;  
-    wire                    vb_wr   = ps_buffer_mode ? vb_wr_en : 1'b0;
+    wire [VERT_ADDR-1:0]    vb_addr = buffer_mode ? vb_wr_addr : vb_addr_mc;
+    wire                    vb_cs   = buffer_mode ? vb_wr_cs : vb_cs_mc;  
+    wire                    vb_wr   = buffer_mode ? vb_wr_en : 1'b0;
         
-    assign vb_din_mux = ps_buffer_mode ? vb_wr_data : 0;
+    assign vb_buffer_mode = buffer_mode ? vb_wr_data : 0;
 
     vertex_buffer #(
         .ADDR_WIDTH(VERT_ADDR),
@@ -109,7 +109,7 @@ module top_graphics #(
         .cs(vb_cs),
         .wr(vb_wr),
         .addr(vb_addr),
-        .dataIn(vb_din_mux),
+        .dataIn(vb_buffer_mode),
         .dataOut(vb_data_mc)
     );
 
@@ -118,13 +118,13 @@ module top_graphics #(
     wire [EDGE_ADDR-1:0]    eb_addr_mc;
     wire                    eb_cs_mc;
     wire [2*VERT_ADDR-1:0]  eb_data_mc;
-    wire [2*VERT_ADDR-1:0]  eb_din_mux;
+    wire [2*VERT_ADDR-1:0]  eb_buffer_mode;
 
-    wire [EDGE_ADDR-1:0]    eb_addr = ps_buffer_mode ? eb_wr_addr : eb_addr_mc;   
-    wire                    eb_cs   = ps_buffer_mode ? eb_wr_cs : eb_cs_mc;   
-    wire                    eb_wr   = ps_buffer_mode ? eb_wr_en : 1'b0;
+    wire [EDGE_ADDR-1:0]    eb_addr = buffer_mode ? eb_wr_addr : eb_addr_mc;   
+    wire                    eb_cs   = buffer_mode ? eb_wr_cs : eb_cs_mc;   
+    wire                    eb_wr   = buffer_mode ? eb_wr_en : 1'b0;
     
-    assign eb_din_mux = ps_buffer_mode ? eb_wr_data : 0;
+    assign eb_buffer_mode = buffer_mode ? eb_wr_data : 0;
 
     edge_buffer #(
         .EDGE_ADDR(EDGE_ADDR),
@@ -135,7 +135,7 @@ module top_graphics #(
         .cs(eb_cs),
         .wr(eb_wr),
         .addr(eb_addr),
-        .dataIn(eb_din_mux),
+        .dataIn(eb_buffer_mode),
         .dataOut(eb_data_mc)
     );
 
@@ -228,7 +228,7 @@ module top_graphics #(
         .x_in(fb_x[COORD_BITS-2:0]),
         .y_in(fb_y[COORD_BITS-2:0]),
         .pixel_in(1'b1),
-        .rd_adresa(fb_rd_addr),
+        .rd_address(fb_rd_addr),
         .rd_dataOut(fb_rd_data),
         .busy(fb_busy),
         .dbg_clear_addr(),
@@ -243,6 +243,9 @@ module top_graphics #(
         
         .VERT_ADDR(VERT_ADDR),
         .EDGE_ADDR(EDGE_ADDR),
+        
+        .FOCAL(FOCAL),
+        .CAM_Z(CAM_Z),
         
         .COORD_BITS(COORD_BITS),
         .H_RES(H_RES),

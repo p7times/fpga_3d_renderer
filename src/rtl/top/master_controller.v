@@ -284,7 +284,7 @@ module master_controller #(
             latch_xs_b  <= 0; latch_ys_b  <= 0;
         end else begin
 
-            // Semnale cu durata de un ciclu -- reset implicit in fiecare ciclu
+            // Semnale cu durata de un ciclu, reset implicit in fiecare ciclu
             vp_start   <= 0;
             bu_start   <= 0;
             fb_clear   <= 0;
@@ -302,6 +302,10 @@ module master_controller #(
 
                 CLEAR_FB: begin
                     fb_clear <= 1;
+                end
+
+                WAIT_CLEAR: begin
+                    // Asteapta !fb_busy
                 end
 
                 READ_VERTEX: begin
@@ -351,7 +355,6 @@ module master_controller #(
                 end
 
                 WAIT_EDGE: begin
-
                 end
          
                 LATCH_EDGE: begin
@@ -365,7 +368,6 @@ module master_controller #(
                 end
 
                 WAIT_PT_A: begin
-
                 end
                 
                 LATCH_PT_A: begin
@@ -379,7 +381,6 @@ module master_controller #(
                 end
 
                 WAIT_PT_B: begin
-  
                 end
                 
                 LATCH_PT_B: begin

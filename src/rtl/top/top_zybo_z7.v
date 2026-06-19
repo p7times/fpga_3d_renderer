@@ -1,13 +1,37 @@
-`timescale 1ns / 1ps
+//---------------------------------------------------------------
+// Universitatea Transilvania din Brasov
+// Facultatea IESC
+//
+// Proiect    : Grafica 3D implementata pe FPGA
+// Modul      : top_zybo_z7
+// Autor      : Petru-Andrei BRASOVEANU  
+// An         : 2026
+//---------------------------------------------------------------
+// Descriere  : Acesta este modulul de nivel inalt (top-level) al proiectului.
+//              Rolul sau principal este de a integra si interconecta toate sub-modulele 
+//              sistemului de randare 3D:
+// 
+//              1. config_block  - Gestioneaza starile, memoriile si datele de intrare.
+//              2. top_graphics  - Nucleul grafic care proceseaza si randeaza modelul 3D.
+//              3. clk_wiz_0     - Genereaza semnalele de ceas (sistem, pixel si TMDS).
+//              4. video_timing  - Controleaza timpii de sincronizare pentru rezolutia setata.
+//              5. rgb2dvi_0     - Converteste semnalele video si RGB pentru iesirea HDMI.
+//
+//              De asemenea, modulul calculeaza adresele pentru citirea din 
+//              framebuffer pe baza coordonatelor curente (pixel_x, pixel_y) 
+//              si implementeaza o intarziere logica (pipeline delay) a semnalelor 
+//              de sincronizare (vde, hsync, vsync) pentru a compensa latenta 
+//              de citire din memoria BRAM.
+//---------------------------------------------------------------
 
 module top_zybo_z7 #(
    
     // --- PARAMETRI MODEL 3D ---
-    parameter NUM_VERTICES = 16,
-    parameter NUM_EDGES    = 24,
+    parameter NUM_VERTICES = 137,
+    parameter NUM_EDGES    = 264,
     
-    parameter VERT_FILE    = "vertices.mem",
-    parameter EDGE_FILE    = "edges.mem",
+    parameter VERT_FILE    = "vertices_teapot.mem",
+    parameter EDGE_FILE    = "edges_teapot.mem",
     
     // --- PARAMETRI ECRAN ---
     parameter WORD_BITS     = 32,
@@ -18,14 +42,9 @@ module top_zybo_z7 #(
 )(
     input                       sys_clk,        // Ceas 125 MHz de pe FPGA
     input   [3:0]               sw,             // Switch-uri FPGA
-    input                       btn_rst,           // Buton Reset
-    // input   [FB_WORD_ADDR-1:0]  fb_rd_addr,     // Adresa unui cuvant din framebuffer
-  //  input                       ready,
+    input                       btn_rst,        // Buton Reset
     
-    //output  [WORD_BITS-1:0]     fb_rd_data,     // Datele de iesire din framebuffer
-   // output                      frame_done_out,  // Status calculare cadru
-    
-    output [2:0] tmds_data_p, tmds_data_n,  // HDMI diferential
+    output [2:0] tmds_data_p, tmds_data_n,      // HDMI diferential
     output        tmds_clk_p,  tmds_clk_n
 );
 
@@ -38,19 +57,19 @@ module top_zybo_z7 #(
     localparam FRAC_BITS        = 12;
     localparam DATA_WIDTH       = INT_BITS + FRAC_BITS; 
        
-    localparam VERT_ADDR        = 8;    // Alocă exact numărul de biți necesar pentru vârfuri
-    localparam EDGE_ADDR        = 10;   // Alocă exact numărul de biți necesar pentru muchii
+    localparam VERT_ADDR        = 8;            // Alocă exact numărul de biți necesar pentru vârfuri
+    localparam EDGE_ADDR        = 10;           // Alocă exact numărul de biți necesar pentru muchii
 
 
 
     wire pixel_clk;      // 74.25 MHz
     wire pixel_clk_5x;   // 371.25 MHz pentru TMDS
-    wire sys_clk_buf;    // ceas pipeline (ex. 100 MHz)
+    wire sys_clk_buf;    // ceas pipeline (74.25 MHz)
 
     wire rst_n = ~btn_rst;
 
     // Semnale de interconectare Control -> Grafica
-    wire                        ps_buffer_mode;
+    wire                        buffer_mode;
     wire                        start_frame;
     wire                        frame_done;
     wire [VERT_ADDR-1:0]        vertex_count;
@@ -69,8 +88,6 @@ module top_zybo_z7 #(
     wire                        eb_wr_cs;
     wire                        eb_wr_en;
     
-   // assign frame_done_out = frame_done;
-
     wire        hsync, vsync, vde;
     wire [11:0] pixel_x, pixel_y;
     wire [FB_WORD_ADDR-1:0] fb_video_addr;
@@ -89,7 +106,7 @@ module top_zybo_z7 #(
     always @(posedge pixel_clk) pixel_x_d <= pixel_x[4:0];
 
     wire pixel_bit = fb_video_data[pixel_x_d];
-    wire [23:0] rgb_data = pixel_bit ? 24'hFFFFFF : 24'h000000;
+    wire [23:0] rgb_data = pixel_bit ? 24'h00FFDA : 24'h000000;
     
     
     always @(posedge pixel_clk or negedge rst_n) begin
@@ -133,7 +150,7 @@ module top_zybo_z7 #(
         .sw(sw),
         .ready(ready_internal),
 
-        .ps_buffer_mode(ps_buffer_mode),
+        .buffer_mode(buffer_mode),
         .start_frame(start_frame),
         .vertex_count(vertex_count),
         .edge_count(edge_count),
@@ -166,7 +183,7 @@ module top_zybo_z7 #(
         .clk(sys_clk_buf),
         .rst_n(rst_n),
 
-        .ps_buffer_mode(ps_buffer_mode),
+        .buffer_mode(buffer_mode),
         .start_frame(start_frame),
         .vertex_count(vertex_count),
 
@@ -220,11 +237,12 @@ module top_zybo_z7 #(
       .aRst(~locked),               // input wire aRst
       
       .vid_pData(rgb_data),         // input wire [23 : 0] vid_pData
-      .vid_pVDE(vde_d),               // input wire vid_pVDE
-      .vid_pHSync(hsync_d),           // input wire vid_pHSync
-      .vid_pVSync(vsync_d),           // input wire vid_pVSync
+      .vid_pVDE(vde_d),             // input wire vid_pVDE
+      .vid_pHSync(hsync_d),         // input wire vid_pHSync
+      .vid_pVSync(vsync_d),         // input wire vid_pVSync
       
-      .PixelClk(pixel_clk),          // input wire PixelClk
-      .SerialClk(pixel_clk_5x)       // input wire SerialClk
+      .PixelClk(pixel_clk),         // input wire PixelClk
+      .SerialClk(pixel_clk_5x)      // input wire SerialClk
     );
-endmodule
+    
+endmodule // top_zybo_z7

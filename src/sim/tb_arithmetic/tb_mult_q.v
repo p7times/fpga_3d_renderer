@@ -56,7 +56,7 @@ module tb_mult_q;
         .a        (a),
         .b        (b),
         .overflow (overflow),
-        .result   (result)
+        .product   (result)
     );
 
     // ---------------------------------------------------
@@ -240,7 +240,7 @@ module tb_mult_q;
     //    run_test(32'h0100_0000, 32'hFF00_0000, MIN_VAL, 1'b1,       "256*-256  ");
     //    run_test(MIN_VAL, 32'hFFFF_0000, MAX_VAL, 1'b1,             "MIN*-1    ");
 
-        run_random_tests_mult(42,  200);
+        run_random_tests_mult(42,  2000);
         //run_test(32'hffff_3a97, 32'h759b_c3eb, 32'ha54f_052f, 1'b0, "xp");
         //run_test(32'hffff_3a97, 32'hd841_18b0, 32'h1ea6_2a8b, 1'b0, "yp");
         
