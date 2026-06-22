@@ -35,11 +35,11 @@
 //---------------------------------------------------------------
 
 module framebuffer #(
-    parameter H_RES       = 1280,                               // Rezolutie orizontala in pixeli
-    parameter V_RES       = 720,                               // Rezolutie verticala in pixeli
-    parameter WORD_BITS   = 32,                                 // Numar de biti per cuvant BRAM (32 biti = 32 pixeli monocromi)
-    parameter TOTAL_WORDS = (H_RES * V_RES) / WORD_BITS,        // Numarul total de cuvinte in memorie (64800)
-    parameter ADDR_WIDTH = $clog2((H_RES * V_RES) / WORD_BITS)  // Numarul minim de biti necesari pentru adresarea cuvintelor
+    parameter H_RES       = 1280,                                   // Rezolutie orizontala in pixeli
+    parameter V_RES       = 720,                                    // Rezolutie verticala in pixeli
+    parameter WORD_BITS   = 32,                                     // Numar de biti per cuvant BRAM (32 biti = 32 pixeli monocromi)
+    parameter TOTAL_WORDS = (H_RES * V_RES) / WORD_BITS,            // Numarul total de cuvinte in memorie (64800)
+    parameter FB_ADDR_WIDTH = $clog2((H_RES * V_RES) / WORD_BITS)   // Numarul minim de biti necesari pentru adresarea cuvintelor
 )(
     input                       clk,                        // Semnal de ceas
     input                       rst_n,                      // Reset asincron (activ in 0)
@@ -53,13 +53,13 @@ module framebuffer #(
     input                       pixel_in,           // Valoare pixel: 0 -> negru, 1 -> alb
 
     // Interfata citire HDMI
-    input      [ADDR_WIDTH-1:0] rd_address,
+    input      [FB_ADDR_WIDTH-1:0] rd_address,
     output reg [WORD_BITS-1:0]  rd_dataOut,
 
     // Semnale status/debug
     output                      busy,
-    output     [ADDR_WIDTH-1:0] dbg_clear_addr,     // Debug FSM clear
-    output     [2:0]            dbg_state           // Debug stare FSM
+    output     [FB_ADDR_WIDTH-1:0] dbg_clear_addr,      // Debug FSM clear
+    output     [2:0]            dbg_state               // Debug stare FSM
 );
     
     // ------------------------
@@ -102,7 +102,7 @@ module framebuffer #(
     localparam OFFSET_BITS = $clog2(WORD_BITS);
 
     wire [$clog2(H_RES*V_RES)-1:0] pixel_index;         // Index liniar pixel
-    wire [ADDR_WIDTH-1:0]          pixel_addr;          // Adresa cuvantului BRAM
+    wire [FB_ADDR_WIDTH-1:0]          pixel_addr;       // Adresa cuvantului BRAM
     wire [OFFSET_BITS-1:0]         bit_offset;          // Pozitia bitului in cuvant
     wire [WORD_BITS-1:0]           bit_mask;            // Masca pentru modificarea pixelului
     wire in_bounds = (x_in < H_RES) && (y_in < V_RES);  // Protectie coordonate invalide
@@ -119,13 +119,13 @@ module framebuffer #(
     // Registre interne FSM si semnale Clear
     // ------------------------------------------------
 
-    reg [ADDR_WIDTH-1:0] clear_addr;
+    reg [FB_ADDR_WIDTH-1:0] clear_addr;
     reg clear_d;                            // Delay pentru detectie front pozitiv clear
     wire clear_start = clear & ~clear_d;    // Puls un singur ciclu la activarea clear
 
     // Latch-uri pentru a salva datele de intrare (local) deoarece operatia
     // Read-Modify-Write dureaza mai multe cicluri.
-    reg [ADDR_WIDTH-1:0] latched_addr;
+    reg [FB_ADDR_WIDTH-1:0] latched_addr;
     reg [WORD_BITS-1:0]  latched_mask;
     reg                  latched_pixel;
 
@@ -160,9 +160,9 @@ module framebuffer #(
 
         if (!rst_n) begin
             clear_d    <= 1'b0;
-            clear_addr <= {ADDR_WIDTH{1'b0}};
+            clear_addr <= {FB_ADDR_WIDTH{1'b0}};
 
-            latched_addr  <= {ADDR_WIDTH{1'b0}};
+            latched_addr  <= {FB_ADDR_WIDTH{1'b0}};
             latched_mask  <= {WORD_BITS{1'b0}};
             latched_pixel <= 1'b0;
         end
@@ -210,7 +210,7 @@ module framebuffer #(
 
     reg [WORD_BITS-1:0] b_read_data;
     wire port_b_we;
-    wire [ADDR_WIDTH-1:0] port_b_addr;
+    wire [FB_ADDR_WIDTH-1:0] port_b_addr;
     wire [WORD_BITS-1:0] port_b_data_in;
 
     // Write Enable

@@ -216,7 +216,11 @@ module top_zybo_z7 #(
     
     
     // 4. Video timing
-    video_timing u_vt (
+    video_timing #(
+        .H_ACTIVE(H_RES),
+        .V_ACTIVE(V_RES),
+        .COORD_BITS(COORD_BITS)
+    ) u_vt (
         .pixel_clk (pixel_clk),
         .rst_n     (rst_n),
         .hsync     (hsync),

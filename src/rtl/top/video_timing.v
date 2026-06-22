@@ -27,7 +27,8 @@ module video_timing #(
     parameter V_ACTIVE = 720,  // Zona vizibila pe verticala
     parameter V_FP     = 5,    // Front porch vertical
     parameter V_SYNC   = 5,    // Pulsul de sincronizare verticala
-    parameter V_BP     = 20    // Back porch vertical
+    parameter V_BP     = 20,   // Back porch vertical
+    parameter COORD_BITS = 12
 )(
     input              pixel_clk,  // Ceasul de pixel (frecventa depinde de rezolutie)
     input              rst_n,      // Reset asincron activ pe zero logic
@@ -35,8 +36,8 @@ module video_timing #(
     output reg         hsync,      // Semnalul de sincronizare orizontala
     output reg         vsync,      // Semnalul de sincronizare verticala
     output reg         vde,        // Video Data Enable (1 cand pixelul este vizibil)
-    output reg  [11:0] pixel_x,    // Coordonata X curenta (coloana)
-    output reg  [11:0] pixel_y     // Coordonata Y curenta (randul)
+    output reg  [COORD_BITS-1:0] pixel_x,    // Coordonata X curenta (coloana)
+    output reg  [COORD_BITS-1:0] pixel_y     // Coordonata Y curenta (randul)
 );
 
     // Calculul dimensiunilor totale ale cadrului (inclusiv perioadele de blanking)
@@ -44,8 +45,8 @@ module video_timing #(
     localparam V_TOTAL = V_ACTIVE + V_FP + V_SYNC + V_BP; // Total linii pe cadru: 750
 
     // Registre interne pentru numararea pixelilor si a liniilor
-    reg [11:0] h_cnt;
-    reg [11:0] v_cnt;
+    reg [COORD_BITS-1:0] h_cnt;
+    reg [COORD_BITS-1:0] v_cnt;
 
     // Contorul orizontal parcurge toti pixelii de pe o linie
     always @(posedge pixel_clk or negedge rst_n) begin

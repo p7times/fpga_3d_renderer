@@ -12,17 +12,18 @@
    </db_ref_list>
    <zoom_setting>
       <ZoomStartTime time="0.000000 us"></ZoomStartTime>
-      <ZoomEndTime time="991.000001 us"></ZoomEndTime>
-      <Cursor1Time time="921.000000 us"></Cursor1Time>
+      <ZoomEndTime time="2,000.000001 us"></ZoomEndTime>
+      <Cursor1Time time="1,983.520599 us"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="164"></NameColumnWidth>
-      <ValueColumnWidth column_width="106"></ValueColumnWidth>
+      <ValueColumnWidth column_width="102"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="19" />
    <wave_markers>
-      <marker label="" time="10929282" />
-      <marker label="" time="769918422" />
+      <marker label="" time="8115000" />
+      <marker label="" time="799425000" />
+      <marker label="" time="1375525000" />
    </wave_markers>
    <wvobject type="logic" fp_name="/tb_top_graphics/clk">
       <obj_property name="ElementShortName">clk</obj_property>
@@ -44,56 +45,6 @@
       <obj_property name="ElementShortName">busy</obj_property>
       <obj_property name="ObjectShortName">busy</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb_top_graphics/uut/dbg_mc_state">
-      <obj_property name="ElementShortName">dbg_mc_state[4:0]</obj_property>
-      <obj_property name="ObjectShortName">dbg_mc_state[4:0]</obj_property>
-      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
-   </wvobject>
-   <wvobject type="array" fp_name="/tb_top_graphics/uut/dbg_fb_state">
-      <obj_property name="ElementShortName">dbg_fb_state[2:0]</obj_property>
-      <obj_property name="ObjectShortName">dbg_fb_state[2:0]</obj_property>
-      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
-   </wvobject>
-   <wvobject type="array" fp_name="/tb_top_graphics/uut/dbg_vp_state">
-      <obj_property name="ElementShortName">dbg_vp_state[3:0]</obj_property>
-      <obj_property name="ObjectShortName">dbg_vp_state[3:0]</obj_property>
-      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
-   </wvobject>
-   <wvobject type="array" fp_name="/tb_top_graphics/uut/dbg_bu_state">
-      <obj_property name="ElementShortName">dbg_bu_state[2:0]</obj_property>
-      <obj_property name="ObjectShortName">dbg_bu_state[2:0]</obj_property>
-      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
-   </wvobject>
-   <wvobject type="array" fp_name="/tb_top_graphics/uut/dbg_v_idx">
-      <obj_property name="ElementShortName">dbg_v_idx[7:0]</obj_property>
-      <obj_property name="ObjectShortName">dbg_v_idx[7:0]</obj_property>
-      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
-   </wvobject>
-   <wvobject type="array" fp_name="/tb_top_graphics/uut/dbg_e_idx">
-      <obj_property name="ElementShortName">dbg_e_idx[9:0]</obj_property>
-      <obj_property name="ObjectShortName">dbg_e_idx[9:0]</obj_property>
-      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
-   </wvobject>
-   <wvobject type="logic" fp_name="/tb_top_graphics/uut/dbg_vp_valid">
-      <obj_property name="ElementShortName">dbg_vp_valid</obj_property>
-      <obj_property name="ObjectShortName">dbg_vp_valid</obj_property>
-   </wvobject>
-   <wvobject type="logic" fp_name="/tb_top_graphics/uut/dbg_bu_done">
-      <obj_property name="ElementShortName">dbg_bu_done</obj_property>
-      <obj_property name="ObjectShortName">dbg_bu_done</obj_property>
-   </wvobject>
-   <wvobject type="logic" fp_name="/tb_top_graphics/uut/dbg_overflow">
-      <obj_property name="ElementShortName">dbg_overflow</obj_property>
-      <obj_property name="ObjectShortName">dbg_overflow</obj_property>
-   </wvobject>
-   <wvobject type="logic" fp_name="/tb_top_graphics/uut/u_mc/fb_clear">
-      <obj_property name="ElementShortName">fb_clear</obj_property>
-      <obj_property name="ObjectShortName">fb_clear</obj_property>
-   </wvobject>
-   <wvobject type="logic" fp_name="/tb_top_graphics/uut/u_mc/fb_busy">
-      <obj_property name="ElementShortName">fb_busy</obj_property>
-      <obj_property name="ObjectShortName">fb_busy</obj_property>
-   </wvobject>
    <wvobject type="array" fp_name="/tb_top_graphics/angle">
       <obj_property name="ElementShortName">angle[9:0]</obj_property>
       <obj_property name="ObjectShortName">angle[9:0]</obj_property>
@@ -102,9 +53,85 @@
    <wvobject type="array" fp_name="/tb_top_graphics/fb_rd_addr">
       <obj_property name="ElementShortName">fb_rd_addr[14:0]</obj_property>
       <obj_property name="ObjectShortName">fb_rd_addr[14:0]</obj_property>
+      <obj_property name="CustomSignalColor">#FFA500</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
    </wvobject>
    <wvobject type="array" fp_name="/tb_top_graphics/fb_rd_data">
       <obj_property name="ElementShortName">fb_rd_data[31:0]</obj_property>
       <obj_property name="ObjectShortName">fb_rd_data[31:0]</obj_property>
+      <obj_property name="CustomSignalColor">#FFA500</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top_graphics/uut/u_mc/fb_clear">
+      <obj_property name="ElementShortName">fb_clear</obj_property>
+      <obj_property name="ObjectShortName">fb_clear</obj_property>
+      <obj_property name="CustomSignalColor">#FFA500</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top_graphics/uut/u_mc/fb_busy">
+      <obj_property name="ElementShortName">fb_busy</obj_property>
+      <obj_property name="ObjectShortName">fb_busy</obj_property>
+      <obj_property name="CustomSignalColor">#FFA500</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_graphics/uut/dbg_mc_state">
+      <obj_property name="ElementShortName">dbg_mc_state[4:0]</obj_property>
+      <obj_property name="ObjectShortName">dbg_mc_state[4:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      <obj_property name="CustomSignalColor">#0000FF</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_graphics/uut/dbg_fb_state">
+      <obj_property name="ElementShortName">dbg_fb_state[2:0]</obj_property>
+      <obj_property name="ObjectShortName">dbg_fb_state[2:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      <obj_property name="CustomSignalColor">#0000FF</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_graphics/uut/dbg_vp_state">
+      <obj_property name="ElementShortName">dbg_vp_state[3:0]</obj_property>
+      <obj_property name="ObjectShortName">dbg_vp_state[3:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      <obj_property name="CustomSignalColor">#0000FF</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_graphics/uut/dbg_bu_state">
+      <obj_property name="ElementShortName">dbg_bu_state[2:0]</obj_property>
+      <obj_property name="ObjectShortName">dbg_bu_state[2:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      <obj_property name="CustomSignalColor">#0000FF</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_graphics/uut/dbg_v_idx">
+      <obj_property name="ElementShortName">dbg_v_idx[7:0]</obj_property>
+      <obj_property name="ObjectShortName">dbg_v_idx[7:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      <obj_property name="CustomSignalColor">#0000FF</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_graphics/uut/dbg_e_idx">
+      <obj_property name="ElementShortName">dbg_e_idx[9:0]</obj_property>
+      <obj_property name="ObjectShortName">dbg_e_idx[9:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      <obj_property name="CustomSignalColor">#0000FF</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top_graphics/uut/dbg_vp_valid">
+      <obj_property name="ElementShortName">dbg_vp_valid</obj_property>
+      <obj_property name="ObjectShortName">dbg_vp_valid</obj_property>
+      <obj_property name="CustomSignalColor">#0000FF</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top_graphics/uut/dbg_bu_done">
+      <obj_property name="ElementShortName">dbg_bu_done</obj_property>
+      <obj_property name="ObjectShortName">dbg_bu_done</obj_property>
+      <obj_property name="CustomSignalColor">#0000FF</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top_graphics/uut/dbg_overflow">
+      <obj_property name="ElementShortName">dbg_overflow</obj_property>
+      <obj_property name="ObjectShortName">dbg_overflow</obj_property>
+      <obj_property name="CustomSignalColor">#0000FF</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
    </wvobject>
 </wave_config>

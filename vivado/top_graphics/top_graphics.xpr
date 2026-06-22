@@ -61,7 +61,7 @@
     <Option Name="IPStaticSourceDir" Val="$PIPUSERFILESDIR/ipstatic"/>
     <Option Name="EnableBDX" Val="FALSE"/>
     <Option Name="DSABoardId" Val="zybo-z7-10"/>
-    <Option Name="WTXSimLaunchSim" Val="440"/>
+    <Option Name="WTXSimLaunchSim" Val="443"/>
     <Option Name="WTModelSimLaunchSim" Val="0"/>
     <Option Name="WTQuestaLaunchSim" Val="0"/>
     <Option Name="WTIesLaunchSim" Val="0"/>
@@ -304,25 +304,12 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PPRDIR/../../src/sim/tb_top/tb_top_zybo_z7.v">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
       <File Path="$PPRDIR/../../src/meshes/vertices_prism.txt"/>
       <File Path="$PPRDIR/../../src/meshes/edges_prism.txt"/>
       <File Path="$PPRDIR/../../src/meshes/vertices_cube.txt"/>
       <File Path="$PPRDIR/../../src/meshes/edges_cube.txt"/>
       <File Path="$PPRDIR/../../src/meshes/vertices_prism_q_16_12.txt"/>
       <File Path="$PPRDIR/../../src/meshes/vertices_prism_q_16_8.txt"/>
-      <File Path="$PPRDIR/tb_top_zybo_z7_behav.wcfg">
-        <FileInfo>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
       <File Path="$PPRDIR/tb_top_graphics_behav1.wcfg">
         <FileInfo>
           <Attr Name="UsedIn" Val="simulation"/>

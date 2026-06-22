@@ -384,8 +384,8 @@ endtask
         //load_vertices("vertices_prism_q_16_8.txt", parsed_vertices);
         //load_vertices("vertices_prism.txt", parsed_vertices);
         //load_edges("edges_prism.txt", parsed_edges);
-        load_vertices("vertices_teapot.mem", parsed_vertices);
-        load_edges("edges_teapot.mem", parsed_edges);    
+        load_vertices("vertices_unitbv.mem", parsed_vertices);
+        load_edges("edges_unitbv.mem", parsed_edges);    
         
         
         vertex_count = parsed_vertices[VERT_ADDR-1:0];          

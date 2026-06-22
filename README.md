@@ -16,7 +16,7 @@ Arhitectura modulară separă clar etapele de transformare geometrică, rasteriz
 - **Output HDMI funcțional:** Sistemul generează semnal video live pe ieșirea HDMI fizică a plăcii Zybo Z7, la rezoluția 1280x720p, folosind IP-ul **rgb2dvi** de la Digilent și un **Clock Wizard (MMCM)** pentru generarea frecvențelor pixel (74.25 MHz) și TMDS (371.25 MHz).
 - **Video Timing Controller:** Implementat un modul hardware dedicat pentru generarea semnalelor de sincronizare (`hsync`, `vsync`, `vde`) conform standardului 720p, cu citire sincronă a Framebuffer-ului pe domeniul pixel clock.
 - **Configuration Block sintetizabil:** Înlocuirea completă a logicii de testbench cu un bloc FSM sintetizabil (`config_block`) care gestionează încărcarea geometriei din ROM-uri interne (fișiere `.mem`), animația continuă prin incrementarea unghiului și sincronizarea cu video controller-ul prin semnalul `ready` generat automat.
-- **Validare BMP:** Testbench-ul principal extrage periodic conținutul bit-packed din Framebuffer și generează automat secvențe de fișiere imagine în format `.bmp`, confirming funcționarea corectă a procesorului de vertecși, a proiecției de perspectivă și a rasterizatorului Bresenham.
+- **Validare BMP:** Testbench-ul principal extrage periodic conținutul bit-packed din Framebuffer și generează automat secvențe de fișiere imagine în format `.bmp`, confirmând funcționarea corectă a procesorului de vertecși, a proiecției de perspectivă și a rasterizatorului Bresenham.
 
 ---
 
@@ -72,7 +72,7 @@ Toate modulele suportă lungime de bit parametrizabilă și includ logică dedic
 
 | Resursă | Utilizare |
 |---------|-----------|
-| LUT     | 21%       |
+| LUT     | 22%       |
 | FF      | 11%       |
 | BRAM    | 58%       |
 | DSP     | 68%       |
@@ -105,7 +105,7 @@ Fiecare modul a fost verificat independent prin simulări cu stimuli aleatori (*
 - [x] **Clock Wizard MMCM** — generare frecvențe pixel și TMDS
 - [ ] **Z-Clipping (Clip Space):** Adăugarea parametrilor de clampare (planul NEAR și planul FAR) pentru a evita artefactele vizuale cauzate de valorile extreme pe axa Z.
 - [ ] **Data Safety:** Implementarea detecției și tratării complete a cazurilor de **Underflow** pe tot lanțul aritmetic.
-- [ ] **Documentație Completă:** Redactarea diagramelor de arhitectură (Block Designs), detalierea FSM-urilor și documentarea formatului Q ales.
+- [x] **Documentație Completă:** Redactarea diagramelor de arhitectură (Block Designs), detalierea FSM-urilor și documentarea formatului Q ales.
 
 ---
 
