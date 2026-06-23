@@ -1,4 +1,4 @@
-# Grafica 3D, implementata pe FPGA
+# Grafică 3D, implementată pe FPGA
 **Randare 3D în timp real implementată hardware pe FPGA (Verilog).**
 
 ## Descriere proiect
@@ -23,10 +23,9 @@ Arhitectura modulară separă clar etapele de transformare geometrică, rasteriz
 ## Structură Repository
 
 ```text
-├── doc_latex/          # Documentația proiectului
+├── src/                # Codul sursă Verilog (Modulele hardware)
 ├── generare_lut/       # Codul Python pentru calcularea valorilor LUT-ului sin și cos
 ├── hdmi_demo/          # Prototip implementat în C a pipeline-ului 3D
-├── src/                # Codul sursă Verilog (Modulele hardware)
 ├── vivado/             # Fișierele de rulare a proiectului în mediul de dezvoltare Vivado
 └── rgb2dvi/            # IP-ul RGB2DVI, utilizat pentru serializarea datelor RGB
 ```
@@ -109,9 +108,9 @@ Fiecare modul a fost verificat independent prin simulări cu stimuli aleatori (*
 
 ---
 
-**Autor:** Petru-Andrei BRASOVEANU 
-**Instituție:** Universitatea Transilvania din Brașov
-**An:** 2026 
-**Tehnologii:** Verilog 2001/SystemVerilog, Xilinx Vivado, FPGA (Zynq-7000), Fixed-Point DSP
+- **Autor:** Petru-Andrei BRASOVEANU 
+- **Instituție:** Universitatea Transilvania din Brașov
+- **An:** 2026 
+- **Tehnologii:** Verilog 2001, Xilinx Vivado, FPGA (Zynq-7000)
 
 
