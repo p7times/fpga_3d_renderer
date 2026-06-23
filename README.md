@@ -7,6 +7,7 @@ Acest proiect implementează un pipeline pentru grafica 3D, optimizat pentru arh
 Arhitectura modulară separă clar etapele de transformare geometrică, rasterizare și control al memoriei, permițând paralelizarea fluxului de date și un control complet determinist.
 
 ![3D Wireframe Render Output](output.gif)
+
 *Fig 1. Vizualizarea wireframe a modelului 3D, obținută prin conversia directă a dump-ului de memorie din Framebuffer în format .bmp*
 
 ---
@@ -102,9 +103,10 @@ Fiecare modul a fost verificat independent prin simulări cu stimuli aleatori (*
 - [x] **Configuration Block sintetizabil** — înlocuire completă a testbench-ului în fluxul hardware
 - [x] **Video Timing Controller** — generare semnale sincronizare 720p
 - [x] **Clock Wizard MMCM** — generare frecvențe pixel și TMDS
+- [x] **Documentație Completă:** Redactarea diagramelor de arhitectură (Block Designs), detalierea FSM-urilor și documentarea formatului Q ales.
 - [ ] **Z-Clipping (Clip Space):** Adăugarea parametrilor de clampare (planul NEAR și planul FAR) pentru a evita artefactele vizuale cauzate de valorile extreme pe axa Z.
 - [ ] **Data Safety:** Implementarea detecției și tratării complete a cazurilor de **Underflow** pe tot lanțul aritmetic.
-- [x] **Documentație Completă:** Redactarea diagramelor de arhitectură (Block Designs), detalierea FSM-urilor și documentarea formatului Q ales.
+
 
 ---
 
