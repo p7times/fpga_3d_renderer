@@ -49,7 +49,7 @@ module top_zybo_z7 #(
 );
 
 
-    localparam FOCAL            = 1;
+    localparam FOCAL            = 2;
     localparam CAM_Z            = 2;
     
     localparam COORD_BITS       = 12;
@@ -106,7 +106,9 @@ module top_zybo_z7 #(
     always @(posedge pixel_clk) pixel_x_d <= pixel_x[4:0];
 
     wire pixel_bit = fb_video_data[pixel_x_d];
-    wire [23:0] rgb_data = pixel_bit ? 24'h00FFDA : 24'h000000;
+    
+    // CHANNELS FOR COLOR:          RED BLUE GREEN
+    wire [23:0] rgb_data = pixel_bit ? 24'hFF00FF : 24'h000000;
     
     
     always @(posedge pixel_clk or negedge rst_n) begin
