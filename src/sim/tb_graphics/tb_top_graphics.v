@@ -236,7 +236,7 @@ module tb_top_graphics;
                     for (bit_idx = 0; bit_idx < WORD_BITS; bit_idx = bit_idx+1) begin
                         if (fb_rd_data[bit_idx])
                                                       // BLUE GREEN  RED
-                            $fwrite(file_id, "%c%c%c", 8'h00, 8'hFF, 8'hFF);
+                            $fwrite(file_id, "%c%c%c", 8'hFF, 8'hFF, 8'hFF);
                         else
                             $fwrite(file_id, "%c%c%c", 8'h00, 8'h00, 8'h00);
                     end
@@ -383,10 +383,10 @@ endtask
         
         
         //load_vertices("vertices_prism_q_16_8.txt", parsed_vertices);
-        //load_vertices("vertices_prism.txt", parsed_vertices);
-        //load_edges("edges_prism.txt", parsed_edges);
-        load_vertices("vertices_teapot.mem", parsed_vertices);
-        load_edges("edges_teapot.mem", parsed_edges);    
+       // load_vertices("vertices_teapot.mem", parsed_vertices);
+       // load_edges("edges_teapot.mem", parsed_edges);
+        load_vertices("vertices_unitbv.mem", parsed_vertices);
+        load_edges("edges_unitbv.mem", parsed_edges);    
         
         
         vertex_count = parsed_vertices[VERT_ADDR-1:0];          
