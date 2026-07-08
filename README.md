@@ -110,9 +110,4 @@ Fiecare modul a fost verificat independent prin simulări cu stimuli aleatori (*
 
 ---
 
-- **Autor:** Petru-Andrei BRASOVEANU 
-- **Instituție:** Universitatea Transilvania din Brașov
-- **An:** 2026 
-- **Tehnologii:** Verilog 2001, Xilinx Vivado, FPGA (Zynq-7000)
-
 
