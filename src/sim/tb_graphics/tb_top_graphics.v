@@ -423,7 +423,7 @@ endtask
         // 5. Finalizare
         $display("\n=== ANIMATIE COMPLETA ===");
         $display("=== REZULTATE PERFORMANȚĂ HARDWARE ===");
-        $display("[STAT] Frecventa ceas:               %0.3f MHz"       , (1.0 / $itor(CK_PER)) * 1000.0);
+        $display("[STAT] Frecventa ceas:               %0.3f MHz", (1.0 / CK_PER) * 1000.0); 
         $display("[STAT] Format Q:                     Q%0d.%0d semnat" , INT_BITS, FRAC_BITS);
         $display("[STAT] Focala:                       %0g mm"          , $itor(FOCAL) * 1000);
         $display("[STAT] Offset camera:                %0g m"           , $itor(CAM_Z));
