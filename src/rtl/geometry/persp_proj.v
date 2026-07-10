@@ -60,8 +60,8 @@ module persp_proj #(
                START_DIV = 3'b010,  // Trimite puls de start catre divizor
                CALC_DIV  = 3'b011,  // Asteapta rezultatul divizorului (f/z)
                DONE_DIV  = 3'b100,  // Salveaza rezultatul divizarii
-               CALC_PROJ = 3'b101,  // Asteapta rezultatul multiplicarilor (f/z)*x si (f/z)*y
-               WAIT_PROJ = 3'b110,  // Latenta +1 tact de ceas
+               START_MULT = 3'b101,  // Asteapta rezultatul multiplicarilor (f/z)*x si (f/z)*y
+               WAIT_MULT = 3'b110,  // Latenta +1 tact de ceas
                DONE      = 3'b111;  // Rezultate finale valide
 
     reg [2:0] state, next_state;
@@ -72,27 +72,27 @@ module persp_proj #(
     // Registrele interne ptr pipeline
     // ------------------------
 
-    reg [DATA_WIDTH-1:0] reg_f, reg_x, reg_y, reg_z;  // Datele de intrare
-    reg [DATA_WIDTH-1:0] reg_fz;                      // Rezultat intermediar f/z
+    reg [DATA_WIDTH-1:0]    reg_f, reg_x, reg_y, reg_z;  // Datele de intrare
+    reg [DATA_WIDTH-1:0]    reg_fz;                      // Rezultat intermediar f/z
 
 
     // ------------------------
     // Interfata divizor
     // ------------------------
 
-    reg                   div_start;     // Puls de start (1 ciclu)
-    wire [DATA_WIDTH-1:0] div_result;    // Rezultat impartire
-    wire                  div_valid;     // Semnal rezultat valid
+    reg                     div_start;     // Puls de start (1 ciclu)
+    wire [DATA_WIDTH-1:0]   div_result;    // Rezultat impartire
+    wire                    div_valid;     // Semnal rezultat valid
     
     
     // ------------------------
     // Interfata multiplicatoare
     // ------------------------
-
-    // mult_xp : (f/z) * x
-    // mult_yp : (f/z) * y
-    wire [DATA_WIDTH-1:0] mult_xp_result, mult_yp_result;
-    wire                  ovf_xp, ovf_yp;   // Flaguri overflow (DEBUG)
+    
+    reg                     mult_start;    // Puls de start pentru ambele multiplicatoare
+    wire [DATA_WIDTH-1:0]   mult_xp_result, mult_yp_result;
+    wire                    mult_xp_valid, mult_yp_valid;
+    wire                    ovf_xp, ovf_yp;
 
 
     // ------------------------
@@ -113,30 +113,34 @@ module persp_proj #(
         .valid   (div_valid)
     );
 
-    // Multiplicator axa X: xp = (f/z) * x
-    mult_q #(
+    // Multiplicator iterativ axa X: xp = (f/z) * x
+    mult_top_level_q #(
         .INT_BITS (INT_BITS),
         .FRAC_BITS(FRAC_BITS)
     ) u_mult_xp (
         .clk     (clk),
         .rst_n   (rst_n),
+        .start   (mult_start),
         .a       (reg_fz),
         .b       (reg_x),
         .overflow(ovf_xp),
-        .product (mult_xp_result)
+        .product (mult_xp_result),
+        .valid   (mult_xp_valid)
     );
 
-    // Multiplicator axa Y: = (f/z) * y
-    mult_q #(
+    // Multiplicator iterativ axa Y: yp = (f/z) * y
+    mult_top_level_q #(
         .INT_BITS (INT_BITS),
         .FRAC_BITS(FRAC_BITS)
     ) u_mult_yp (
         .clk     (clk),
         .rst_n   (rst_n),
+        .start   (mult_start),
         .a       (reg_fz),
         .b       (reg_y),
         .overflow(ovf_yp),
-        .product  (mult_yp_result)
+        .product (mult_yp_result),
+        .valid   (mult_yp_valid)
     );
 
 
@@ -151,15 +155,16 @@ module persp_proj #(
 
     always @(*) begin
         case (state)
-            IDLE:      next_state = start ? LOAD : IDLE;               
-            LOAD:      next_state = START_DIV;                         
-            START_DIV: next_state = CALC_DIV;                          
-            CALC_DIV:  next_state = div_valid ? DONE_DIV : CALC_DIV;    
-            DONE_DIV:  next_state = CALC_PROJ;
-            CALC_PROJ: next_state = WAIT_PROJ;
-            WAIT_PROJ: next_state = DONE;                          
-            DONE:      next_state = IDLE;                         
-            default:   next_state = IDLE;
+            IDLE:       next_state = start ? LOAD : IDLE;               
+            LOAD:       next_state = START_DIV;                         
+            START_DIV:  next_state = CALC_DIV;                          
+            CALC_DIV:   next_state = div_valid ? DONE_DIV : CALC_DIV;    
+            DONE_DIV:   next_state = START_MULT;
+            
+            START_MULT: next_state = WAIT_MULT;
+            WAIT_MULT:  next_state = (mult_xp_valid & mult_yp_valid) ? DONE : WAIT_MULT;                       
+            DONE:       next_state = IDLE;                         
+            default:    next_state = IDLE;
         endcase
     end
 
@@ -183,6 +188,7 @@ module persp_proj #(
             yp        <= 0;
             
             div_start <= 1'b0;
+            mult_start <= 1'b0;
             valid     <= 1'b0;
             overflow  <= 1'b0;
         end else begin
@@ -191,8 +197,9 @@ module persp_proj #(
 
                 // Asteapta semnalul de start
                 IDLE: begin
-                   div_start <= 1'b0;  // Divizorul ramane oprit
-                   valid     <= 1'b0;  // Valid este 1 doar in DONE
+                   div_start    <= 1'b0;    // Divizorul ramane oprit
+                   mult_start   <= 1'b0;    // Multiplicatoarele raman oprite
+                   valid        <= 1'b0;    // Valid este 1 doar in DONE
                 end
 
                 // Incarca datele de intrare in registre
@@ -219,17 +226,19 @@ module persp_proj #(
                 end
 
                 // Stare de asteptare pentru latenta multiplicatoarelor
-                CALC_PROJ: begin
+                START_MULT: begin
+                    mult_start <= 1'b1; // Dam trigger la ambele multiplicatoare simultan
                 end
                 
-                WAIT_PROJ: begin
+                WAIT_MULT: begin
+                    mult_start <= 1'b0; // Coboram start-ul imediat
                 end
                 
                 // Rezultat final disponibil
                 DONE: begin
                     xp       <= mult_xp_result;
                     yp       <= mult_yp_result;
-                    overflow <= ovf_xp | ovf_yp;
+                    overflow <= ovf_xp | ovf_yp;    // Daca vreunul depaseste pragul, marcam overflow
                     valid    <= 1'b1;
                 end
             endcase

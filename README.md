@@ -14,10 +14,7 @@ Arhitectura modulară separă clar etapele de transformare geometrică, rasteriz
 
 ## Progrese recente
 
-- **Output HDMI funcțional:** Sistemul generează semnal video live pe ieșirea HDMI fizică a plăcii Zybo Z7, la rezoluția 1280x720p, folosind IP-ul **rgb2dvi** de la Digilent și un **Clock Wizard (MMCM)** pentru generarea frecvențelor pixel (74.25 MHz) și TMDS (371.25 MHz).
-- **Video Timing Controller:** Implementat un modul hardware dedicat pentru generarea semnalelor de sincronizare (`hsync`, `vsync`, `vde`) conform standardului 720p, cu citire sincronă a Framebuffer-ului pe domeniul pixel clock.
-- **Configuration Block sintetizabil:** Înlocuirea completă a logicii de testbench cu un bloc FSM sintetizabil (`config_block`) care gestionează încărcarea geometriei din ROM-uri interne (fișiere `.mem`), animația continuă prin incrementarea unghiului și sincronizarea cu video controller-ul prin semnalul `ready` generat automat.
-- **Validare BMP:** Testbench-ul principal extrage periodic conținutul bit-packed din Framebuffer și generează automat secvențe de fișiere imagine în format `.bmp`, confirmând funcționarea corectă a procesorului de vertecși, a proiecției de perspectivă și a rasterizatorului Bresenham.
+- **Multiplicatoare iterative:** Procesorul de vertecși folosește multiplicatoare de tip iterativ (folosind algoritmul Booth pentru numere întregi). Aceasta a determinat scăderea drastică a numărului de DSP-uri folosite, în detrimentul unui timp de procesare crescut.
 
 ---
 
@@ -38,7 +35,7 @@ Arhitectura modulară separă clar etapele de transformare geometrică, rasteriz
 ### 1. Primitive Aritmetice Custom (Format Q)
 Toate modulele suportă lungime de bit parametrizabilă și includ logică dedicată pentru gestionarea limitelor numerice:
 * **Q-Adder/Subtractor:** Implementare cu saturare hardware și semnalizare pentru overflow.
-* **Q-Multiplier:** Gestionare automată a alinierii punctului fix după efectuarea produsului (mapare eficientă pe blocurile DSP48E1).
+* **Q-Multiplier:** Gestionare automată a alinierii punctului fix după efectuarea produsului, folosind algoritmul iterativ de multiplicare Booth a numerelor întregi.
 * **Q-Divider:** Implementare secvențială, bazată pe o mașină de stări (FSM) pentru economisirea resurselor logice (LUTs).
 
 ### 2. Pipeline Geometric (Vertex Processing)
@@ -72,16 +69,16 @@ Toate modulele suportă lungime de bit parametrizabilă și includ logică dedic
 
 | Resursă | Utilizare |
 |---------|-----------|
-| LUT     | 22%       |
-| FF      | 11%       |
+| LUT     | 16%       |
+| FF      | 13%       |
 | BRAM    | 58%       |
-| DSP     | 68%       |
+| DSP     | 3%        |
 | IO      | 14%       |
 | BUFG    | 13%       |
 | MMCM    | 50%       |
 
-**Timing:** WNS = 0.121 ns — toate constrângerile respectate. 
-**Putere:** 0.514 W total on-chip. 
+**Timing:** WNS = 2.034 ns — toate constrângerile respectate. 
+**Putere:** 0.492 W total on-chip. 
 **Target:** Xilinx xc7z010clg400-1 (Zybo Z7-10)
 
 ---
@@ -99,14 +96,28 @@ Fiecare modul a fost verificat independent prin simulări cu stimuli aleatori (*
 
 ## Roadmap / TODO
 
-- [x] **Output HDMI funcțional** — semnal video live pe monitor fizic
-- [x] **Configuration Block sintetizabil** — înlocuire completă a testbench-ului în fluxul hardware
-- [x] **Video Timing Controller** — generare semnale sincronizare 720p
-- [x] **Clock Wizard MMCM** — generare frecvențe pixel și TMDS
-- [x] **Documentație Completă:** Redactarea diagramelor de arhitectură (Block Designs), detalierea FSM-urilor și documentarea formatului Q ales.
-- [ ] **Z-Clipping (Clip Space):** Adăugarea parametrilor de clampare (planul NEAR și planul FAR) pentru a evita artefactele vizuale cauzate de valorile extreme pe axa Z.
-- [ ] **Data Safety:** Implementarea detecției și tratării complete a cazurilor de **Underflow** pe tot lanțul aritmetic.
+### 1. Fundație, I/O și Siguranța Datelor
+- [ ] **Data Safety:** Implementarea detecției și tratării complete a cazurilor de **Underflow** (și Overflow) pe tot lanțul aritmetic. Esențial înainte de a adăuga calcule complexe de rasterizare.
+- [ ] **Interfață VGA (BASYS 3):** Implementarea modulului de sincronizare VGA (HSYNC, VSYNC), compatibil cu BASYS 3. 
+- [ ] **Arhitectura Framebuffer-ului:** Stabilirea rezoluției și color depth-ului astfel încât să încapă în BRAM-ul de pe Basys 3.
 
+### 2. Procesarea Geometriei (Vertex Pipeline)
+- [ ] **Z-Clipping (Clip Space):** Adăugarea parametrilor de clampare (planul NEAR și planul FAR) pentru a evita artefactele vizuale cauzate de valorile extreme pe axa Z și diviziunea cu zero în perspectiva 3D.
+- [ ] **Back-Face Culling:** Implementarea unui modul hardware care calculează produsul vectorial 2D al vârfurilor (orientarea triunghiului) și aruncă fețele care nu sunt îndreptate spre cameră (economisește timp de procesare).
+
+### 3. Randare Fețe Solide (Rasterization Pipeline)
+- [ ] **Setup Triunghi (Bounding Box):** Modul care primește cele 3 vârfuri 2D și determină dreptunghiul minim încadrator (X_min, X_max, Y_min, Y_max).
+- [ ] **Rasterizator (Pineda Edge Equations):** Parcurgerea pixelilor din Bounding Box și evaluarea ecuațiilor de muchie pentru a determina dacă un pixel se află în interiorul triunghiului. 
+- [ ] **Flat Shading (Iluminare):** Calcularea unui coeficient de luminozitate pe baza normalei feței 3D și aplicarea acestuia peste culoarea de bază a triunghiului.
+
+### 4. Managementul Adâncimii (Depth Resolution)
+- [ ] **Strategia de Adâncime (Decizie arhitecturală):** Deoarece un Z-buffer tradițional s-ar putea să nu încapă în BRAM-ul rămas pe Basys 3 alături de Framebuffer, trebuie implementată o soluție:
+  - *Opțiunea A:* Z-buffer la rezoluție redusă (ex: 160x120) sau cu precizie foarte mică (4-bit/8-bit Z-depth).
+  - *Opțiunea B:* Painter's Algorithm (Z-Sorting) - sortarea hardware a triunghiurilor de la cel mai îndepărtat la cel mai apropiat înainte de rasterizare (necesită un buffer pentru indicii fețelor).
+
+### 5. Documentație și Cleanup
+- [ ] **Actualizare documentație Vertex Processor:** Modificare subsecțiuni pentru multiplicarea iterativă + utilizare resurse FPGA (LUTs, DSP-uri, BRAM utilizat).
+- [ ] **Documentare Pipeline Nou:** Adăugarea schemelor bloc (RTL) pentru noile module de Rasterizare și Culling.
 
 ---
 

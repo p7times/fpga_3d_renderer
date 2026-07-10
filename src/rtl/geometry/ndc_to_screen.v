@@ -49,8 +49,8 @@ module ndc_to_screen #(
 
     localparam IDLE         = 4'b0000,   // Asteapta semnalul de start
                LOAD         = 4'b0001,   // Incarca datele de intrare in registrele interne
-               CALC_MULT    = 4'b0010,   // Etapa de multiplicare (xp*h, yp*h)
-               WAIT_MULT    = 4'b0011,  
+               START_MULT   = 4'b0010,   // Etapa de multiplicare (xp*h, yp*h)
+               WAIT_MULT    = 4'b0011,   // Asteapta rezultatele iterative
                DONE_MULT    = 4'b0100,   // Salvare rezultate multiplicare
                ADD_SUB      = 4'b0101,   // Etapa de adunare/scadere (translatie)
                DONE_ADD_SUB = 4'b0110,   // Salvare rezultate adunare/scadere
@@ -77,6 +77,10 @@ module ndc_to_screen #(
     // Semnale interfata submodule aritmetice
     // ------------------------
 
+    reg                   mult_start;        // Semnal start pentru inmultitoare
+    wire                  mult_xp_valid;     // Validare inmultitor X
+    wire                  mult_yp_valid;     // Validare inmultitor Y
+    
     wire [DATA_WIDTH-1:0] mult_xph_result;  
     wire [DATA_WIDTH-1:0] mult_yph_result;  
     wire [DATA_WIDTH-1:0] add_result;   
@@ -90,30 +94,34 @@ module ndc_to_screen #(
     // Instantiere submodule aritmetice
     // ------------------------
 
-    // Multiplicator pentru axa X: xp * h
-    mult_q #(
+    // Multiplicator iterativ pentru axa X: xp * h
+    mult_top_level_q #(
         .INT_BITS (INT_BITS),
         .FRAC_BITS(FRAC_BITS)
     ) u_mult_xp (
         .clk     (clk),
         .rst_n   (rst_n),
+        .start   (mult_start),
         .a       (reg_xp), 
         .b       (reg_h),    
         .overflow(ovf_mult_xp),
-        .product  (mult_xph_result)
+        .product (mult_xph_result),
+        .valid   (mult_xp_valid)
     );
 
-    // Multiplicator pentru axa Y: yp * h
-    mult_q #(
+    // Multiplicator iterativ pentru axa Y: yp * h
+    mult_top_level_q #(
         .INT_BITS (INT_BITS),
         .FRAC_BITS(FRAC_BITS)
     ) u_mult_yp (
         .clk     (clk),
         .rst_n   (rst_n),
+        .start   (mult_start),
         .a       (reg_yp),
         .b       (reg_h),
         .overflow(ovf_mult_yp),
-        .product  (mult_yph_result)
+        .product (mult_yph_result),
+        .valid   (mult_yp_valid)
     );
 
     // Sumator pentru X: (xp * h) + w
@@ -155,9 +163,9 @@ module ndc_to_screen #(
     always @(*) begin
         case (state)
             IDLE:         next_state = start ? LOAD : IDLE; 
-            LOAD:         next_state = CALC_MULT;          
-            CALC_MULT:    next_state = WAIT_MULT;
-            WAIT_MULT:    next_state = DONE_MULT;          
+            LOAD:         next_state = START_MULT;          
+            START_MULT:   next_state = WAIT_MULT;
+            WAIT_MULT:    next_state = (mult_xp_valid & mult_yp_valid) ? DONE_MULT : WAIT_MULT;         
             DONE_MULT:    next_state = ADD_SUB;
             ADD_SUB:      next_state = DONE_ADD_SUB;       
             DONE_ADD_SUB: next_state = SHIFT_RIGHT;
@@ -191,7 +199,8 @@ module ndc_to_screen #(
 
             ovf_mult    <= 0;      
             ovf_add_sub <= 0;
-
+            
+            mult_start  <= 1'b0;
             valid       <= 1'b0;
             overflow    <= 1'b0;
         end else begin
@@ -200,6 +209,7 @@ module ndc_to_screen #(
 
                 // Asteapta semnalul de start
                 IDLE: begin
+                    mult_start  <= 1'b0;
                     valid     <= 1'b0;  // Valid este 1 doar in DONE
                 end
 
@@ -212,10 +222,12 @@ module ndc_to_screen #(
                 end
                 
                 // Multiplicarea este efectuata in modulele dedicate
-                CALC_MULT: begin
+                START_MULT: begin
+                    mult_start <= 1'b1; // Trigger ambele inmultitoare
                 end
                 
                 WAIT_MULT: begin
+                    mult_start <= 1'b0; // Coboram pulsul in ciclul urmator
                 end
                 
                 // Salveaza rezultate multiplicare

@@ -90,8 +90,8 @@ module rotation #(
                WAIT_LUT       = 4'b0010,
                DONE_LUT       = 4'b0011,
                LOAD           = 4'b0100,  // Incarca datele in registrele interne
-               CALC_MULT      = 4'b0101,  // Multiplicatoarele calculeaza (latenta 2 ciclu)
-               WAIT_MULT      = 4'b0110,
+               START_MULT     = 4'b0101,  // Multiplicatoarele calculeaza (latenta 2 ciclu)
+               WAIT_MULT      = 4'b0110,  // Asteptare executie inmultitoare iterative
                DONE_MULT      = 4'b0111,  // Salveaza rezultatele multiplicatoarelor
                CALC_SUM_FIRST = 4'b1000,  // Prima etapa de sumare: ax+by, dx+ey, gx+hy
                DONE_SUM_FIRST = 4'b1001,  // Salveaza rezultatele primei etape
@@ -141,11 +141,23 @@ module rotation #(
     
     // Negari combinationale (complement fata de 2)
     wire [DATA_WIDTH-1:0] neg_sin = ~lut_sin + 1'b1;
+    
+    // Semnale control/validare pentru cele 9 multiplicatoare iterative
+    reg               mult_start;
+    wire              mult_ax_valid, mult_by_valid, mult_cz_valid;
+    wire              mult_dx_valid, mult_ey_valid, mult_fz_valid;
+    wire              mult_gx_valid, mult_hy_valid, mult_iz_valid;
+    
+    // Agregarea validarii tuturor celor 9 instante
+    wire mult_all_valid = mult_ax_valid & mult_by_valid & mult_cz_valid &
+                          mult_dx_valid & mult_ey_valid & mult_fz_valid &
+                          mult_gx_valid & mult_hy_valid & mult_iz_valid;
 
     // Multiplicatoare (output registrat, latenta 1 ciclu)
     wire [DATA_WIDTH-1:0] mult_ax_result, mult_by_result, mult_cz_result;
     wire [DATA_WIDTH-1:0] mult_dx_result, mult_ey_result, mult_fz_result;
     wire [DATA_WIDTH-1:0] mult_gx_result, mult_hy_result, mult_iz_result;
+    
     wire             ovf_ax, ovf_by, ovf_cz;
     wire             ovf_dx, ovf_ey, ovf_fz;
     wire             ovf_gx, ovf_hy, ovf_iz;
@@ -182,36 +194,44 @@ module rotation #(
 
 
     // 9 Multiplicatoare pentru produsele matricei
-    mult_q #(
-        .INT_BITS(INT_BITS),
-        .FRAC_BITS(FRAC_BITS)
-    ) u_mult_ax (
-        .clk(clk),
-        .rst_n(rst_n),
-        .a(reg_a), 
-        .b(reg_x),
-        .overflow(ovf_ax), 
-        .product(mult_ax_result)
+    mult_top_level_q #(.INT_BITS(INT_BITS), .FRAC_BITS(FRAC_BITS)) u_mult_ax (
+        .clk(clk), .rst_n(rst_n), .start(mult_start), .a(reg_a), .b(reg_x), 
+        .overflow(ovf_ax), .product(mult_ax_result), .valid(mult_ax_valid)
     );
-
-    mult_q #(.INT_BITS(INT_BITS), .FRAC_BITS(FRAC_BITS)) u_mult_by
-        (.clk(clk), .rst_n(rst_n), .a(reg_b), .b(reg_y), .overflow(ovf_by), .product(mult_by_result));
-    mult_q #(.INT_BITS(INT_BITS), .FRAC_BITS(FRAC_BITS)) u_mult_cz
-        (.clk(clk), .rst_n(rst_n), .a(reg_c), .b(reg_z), .overflow(ovf_cz), .product(mult_cz_result));
+    mult_top_level_q #(.INT_BITS(INT_BITS), .FRAC_BITS(FRAC_BITS)) u_mult_by (
+        .clk(clk), .rst_n(rst_n), .start(mult_start), .a(reg_b), .b(reg_y), 
+        .overflow(ovf_by), .product(mult_by_result), .valid(mult_by_valid)
+    );
+    mult_top_level_q #(.INT_BITS(INT_BITS), .FRAC_BITS(FRAC_BITS)) u_mult_cz (
+        .clk(clk), .rst_n(rst_n), .start(mult_start), .a(reg_c), .b(reg_z), 
+        .overflow(ovf_cz), .product(mult_cz_result), .valid(mult_cz_valid)
+    );
  
-    mult_q #(.INT_BITS(INT_BITS), .FRAC_BITS(FRAC_BITS)) u_mult_dx
-        (.clk(clk), .rst_n(rst_n), .a(reg_d), .b(reg_x), .overflow(ovf_dx), .product(mult_dx_result));
-    mult_q #(.INT_BITS(INT_BITS), .FRAC_BITS(FRAC_BITS)) u_mult_ey
-        (.clk(clk), .rst_n(rst_n), .a(reg_e), .b(reg_y), .overflow(ovf_ey), .product(mult_ey_result));
-    mult_q #(.INT_BITS(INT_BITS), .FRAC_BITS(FRAC_BITS)) u_mult_fz
-        (.clk(clk), .rst_n(rst_n), .a(reg_f), .b(reg_z), .overflow(ovf_fz), .product(mult_fz_result));
+    mult_top_level_q #(.INT_BITS(INT_BITS), .FRAC_BITS(FRAC_BITS)) u_mult_dx (
+        .clk(clk), .rst_n(rst_n), .start(mult_start), .a(reg_d), .b(reg_x), 
+        .overflow(ovf_dx), .product(mult_dx_result), .valid(mult_dx_valid)
+    );
+    mult_top_level_q #(.INT_BITS(INT_BITS), .FRAC_BITS(FRAC_BITS)) u_mult_ey (
+        .clk(clk), .rst_n(rst_n), .start(mult_start), .a(reg_e), .b(reg_y), 
+        .overflow(ovf_ey), .product(mult_ey_result), .valid(mult_ey_valid)
+    );
+    mult_top_level_q #(.INT_BITS(INT_BITS), .FRAC_BITS(FRAC_BITS)) u_mult_fz (
+        .clk(clk), .rst_n(rst_n), .start(mult_start), .a(reg_f), .b(reg_z), 
+        .overflow(ovf_fz), .product(mult_fz_result), .valid(mult_fz_valid)
+    );
  
-    mult_q #(.INT_BITS(INT_BITS), .FRAC_BITS(FRAC_BITS)) u_mult_gx
-        (.clk(clk), .rst_n(rst_n), .a(reg_g), .b(reg_x), .overflow(ovf_gx), .product(mult_gx_result));
-    mult_q #(.INT_BITS(INT_BITS), .FRAC_BITS(FRAC_BITS)) u_mult_hy
-        (.clk(clk), .rst_n(rst_n), .a(reg_h), .b(reg_y), .overflow(ovf_hy), .product(mult_hy_result));
-    mult_q #(.INT_BITS(INT_BITS), .FRAC_BITS(FRAC_BITS)) u_mult_iz
-        (.clk(clk), .rst_n(rst_n), .a(reg_i), .b(reg_z), .overflow(ovf_iz), .product(mult_iz_result));
+    mult_top_level_q #(.INT_BITS(INT_BITS), .FRAC_BITS(FRAC_BITS)) u_mult_gx (
+        .clk(clk), .rst_n(rst_n), .start(mult_start), .a(reg_g), .b(reg_x), 
+        .overflow(ovf_gx), .product(mult_gx_result), .valid(mult_gx_valid)
+    );
+    mult_top_level_q #(.INT_BITS(INT_BITS), .FRAC_BITS(FRAC_BITS)) u_mult_hy (
+        .clk(clk), .rst_n(rst_n), .start(mult_start), .a(reg_h), .b(reg_y), 
+        .overflow(ovf_hy), .product(mult_hy_result), .valid(mult_hy_valid)
+    );
+    mult_top_level_q #(.INT_BITS(INT_BITS), .FRAC_BITS(FRAC_BITS)) u_mult_iz (
+        .clk(clk), .rst_n(rst_n), .start(mult_start), .a(reg_i), .b(reg_z), 
+        .overflow(ovf_iz), .product(mult_iz_result), .valid(mult_iz_valid)
+    );
  
     // 3 Sumatoare prima etapa: (ax+by), (dx+ey), (gx+hy)
     add_q #(.INT_BITS(INT_BITS), .FRAC_BITS(FRAC_BITS)) u_add_ax_by
@@ -244,9 +264,9 @@ module rotation #(
             START_LUT:      next_state = WAIT_LUT; 
             WAIT_LUT:       next_state = lut_valid ? DONE_LUT : WAIT_LUT;
             DONE_LUT:       next_state = LOAD;          
-            LOAD:           next_state = CALC_MULT;                         
-            CALC_MULT:      next_state = WAIT_MULT;
-            WAIT_MULT:      next_state = DONE_MULT;                                                    
+            LOAD:           next_state = START_MULT;                         
+            START_MULT:     next_state = WAIT_MULT;
+            WAIT_MULT:      next_state = mult_all_valid ? DONE_MULT : WAIT_MULT;                                                    
             DONE_MULT:      next_state = CALC_SUM_FIRST;    
             CALC_SUM_FIRST: next_state = DONE_SUM_FIRST;
             DONE_SUM_FIRST: next_state = CALC_SUM_FINAL;
@@ -285,6 +305,7 @@ module rotation #(
             ovf_mult <= 0; ovf_add_first <= 0;
 
             lut_start <= 1'b0;
+            mult_start <= 1'b0;
             valid    <= 1'b0;
             overflow <= 1'b0;
         end else begin
@@ -294,6 +315,7 @@ module rotation #(
                 // Asteapta semnalul de start
                 IDLE: begin
                    lut_start <= 1'b0;
+                   mult_start <= 1'b0;
                    valid     <= 1'b0;  // Valid este 1 doar in DONE
                 end
 
@@ -405,14 +427,15 @@ module rotation #(
                 
                 // Multiplicatoarele isi inregistreaza rezultatele in acest ciclu.
                 // Rezultatele vor fi disponibile pe wire-uri la inceputul lui DONE_MULT.
-                CALC_MULT: begin
-                    // (nimic - submodulele lucreaza autonom)
+                START_MULT: begin
+                    mult_start <= 1'b1; // Trimite semnalul de start catre cele 9 module
                 end
                 
                 WAIT_MULT: begin
+                    mult_start <= 1'b0; // Coboram semnalul imediat in urmatorul ciclu
                 end
 
-                                // Captura rezultatele celor 9 multiplicatoare in registrele de pipeline.
+                // Captura rezultatele celor 9 multiplicatoare in registrele de pipeline.
                 DONE_MULT: begin
                     reg_ax <= mult_ax_result;
                     reg_by <= mult_by_result;
