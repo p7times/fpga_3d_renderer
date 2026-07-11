@@ -98,7 +98,7 @@ Fiecare modul a fost verificat independent prin simulări cu stimuli aleatori (*
 
 ### 1. Fundație, I/O și Siguranța Datelor
 - [ ] **Data Safety:** Implementarea detecției și tratării complete a cazurilor de **Underflow** (și Overflow) pe tot lanțul aritmetic. Esențial înainte de a adăuga calcule complexe de rasterizare.
-- [ ] **Interfață VGA (BASYS 3):** Implementarea modulului de sincronizare VGA (HSYNC, VSYNC), compatibil cu BASYS 3. 
+- [x] **Interfață VGA (BASYS 3):** Implementarea modulului de sincronizare VGA (HSYNC, VSYNC), compatibil cu BASYS 3. 
 - [ ] **Arhitectura Framebuffer-ului:** Stabilirea rezoluției și color depth-ului astfel încât să încapă în BRAM-ul de pe Basys 3.
 
 ### 2. Procesarea Geometriei (Vertex Pipeline)
