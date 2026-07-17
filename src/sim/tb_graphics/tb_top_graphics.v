@@ -14,8 +14,11 @@ module tb_top_graphics;
     parameter DATA_WIDTH        = INT_BITS + FRAC_BITS;
     parameter real SCALE        = 2.0**FRAC_BITS;       // Factor de scalare pentru Q16.16 (2^FRAC_BITS)
 
-    parameter VERT_ADDR         = 8;
+    parameter VERT_ADDR         = 12;
     parameter EDGE_ADDR         = 10; 
+    
+  //  parameter VERT_ADDR         = 8;
+  //  parameter EDGE_ADDR         = 10; 
       
     parameter COORD_BITS        = 12; 
     parameter WORD_BITS         = 32;
@@ -32,7 +35,7 @@ module tb_top_graphics;
     parameter CAM_Z             = 2;        // Distanta camera
 
     
-    parameter ROTATION          = 3'b010;
+    parameter ROTATION          = 3'b100;
     
     // -------------------------------------------------------------------------
     // Parametri Calculati Automat (NU ATINGE)
@@ -61,7 +64,6 @@ module tb_top_graphics;
     reg  [2:0]                  rotation_type;
 
     wire                        frame_done;
-    wire                        busy;
 
     reg  [VERT_ADDR-1:0]        vb_wr_addr;
     reg  [3*DATA_WIDTH-1:0]     vb_wr_data;
@@ -115,7 +117,6 @@ module tb_top_graphics;
         
         .angle(angle),
         .rotation_type(rotation_type),
-        .busy(busy),
         
         .vb_wr_addr(vb_wr_addr),
         .vb_wr_cs(vb_wr_cs),
@@ -254,12 +255,6 @@ module tb_top_graphics;
     real end_time_ns;
     real frame_time_us;
     real fps;
-    
-    // Contorizare cicluri de ceas hardware active
-    integer clk_cycles = 0;
-    always @(posedge clk) begin
-        if (busy) clk_cycles = clk_cycles + 1;
-    end
 
 
     // -------------------------------------------------------------------------
@@ -385,8 +380,8 @@ endtask
         //load_vertices("vertices_prism_q_16_8.txt", parsed_vertices);
        // load_vertices("vertices_teapot.mem", parsed_vertices);
        // load_edges("edges_teapot.mem", parsed_edges);
-        load_vertices("vertices_unitbv.mem", parsed_vertices);
-        load_edges("edges_unitbv.mem", parsed_edges);    
+        load_vertices("vertices_japatext.mem", parsed_vertices);
+        load_edges("edges_japatext.mem", parsed_edges);    
         
         
         vertex_count = parsed_vertices[VERT_ADDR-1:0];          
@@ -400,7 +395,7 @@ endtask
         for (i = 0; i < 720; i = i + 1) begin
             $display("\n[FRAME %0d] Randare unghi: %0d grade", i, angle);
 
-            rotation_type = 3'b010; 
+            rotation_type = ROTATION; 
 
             // Trigger start_frame
             start_frame = 1;
@@ -431,7 +426,6 @@ endtask
         $display("[STAT] Inaltime ecran:               %0d px"          , $itor(SCREEN_HEIGHT) / SCALE);
         print_rotation_stat(ROTATION);
         $display("[STAT] Timp pur de randare (calcul): %0.2f us"        , frame_time_us);
-        $display("[STAT] Cicluri de ceas consumate:    %0d cicluri"     , clk_cycles);
         $display("[STAT] Performanță teoretică:        %0.2f FPS"       , fps);
         $display("=====================================");
            

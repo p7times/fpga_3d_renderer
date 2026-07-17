@@ -28,6 +28,8 @@
 //                signed fixed-point Q(INT_BITS).(FRAC_BITS)
 //---------------------------------------------------------------
 
+`timescale 1ns / 1ps
+
 module ndc_to_screen #(
     parameter INT_BITS  = 16,                           // Numar de biti parte intreaga (include semnul) 
     parameter FRAC_BITS = 16,                           // Numar de biti parte fractionara

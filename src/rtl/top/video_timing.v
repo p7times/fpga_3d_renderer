@@ -16,6 +16,8 @@
 //              corespund rezolutiei 1280x720 (720p).
 //---------------------------------------------------------------
 
+`timescale 1ns / 1ps
+
 module video_timing #(
     // Parametri pentru temporizarea orizontala (masurati in pixeli)
     parameter H_ACTIVE = 1280, // Zona vizibila pe orizontala

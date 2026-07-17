@@ -21,8 +21,7 @@
 //              Functioneaza ca un scheduler hardware secvential (FSM Moore).
 //
 //              Valorile geometrice (dimensiuni ecran, focala, camera)
-//              sunt primite ca porturi, configurabile din exterior
-//              (testbench sau registre AXI).
+//              sunt primite ca porturi, configurabile din exterior.
 //
 //              Unghiul de rotatie este primit ca valoare de 10 biti
 //              in format jumatati de grad [0..719], calculat in modulul Top.
@@ -35,6 +34,8 @@
 //              - BU            : start/done + coordonate integer
 //              - framebuffer   : clear + busy
 //---------------------------------------------------------------
+
+`timescale 1ns / 1ps
 
 module master_controller #(
     parameter INT_BITS      = 16,                                   // Numar de biti parte intreaga (include semnul) 
@@ -62,7 +63,9 @@ module master_controller #(
     input  [VERT_ADDR-1:0]              vertex_count,               // Numarul de vertecsi din mesh
     input  [EDGE_ADDR-1:0]              edge_count,                 // Numarul de muchii din mesh
     input  [9:0]                        angle,                      // Unghi rotatie: jumatati de grade [0..719]
-    input  [2:0]                        rotation_type,              // Tip rotatie (SW[2:0])
+    input  [DATA_WIDTH-1:0]             focal_in,                   // Distanta focala
+    input  [DATA_WIDTH-1:0]             camz_in,                    // Distanta fata de camera
+    input  [1:0]                        rotation_type,              // Tip rotatie (SW[2:0])
     output reg                          frame_done,                 // Puls: frame complet randat
     
     //------------------------------------------------------------
@@ -97,10 +100,9 @@ module master_controller #(
     output reg                          vp_start,
     output reg [DATA_WIDTH-1:0]         vp_x, vp_y, vp_z, vp_f, vp_w, vp_h, vp_cam_z,
     output reg [9:0]                    vp_angle,
-    output reg [2:0]                    vp_rotation,
+    output reg [1:0]                    vp_rotation,
     input      [DATA_WIDTH-1:0]         vp_xs, vp_ys,
     input                               vp_valid,
-    input                               vp_overflow,
 
     //------------------------------------------------------------
     // Interfata Bresenham Unit (BU)
@@ -134,9 +136,6 @@ module master_controller #(
     
     localparam [DATA_WIDTH-1:0] SCREEN_W_FP         = H_RES << FRAC_BITS;
     localparam [DATA_WIDTH-1:0] SCREEN_H_FP         = V_RES << FRAC_BITS;
-    
-    localparam [DATA_WIDTH-1:0] FOCAL_FP    = FOCAL << FRAC_BITS;
-    localparam [DATA_WIDTH-1:0] CAM_Z_FP    = CAM_Z << FRAC_BITS;
 
     // ------------------------
     // Definitie stari FSM
@@ -330,8 +329,8 @@ module master_controller #(
                     
                     vp_w        <= SCREEN_W_FP;
                     vp_h        <= SCREEN_H_FP;
-                    vp_f        <= FOCAL_FP;
-                    vp_cam_z    <= CAM_Z_FP;
+                    vp_f        <= focal_in;
+                    vp_cam_z    <= camz_in;
                     
                     vp_angle    <= angle;
                     vp_rotation <= rotation_type;

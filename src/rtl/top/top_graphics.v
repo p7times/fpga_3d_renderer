@@ -14,10 +14,12 @@
 //                  master_controller
 //
 //              Porturile externe sunt impartite in:
-//                  - Porturi de control (registre AXI Slave)
+//                  - Porturi de control
 //                  - Porturi de incarcare date (scriere buffere)
-//                  - Port de citire framebuffer (HDMI chain)
+//                  - Port de citire framebuffer
 //---------------------------------------------------------------
+
+`timescale 1ns / 1ps
 
 module top_graphics #(
     parameter INT_BITS      = 16,                       // Numar de biti parte intreaga (include semnul)
@@ -52,7 +54,9 @@ module top_graphics #(
     input  [EDGE_ADDR-1:0]      edge_count,
     
     input  [9:0]                angle,
-    input  [2:0]                rotation_type,
+    input  [DATA_WIDTH-1:0]     focal_in,                  
+    input  [DATA_WIDTH-1:0]     camz_in,                 
+    input  [1:0]                rotation_type,
     
     input  [3*DATA_WIDTH-1:0]   vb_wr_data,
     input  [2*VERT_ADDR-1:0]    eb_wr_data,
@@ -69,7 +73,6 @@ module top_graphics #(
     
     // ---------------- OUTPUT-URI ----------------    
     output                      frame_done,      
-    output                      busy,
     output [WORD_BITS-1:0]      fb_rd_data
 );
     
@@ -77,7 +80,7 @@ module top_graphics #(
     wire [4:0]              dbg_mc_state;   // starea master_controller-ului
     wire [3:0]              dbg_vp_state;   // starea procesorului de vertecsi
     wire [2:0]              dbg_bu_state;   // starea unitatii Bresenham
-    wire [2:0]              dbg_fb_state;   // starea framebuffer-ului
+    wire                    dbg_fb_state;   // starea double-framebuffer-ului
     
     wire [VERT_ADDR-1:0]    dbg_v_idx;      // ce vertex se proceseaza
     wire [EDGE_ADDR-1:0]    dbg_e_idx;      // ce muchie se proceseaza
@@ -165,7 +168,7 @@ module top_graphics #(
     wire [DATA_WIDTH-1:0]   vp_x, vp_y, vp_z;
     wire [DATA_WIDTH-1:0]   vp_f, vp_w, vp_h, vp_cam_z;
     wire [9:0]              vp_angle;
-    wire [2:0]              vp_rotation;
+    wire [1:0]              vp_rotation;
     wire [DATA_WIDTH-1:0]   vp_xs, vp_ys;
     wire                    vp_valid, vp_overflow;
 
@@ -215,24 +218,23 @@ module top_graphics #(
         .dbg_state(dbg_bu_state)
     );
 
-    framebuffer #(
+    framebuffer_dbl #(
         .H_RES(H_RES),
         .V_RES(V_RES),
         .WORD_BITS(WORD_BITS)
     ) u_fb (
         .clk(clk),
         .rst_n(rst_n),
-        .cs(fb_cs),
-        .wr(fb_wr),
-        .clear(fb_clear),
-        .x_in(fb_x[COORD_BITS-2:0]),
-        .y_in(fb_y[COORD_BITS-2:0]),
+        .cs(fb_cs), .wr(fb_wr), .clear(fb_clear),
+        .x_in(fb_x[COORD_BITS-2:0]), .y_in(fb_y[COORD_BITS-2:0]),
         .pixel_in(1'b1),
+        .busy(fb_busy),
+        .swap(frame_done),         // <-- pulsul care marcheaza finalul randarii
         .rd_address(fb_rd_addr),
         .rd_dataOut(fb_rd_data),
-        .busy(fb_busy),
-        .dbg_clear_addr(),
-        .dbg_state(dbg_fb_state)
+        .dbg_fb_i_state(),        // Debug stare FSM FB1
+        .dbg_fb_ii_state(),       // Debug stare FSM FB2
+        .dbg_disp_buf(dbg_fb_state)
     );
 
 
@@ -259,6 +261,8 @@ module top_graphics #(
         .vertex_count(vertex_count),
         .edge_count(edge_count),
         .angle(angle),
+        .focal_in(focal_in),
+        .camz_in(camz_in),
         .rotation_type(rotation_type),
        
         .vb_addr(vb_addr_mc),
@@ -283,7 +287,6 @@ module top_graphics #(
         .vp_rotation(vp_rotation),
         .vp_xs(vp_xs), .vp_ys(vp_ys),
         .vp_valid(vp_valid),
-        .vp_overflow(vp_overflow),
 
         .bu_start(bu_start),
         .bu_x0(bu_x0), .bu_y0(bu_y0),
@@ -301,7 +304,6 @@ module top_graphics #(
     
     assign dbg_vp_valid = vp_valid;
     assign dbg_bu_done  = bu_done;
-    assign busy = (dbg_mc_state != 5'd0);
     assign dbg_overflow = vp_overflow;
 
 endmodule // top_graphics

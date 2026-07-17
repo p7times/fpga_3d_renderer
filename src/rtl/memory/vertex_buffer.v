@@ -15,6 +15,8 @@
 //              secventiala in cadrul pipeline-ului grafic.
 //---------------------------------------------------------------
 
+`timescale 1ns / 1ps
+
 module vertex_buffer #(
     parameter ADDR_WIDTH = 8,                   // Latime adrese, in biti (8 biti==> max 256 vertecsi de mapat)
     parameter INT_BITS   = 16,                  // Numar de biti parte intreaga (include semnul) 

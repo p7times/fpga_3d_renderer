@@ -11,6 +11,8 @@
 //              Realizeaza impartirea numerelor in virgula fixa semnata.
 //---------------------------------------------------------------
 
+`timescale 1ns / 1ps
+
 module div_data_q #(
     parameter INT_BITS   = 16,                      // Numar de biti parte intreaga (include semnul) 
     parameter FRAC_BITS  = 16,                      // Numar de biti parte fractionara

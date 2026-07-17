@@ -36,6 +36,8 @@
 //              Include semnalizare overflow pentru depanare.
 //---------------------------------------------------------------
 
+`timescale 1ns / 1ps
+
 module persp_proj #(
     parameter INT_BITS  = 16,                       // Numar de biti parte intreaga (include semnul) 
     parameter FRAC_BITS = 16,                       // Numar de biti parte fractionara

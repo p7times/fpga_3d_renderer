@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="tb_top_graphics_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="glbl" />
+            <top_module name="tb_top_graphics" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="798.845000 us"></ZoomStartTime>
+      <ZoomEndTime time="2,292.845001 us"></ZoomEndTime>
+      <Cursor1Time time="1,356.845000 us"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="225"></NameColumnWidth>
+      <ValueColumnWidth column_width="80"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="32" />
+   <wvobject type="logic" fp_name="/tb_top_graphics/clk">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top_graphics/rst_n">
+      <obj_property name="ElementShortName">rst_n</obj_property>
+      <obj_property name="ObjectShortName">rst_n</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top_graphics/buffer_mode">
+      <obj_property name="ElementShortName">buffer_mode</obj_property>
+      <obj_property name="ObjectShortName">buffer_mode</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top_graphics/start_frame">
+      <obj_property name="ElementShortName">start_frame</obj_property>
+      <obj_property name="ObjectShortName">start_frame</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_graphics/vertex_count">
+      <obj_property name="ElementShortName">vertex_count[9:0]</obj_property>
+      <obj_property name="ObjectShortName">vertex_count[9:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_graphics/edge_count">
+      <obj_property name="ElementShortName">edge_count[9:0]</obj_property>
+      <obj_property name="ObjectShortName">edge_count[9:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_graphics/angle">
+      <obj_property name="ElementShortName">angle[9:0]</obj_property>
+      <obj_property name="ObjectShortName">angle[9:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_graphics/rotation_type">
+      <obj_property name="ElementShortName">rotation_type[2:0]</obj_property>
+      <obj_property name="ObjectShortName">rotation_type[2:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top_graphics/frame_done">
+      <obj_property name="ElementShortName">frame_done</obj_property>
+      <obj_property name="ObjectShortName">frame_done</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_graphics/vb_wr_addr">
+      <obj_property name="ElementShortName">vb_wr_addr[9:0]</obj_property>
+      <obj_property name="ObjectShortName">vb_wr_addr[9:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_graphics/vb_wr_data">
+      <obj_property name="ElementShortName">vb_wr_data[83:0]</obj_property>
+      <obj_property name="ObjectShortName">vb_wr_data[83:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top_graphics/vb_wr_cs">
+      <obj_property name="ElementShortName">vb_wr_cs</obj_property>
+      <obj_property name="ObjectShortName">vb_wr_cs</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top_graphics/vb_wr_en">
+      <obj_property name="ElementShortName">vb_wr_en</obj_property>
+      <obj_property name="ObjectShortName">vb_wr_en</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_graphics/eb_wr_addr">
+      <obj_property name="ElementShortName">eb_wr_addr[9:0]</obj_property>
+      <obj_property name="ObjectShortName">eb_wr_addr[9:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_graphics/eb_wr_data">
+      <obj_property name="ElementShortName">eb_wr_data[19:0]</obj_property>
+      <obj_property name="ObjectShortName">eb_wr_data[19:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top_graphics/eb_wr_cs">
+      <obj_property name="ElementShortName">eb_wr_cs</obj_property>
+      <obj_property name="ObjectShortName">eb_wr_cs</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top_graphics/eb_wr_en">
+      <obj_property name="ElementShortName">eb_wr_en</obj_property>
+      <obj_property name="ObjectShortName">eb_wr_en</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_graphics/fb_rd_addr">
+      <obj_property name="ElementShortName">fb_rd_addr[13:0]</obj_property>
+      <obj_property name="ObjectShortName">fb_rd_addr[13:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_graphics/fb_rd_data">
+      <obj_property name="ElementShortName">fb_rd_data[31:0]</obj_property>
+      <obj_property name="ObjectShortName">fb_rd_data[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_graphics/uut/dbg_mc_state">
+      <obj_property name="ElementShortName">dbg_mc_state[4:0]</obj_property>
+      <obj_property name="ObjectShortName">dbg_mc_state[4:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_graphics/uut/dbg_vp_state">
+      <obj_property name="ElementShortName">dbg_vp_state[3:0]</obj_property>
+      <obj_property name="ObjectShortName">dbg_vp_state[3:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_graphics/uut/dbg_bu_state">
+      <obj_property name="ElementShortName">dbg_bu_state[2:0]</obj_property>
+      <obj_property name="ObjectShortName">dbg_bu_state[2:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_graphics/uut/dbg_fb_state">
+      <obj_property name="ElementShortName">dbg_fb_state[2:0]</obj_property>
+      <obj_property name="ObjectShortName">dbg_fb_state[2:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_graphics/uut/dbg_v_idx">
+      <obj_property name="ElementShortName">dbg_v_idx[9:0]</obj_property>
+      <obj_property name="ObjectShortName">dbg_v_idx[9:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_graphics/uut/dbg_e_idx">
+      <obj_property name="ElementShortName">dbg_e_idx[9:0]</obj_property>
+      <obj_property name="ObjectShortName">dbg_e_idx[9:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_graphics/file_id">
+      <obj_property name="ElementShortName">file_id[31:0]</obj_property>
+      <obj_property name="ObjectShortName">file_id[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_graphics/y">
+      <obj_property name="ElementShortName">y[31:0]</obj_property>
+      <obj_property name="ObjectShortName">y[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_graphics/word_idx">
+      <obj_property name="ElementShortName">word_idx[31:0]</obj_property>
+      <obj_property name="ObjectShortName">word_idx[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_graphics/bit_idx">
+      <obj_property name="ElementShortName">bit_idx[31:0]</obj_property>
+      <obj_property name="ObjectShortName">bit_idx[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_graphics/bmp_file_size">
+      <obj_property name="ElementShortName">bmp_file_size[31:0]</obj_property>
+      <obj_property name="ObjectShortName">bmp_file_size[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_graphics/WORDS_PER_ROW">
+      <obj_property name="ElementShortName">WORDS_PER_ROW[31:0]</obj_property>
+      <obj_property name="ObjectShortName">WORDS_PER_ROW[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_graphics/filename_dynamic">
+      <obj_property name="ElementShortName">filename_dynamic[399:0]</obj_property>
+      <obj_property name="ObjectShortName">filename_dynamic[399:0]</obj_property>
+   </wvobject>
+</wave_config>

@@ -22,6 +22,8 @@
 //              Optimizat pentru implementare hardware fara multiplicari complexe.
 //---------------------------------------------------------------
 
+`timescale 1ns / 1ps
+
 module sin_cos_lut #(
     parameter INT_BITS  = 2,                        // Minim 2 biti (1 semn + 1 parte intreaga pentru valoarea "1.0")
     parameter FRAC_BITS = 16,                       // Numar de biti parte fractionara

@@ -11,10 +11,11 @@
 //              Rolul sau principal este de a integra si interconecta toate sub-modulele 
 //              sistemului de randare 3D:
 // 
-//              1. config_block  - Gestioneaza starile, memoriile si datele de intrare.
-//              2. top_graphics  - Nucleul grafic care proceseaza si randeaza modelul 3D.
-//              3. clk_wiz_0     - Genereaza semnalele de ceas (sistem, pixel si TMDS).
-//              4. video_timing  - Controleaza timpii de sincronizare pentru rezolutia setata.
+//              1. config_block     - Gestioneaza starile, memoriile si datele de intrare.
+//              2. top_graphics     - Nucleul grafic care proceseaza si randeaza modelul 3D.
+//              3. clk_wiz_0        - Genereaza semnalele de ceas (sistem, pixel si TMDS).
+//              4. vga_fb_interface - Interfata intre framebuffer și timer-ul VGA 
+//              5. video_timing     - Controleaza timpii de sincronizare pentru rezolutia setata.
 //
 //              De asemenea, modulul calculeaza adresele pentru citirea din 
 //              framebuffer pe baza coordonatelor curente (pixel_x, pixel_y) 
@@ -23,14 +24,17 @@
 //              de citire din memoria BRAM.
 //---------------------------------------------------------------
 
+`timescale 1ns / 1ps
+`include "model_params.vh"
+
 module top_basys_3 #(
    
     // --- PARAMETRI MODEL 3D ---
-    parameter NUM_VERTICES = 137,
-    parameter NUM_EDGES    = 264,
+    parameter NUM_VERTICES = `NUM_VERTICES_AUTO,
+    parameter NUM_EDGES    = `NUM_EDGES_AUTO,
     
-    parameter VERT_FILE    = "vertices_teapot.mem",
-    parameter EDGE_FILE    = "edges_teapot.mem",
+    parameter VERT_FILE    = "vertices_japatext.mem",
+    parameter EDGE_FILE    = "edges_japatext.mem",
     
     // --- PARAMETRI ECRAN ---
     parameter WORD_BITS     = 32,
@@ -39,39 +43,42 @@ module top_basys_3 #(
     parameter FB_WORD_ADDR  = $clog2((H_RES*V_RES)/WORD_BITS)
 
 )(
-    input                       sys_clk,        // Ceas 100 MHz de pe FPGA
-    input   [3:0]               sw,             // Switch-uri FPGA
-    input                       btn_rst,        // Buton Reset
+    input         sys_clk,      // Ceas 100 MHz de pe FPGA
+    input   [2:0] sw,           // Switch-uri FPGA
+    input         btn_rst,      // Buton Reset
     
-    output                      hsync,
-    output                      vsync,
-    output       [3:0]          vga_red,
-    output       [3:0]          vga_green,
-    output       [3:0]          vga_blue,
+    input         btn_left,     // Conectat la W19 (CCW)
+    input         btn_right,    // Conectat la T17 (CW)
+    input         btn_up,       // Conectat la T18
+    input         btn_down,     // Conectat la U17
+    
+    output        hsync,
+    output        vsync,
+    output  [3:0] vga_red,
+    output  [3:0] vga_green,
+    output  [3:0] vga_blue,
+    
+    output  [3:0] an,           // Anozii celor 4 display-uri
+    output  [6:0] seg,          // Catozii (segmentele A-G)
+    output        dp,           // Punctul zecimal
  
-    output                      rst_led         // LED aprins cat timp reset e apasat
+    output        rst_led       // LED aprins cat timp reset e apasat
 );
 
-
-    localparam FOCAL            = 2;
-    localparam CAM_Z            = 2;
+    localparam FOCAL            = 1;
+    localparam CAM_Z            = 1;
     
     localparam COORD_BITS       = 12;
     localparam INT_BITS         = 16;
     localparam FRAC_BITS        = 12;
     localparam DATA_WIDTH       = INT_BITS + FRAC_BITS; 
-       
-    localparam VERT_ADDR        = 8;            // Alocă exact numărul de biți necesar pentru vârfuri
-    localparam EDGE_ADDR        = 10;           // Alocă exact numărul de biți necesar pentru muchii
-
-
-
-    wire pixel_clk;      // 25.175 MHz
-    wire sys_clk_buf;    // acelasi clock, folosit pt pipeline-ul de grafica
-
+    
+    localparam VERT_ADDR = `VERT_ADDR_AUTO;   // lățimea adresei se calculează automat
+    localparam EDGE_ADDR = `EDGE_ADDR_AUTO;   // din numărul curent de vârfuri/muchii
+    
+    wire pixel_clk;
     wire rst_n = ~btn_rst;
     assign rst_led = btn_rst;
-    assign sys_clk_buf = pixel_clk;
 
     // Semnale de interconectare Control -> Grafica
     wire                        buffer_mode;
@@ -80,7 +87,11 @@ module top_basys_3 #(
     wire [VERT_ADDR-1:0]        vertex_count;
     wire [EDGE_ADDR-1:0]        edge_count;
     wire [9:0]                  angle;
-    wire [2:0]                  rotation_type;
+    wire [DATA_WIDTH-1:0]       camz;
+    wire [DATA_WIDTH-1:0]       focal;
+
+    wire [1:0]                  rotation_type;
+    wire                        ready_internal;
 
     // Magistrale de Incarcare Geometrie
     wire [VERT_ADDR-1:0]        vb_wr_addr;
@@ -89,53 +100,17 @@ module top_basys_3 #(
     wire                        vb_wr_en;
 
     wire [EDGE_ADDR-1:0]        eb_wr_addr;
-    wire [2*VERT_ADDR-1:0]      eb_wr_data; // 2 x 8biti
+    wire [2*VERT_ADDR-1:0]      eb_wr_data; 
     wire                        eb_wr_cs;
     wire                        eb_wr_en;
     
-    wire        hsync_i, vsync_i, vde;
+    // Semnale Video Timing
+    wire hsync_i, vsync_i, vde;
     wire [11:0] pixel_x, pixel_y;
+    
+    // Semnale Framebuffer
     wire [FB_WORD_ADDR-1:0] fb_video_addr;
     wire [WORD_BITS-1:0]    fb_video_data;
-    
-    // Adresa framebuffer
-    assign fb_video_addr = (pixel_y * (H_RES/WORD_BITS)) + (pixel_x >> 5);
-
-    // In top_zybo_z7, genereaza ready automat
-    reg ready_internal;
-    
-    
-    // RGB
-    reg [4:0] pixel_x_d;
-    always @(posedge pixel_clk) pixel_x_d <= pixel_x[4:0];
-
-    wire pixel_bit = fb_video_data[pixel_x_d];
-    
-    always @(posedge pixel_clk or negedge rst_n) begin
-        if (!rst_n)
-            ready_internal <= 0;
-        else
-            // ultimul pixel activ: x=H_RES-1, y=V_RES-1
-            ready_internal <= (pixel_x == H_RES-1) && (pixel_y == V_RES-1) && vde;
-    end
-    // conectat la config_block in loc de portul extern ready
-    
-    // vde/hsync/vsync intarziate cu 1 ciclu pentru a compensa latenta BRAM
-    reg vde_d, hsync_d, vsync_d;
-    always @(posedge pixel_clk) begin
-        vde_d   <= vde;
-        hsync_d <= hsync_i;
-        vsync_d <= vsync_i;
-    end
-
-    // Iesire culoare directa (fara encoder TMDS): alb pe linii, negru in rest,
-    // blancat in afara zonei active
-    assign vga_red   = (vde_d && pixel_bit) ? 4'hF : 4'h0;
-    assign vga_green = (vde_d && pixel_bit) ? 4'hF : 4'h0;
-    assign vga_blue  = (vde_d && pixel_bit) ? 4'hF : 4'h0;
- 
-    assign hsync = hsync_d;
-    assign vsync = vsync_d;
 
 
     // 1. Instantiere Bloc de Configurare Automata
@@ -157,9 +132,14 @@ module top_basys_3 #(
         .CAM_Z(CAM_Z),
         .WORD_BITS(WORD_BITS)
     ) u_config  (
-        .clk(sys_clk_buf),
+        .clk(pixel_clk),
         .rst_n(rst_n),
+        
         .sw(sw),
+        .btn_left(btn_left),   
+        .btn_right(btn_right),  
+        .btn_up(btn_up),   
+        .btn_down(btn_down),
         .ready(ready_internal),
 
         .buffer_mode(buffer_mode),
@@ -167,6 +147,8 @@ module top_basys_3 #(
         .vertex_count(vertex_count),
         .edge_count(edge_count),
         .angle(angle),
+        .focal(focal),
+        .camz(camz),
         .rotation_type(rotation_type),
         .frame_done(frame_done),
 
@@ -192,7 +174,7 @@ module top_basys_3 #(
         
         .WORD_BITS(WORD_BITS)
     ) u_graphics_core (
-        .clk(sys_clk_buf),
+        .clk(pixel_clk),
         .rst_n(rst_n),
 
         .buffer_mode(buffer_mode),
@@ -201,7 +183,8 @@ module top_basys_3 #(
 
         .edge_count(edge_count),
         .angle(angle),
-
+        .focal_in(focal),
+        .camz_in(camz),
         .rotation_type(rotation_type),
         .frame_done(frame_done),
         
@@ -215,13 +198,13 @@ module top_basys_3 #(
 
     // 3. Instantiere Generator de Frecvente
     clk_wiz_0 clock_wizard (
-        .clk_out1(pixel_clk),     // output PIPELINE  74.256 MHz 
-        .reset(btn_rst),            // input reset
-        .clk_in1(sys_clk)           // input clk_in1 125 MHz
+        .clk_out1(pixel_clk),       // output: 25.175 MHz 
+        .reset(btn_rst),            
+        .clk_in1(sys_clk)           // input:  100 MHz
     );
     
     // 4. Video timing
-    video_timing_vga #(
+    vga_driver #(
         .H_ACTIVE(H_RES),
         .V_ACTIVE(V_RES),
         .COORD_BITS(COORD_BITS)
@@ -236,6 +219,42 @@ module top_basys_3 #(
         .pixel_y   (pixel_y)
     );
     
-
+    // 5. Logica de Pipelining si Iesire VGA ---
+    vga_fb_interface #(
+        .WORD_BITS(WORD_BITS),
+        .H_RES(H_RES),
+        .V_RES(V_RES),
+        .FB_WORD_ADDR(FB_WORD_ADDR)
+    ) u_vga_pipeline (
+        .pixel_clk(pixel_clk),      .rst_n(rst_n),
+        
+        // De la timing
+        .hsync_i(hsync_i),          .vsync_i(vsync_i),
+        .vde_i(vde),                .pixel_x(pixel_x),
+        .pixel_y(pixel_y),
+        
+        // Catre/de la grafice (Framebuffer)
+        .fb_video_data(fb_video_data),
+        .fb_video_addr(fb_video_addr),
+        
+        // Interne
+        .ready_internal(ready_internal),
+        
+        // Catre pinii FPGA fizici
+        .hsync_o(hsync),            .vsync_o(vsync),
+        .vga_red(vga_red),          .vga_green(vga_green),
+        .vga_blue(vga_blue)
+    );
+    
+    // 6. Afisare FPS ---
+    fps_counter u_fps_counter (
+        .clk    (pixel_clk),    // Ceasul direct de 25.175MHz de pe pinul W5 al plăcii
+        .rst_n  (rst_n),        // Reset general
+       // .vsync  (vsync_i),  
+        .vsync  (frame_done),    
+        .an     (an),          
+        .seg    (seg),         
+        .dp     (dp)           
+    );
     
 endmodule // top_basys_3

@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="tb_top_basys_3_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="glbl" />
+            <top_module name="tb_top_basys_3" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="0.000000000 ms"></ZoomStartTime>
+      <ZoomEndTime time="35.000000001 ms"></ZoomEndTime>
+      <Cursor1Time time="10.223596575 ms"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="167"></NameColumnWidth>
+      <ValueColumnWidth column_width="61"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="18" />
+   <wvobject type="logic" fp_name="/tb_top_basys_3/sys_clk">
+      <obj_property name="ElementShortName">sys_clk</obj_property>
+      <obj_property name="ObjectShortName">sys_clk</obj_property>
+      <obj_property name="CustomSignalColor">#DCDCDC</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top_basys_3/uut/pixel_clk">
+      <obj_property name="ElementShortName">pixel_clk</obj_property>
+      <obj_property name="ObjectShortName">pixel_clk</obj_property>
+      <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top_basys_3/btn_rst">
+      <obj_property name="ElementShortName">btn_rst</obj_property>
+      <obj_property name="ObjectShortName">btn_rst</obj_property>
+      <obj_property name="CustomSignalColor">#DCDCDC</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject type="group" fp_name="group80">
+      <obj_property name="label">VGA OUTPUT</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject type="logic" fp_name="/tb_top_basys_3/hsync">
+         <obj_property name="ElementShortName">hsync</obj_property>
+         <obj_property name="ObjectShortName">hsync</obj_property>
+         <obj_property name="CustomSignalColor">#E0FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/tb_top_basys_3/vsync">
+         <obj_property name="ElementShortName">vsync</obj_property>
+         <obj_property name="ObjectShortName">vsync</obj_property>
+         <obj_property name="CustomSignalColor">#E0FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_top_basys_3/vga_red">
+         <obj_property name="ElementShortName">vga_red[3:0]</obj_property>
+         <obj_property name="ObjectShortName">vga_red[3:0]</obj_property>
+         <obj_property name="CustomSignalColor">#E0FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_top_basys_3/vga_green">
+         <obj_property name="ElementShortName">vga_green[3:0]</obj_property>
+         <obj_property name="ObjectShortName">vga_green[3:0]</obj_property>
+         <obj_property name="CustomSignalColor">#E0FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_top_basys_3/vga_blue">
+         <obj_property name="ElementShortName">vga_blue[3:0]</obj_property>
+         <obj_property name="ObjectShortName">vga_blue[3:0]</obj_property>
+         <obj_property name="CustomSignalColor">#E0FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject type="group" fp_name="group79">
+      <obj_property name="label">VP</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject type="logic" fp_name="/tb_top_basys_3/uut/u_graphics_core/u_vp/start">
+         <obj_property name="ElementShortName">start</obj_property>
+         <obj_property name="ObjectShortName">start</obj_property>
+         <obj_property name="CustomSignalColor">#0000FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/tb_top_basys_3/uut/u_graphics_core/u_vp/valid">
+         <obj_property name="ElementShortName">valid</obj_property>
+         <obj_property name="ObjectShortName">valid</obj_property>
+         <obj_property name="CustomSignalColor">#0000FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_top_basys_3/uut/u_graphics_core/u_vp/x">
+         <obj_property name="ElementShortName">x[27:0]</obj_property>
+         <obj_property name="ObjectShortName">x[27:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_top_basys_3/uut/u_graphics_core/u_vp/y">
+         <obj_property name="ElementShortName">y[27:0]</obj_property>
+         <obj_property name="ObjectShortName">y[27:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_top_basys_3/uut/u_graphics_core/u_vp/z">
+         <obj_property name="ElementShortName">z[27:0]</obj_property>
+         <obj_property name="ObjectShortName">z[27:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_top_basys_3/uut/u_graphics_core/u_vp/xs">
+         <obj_property name="ElementShortName">xs[27:0]</obj_property>
+         <obj_property name="ObjectShortName">xs[27:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FFA500</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_top_basys_3/uut/u_graphics_core/u_vp/ys">
+         <obj_property name="ElementShortName">ys[27:0]</obj_property>
+         <obj_property name="ObjectShortName">ys[27:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FFA500</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_top_basys_3/uut/u_graphics_core/u_vp/dbg_state">
+         <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="ElementShortName">dbg_state[3:0]</obj_property>
+         <obj_property name="ObjectShortName">dbg_state[3:0]</obj_property>
+         <obj_property name="label">vp_state[3:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_top_basys_3/uut/u_graphics_core/u_vp/u_rotation_q/dbg_state">
+         <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="ElementShortName">dbg_state[3:0]</obj_property>
+         <obj_property name="ObjectShortName">dbg_state[3:0]</obj_property>
+         <obj_property name="label">rot_state[3:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_top_basys_3/uut/u_graphics_core/u_vp/u_rotation_q/u_sin_cos_lut/dbg_state">
+         <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="ElementShortName">dbg_state[2:0]</obj_property>
+         <obj_property name="ObjectShortName">dbg_state[2:0]</obj_property>
+         <obj_property name="label">lut_state[2:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_top_basys_3/uut/u_graphics_core/u_vp/u_proj_q/dbg_state">
+         <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="ElementShortName">dbg_state[2:0]</obj_property>
+         <obj_property name="ObjectShortName">dbg_state[2:0]</obj_property>
+         <obj_property name="label">proj_state[2:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_top_basys_3/uut/u_graphics_core/u_vp/u_ndc_to_screen_q/dbg_state">
+         <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="ElementShortName">dbg_state[3:0]</obj_property>
+         <obj_property name="ObjectShortName">dbg_state[3:0]</obj_property>
+         <obj_property name="label">ndc_state[3:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_basys_3/frame_number">
+      <obj_property name="ElementShortName">frame_number[31:0]</obj_property>
+      <obj_property name="ObjectShortName">frame_number[31:0]</obj_property>
+      <obj_property name="CustomSignalColor">#FFA500</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top_basys_3/uut/u_config/ready">
+      <obj_property name="ElementShortName">ready</obj_property>
+      <obj_property name="ObjectShortName">ready</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top_basys_3/uut/start_frame">
+      <obj_property name="ElementShortName">start_frame</obj_property>
+      <obj_property name="ObjectShortName">start_frame</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top_basys_3/uut/frame_done">
+      <obj_property name="ElementShortName">frame_done</obj_property>
+      <obj_property name="ObjectShortName">frame_done</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_basys_3/uut/u_config/dbg_config_state">
+      <obj_property name="ElementShortName">dbg_config_state[2:0]</obj_property>
+      <obj_property name="ObjectShortName">dbg_config_state[2:0]</obj_property>
+      <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top_basys_3/uut/u_graphics_core/dbg_fb_state">
+      <obj_property name="ElementShortName">dbg_fb_state</obj_property>
+      <obj_property name="ObjectShortName">dbg_fb_state</obj_property>
+      <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_basys_3/uut/u_graphics_core/u_fb/dbg_fb_i_state">
+      <obj_property name="ElementShortName">dbg_fb_i_state[2:0]</obj_property>
+      <obj_property name="ObjectShortName">dbg_fb_i_state[2:0]</obj_property>
+      <obj_property name="CustomSignalColor">#A0A0A4</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_basys_3/uut/u_graphics_core/u_fb/dbg_fb_ii_state">
+      <obj_property name="ElementShortName">dbg_fb_ii_state[2:0]</obj_property>
+      <obj_property name="ObjectShortName">dbg_fb_ii_state[2:0]</obj_property>
+      <obj_property name="CustomSignalColor">#A0A0A4</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_basys_3/uut/u_graphics_core/dbg_mc_state">
+      <obj_property name="ElementShortName">dbg_mc_state[4:0]</obj_property>
+      <obj_property name="ObjectShortName">dbg_mc_state[4:0]</obj_property>
+      <obj_property name="CustomSignalColor">#DCDCDC</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_basys_3/uut/u_graphics_core/dbg_bu_state">
+      <obj_property name="ElementShortName">dbg_bu_state[2:0]</obj_property>
+      <obj_property name="ObjectShortName">dbg_bu_state[2:0]</obj_property>
+      <obj_property name="CustomSignalColor">#DCDCDC</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_basys_3/uut/u_graphics_core/dbg_vp_state">
+      <obj_property name="ElementShortName">dbg_vp_state[3:0]</obj_property>
+      <obj_property name="ObjectShortName">dbg_vp_state[3:0]</obj_property>
+      <obj_property name="CustomSignalColor">#DCDCDC</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_basys_3/uut/u_graphics_core/dbg_e_idx">
+      <obj_property name="ElementShortName">dbg_e_idx[9:0]</obj_property>
+      <obj_property name="ObjectShortName">dbg_e_idx[9:0]</obj_property>
+      <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top_basys_3/uut/u_graphics_core/dbg_v_idx">
+      <obj_property name="ElementShortName">dbg_v_idx[9:0]</obj_property>
+      <obj_property name="ObjectShortName">dbg_v_idx[9:0]</obj_property>
+      <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+</wave_config>

@@ -11,6 +11,8 @@
 //              Interconecteaza Controlerul FSM cu Calea de Date.
 //---------------------------------------------------------------
 
+`timescale 1ns / 1ps
+
 module div_top_level_q #(
     parameter INT_BITS   = 16,                    // Numar de biti parte intreaga (include semnul) 
     parameter FRAC_BITS  = 12,                    // Numar de biti parte fractionara

@@ -22,6 +22,8 @@
 //              si validarea stabilitatii numerice in spatiul fix-point.
 //---------------------------------------------------------------
 
+`timescale 1ns / 1ps
+
 module vertex_processor #(
     parameter INT_BITS  = 16,                                    // Numar de biti parte intreaga (include semnul) 
     parameter FRAC_BITS = 16,                                    // Numar de biti parte fractionara
@@ -31,7 +33,7 @@ module vertex_processor #(
     input                               rst_n,                   // Reset asincron (activ in 0)
     input                               start,                   // Pornire proces conversie
     
-    input      [2:0]                    rotation,                // Flag selectare tip de rotatie
+    input      [1:0]                    rotation,                // Flag selectare tip de rotatie
     input      [9:0]                    angle,                   // Unghiul de rotatie
 
     input      [DATA_WIDTH-1:0]         f, x, y, z, w, h, cam_z, // Datele de intrare (NDC + dimensiuni ecran)
@@ -69,7 +71,7 @@ module vertex_processor #(
     // Registre de intrare
     reg [DATA_WIDTH-1:0] reg_x, reg_y, reg_z, reg_f, reg_w, reg_h, reg_cam_z;
     reg [9:0]       reg_angle;
-    reg [2:0]       reg_rotation;
+    reg [1:0]       reg_rotation;
 
     // Registre intermediare
     reg [DATA_WIDTH-1:0] reg_xr, reg_yr, reg_zr; // Dupa rotatie

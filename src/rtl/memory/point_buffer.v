@@ -18,6 +18,8 @@
 //              si etapa de rasterizare (Bresenham / scan conversion).
 //---------------------------------------------------------------
 
+`timescale 1ns / 1ps
+
 module point_buffer #(
     parameter ADDR_WIDTH = 8,                   // Latime adrese, in biti (10 biti==> max 1024 vertecsi de mapat)
     parameter INT_BITS   = 16,                  // Numar de biti parte intreaga (include semnul)

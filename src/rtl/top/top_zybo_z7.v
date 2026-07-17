@@ -24,6 +24,8 @@
 //              de citire din memoria BRAM.
 //---------------------------------------------------------------
 
+`timescale 1ns / 1ps
+
 module top_zybo_z7 #(
    
     // --- PARAMETRI MODEL 3D ---

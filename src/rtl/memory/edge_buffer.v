@@ -16,6 +16,8 @@
 //              segmentelor de muchii in pipeline-ul de rasterizare.
 //---------------------------------------------------------------
 
+`timescale 1ns / 1ps
+
 module edge_buffer #(
     parameter EDGE_ADDR  = 10,              // Latime adrese muchii, in biti (10 biti==> max 1024 muchii de mapat)
     parameter VERT_ADDR  = 8                // Latimea adresei de memorie a unui vertex, in biti (= ADDR_WIDTH din vertex_buffer)

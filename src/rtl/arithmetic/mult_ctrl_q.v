@@ -11,6 +11,8 @@
 //              Gestioneaza starile de incarcare, calcul si finalizare.
 //---------------------------------------------------------------
 
+`timescale 1ns / 1ps
+
 module mult_ctrl_q (
     input      clk,      // Semnal de ceas
     input      rst_n,    // Reset asincron (activ in 0)

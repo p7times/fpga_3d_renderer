@@ -44,6 +44,8 @@
 //                - sincronizare cu framebuffer prin semnalul busy
 //---------------------------------------------------------------
 
+`timescale 1ns / 1ps
+
 module bresenham #(
     parameter COORD_BITS = 12,              // Numar biti coordonate: interval -2048 .. +2047
     parameter H_RES      = 1920,            // Rezolutie orizontala in pixeli

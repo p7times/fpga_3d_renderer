@@ -48,6 +48,8 @@
 //                  signed fixed-point (Q INT_BITS.FRAC_BITS)
 //---------------------------------------------------------------
 
+`timescale 1ns / 1ps
+
 module rotation #(
     parameter INT_BITS  = 16,                           // Numar de biti parte intreaga (include semnul) 
     parameter FRAC_BITS = 16,                           // Numar de biti parte fractionara
@@ -56,7 +58,7 @@ module rotation #(
     input                               clk,            // Semnal de ceas
     input                               rst_n,          // Reset asincron (activ in 0)
     input                               start,          // Pornire calcul rotatie
-    input      [2:0]                    rotation,       // Flag selectare tip de rotatie
+    input      [1:0]                    rotation,       // Flag selectare tip de rotatie
     input      [DATA_WIDTH-1:0]         x, y, z,        // Datele de intrare 
     input      [9:0]                    angle,          // Unghiul de rotatie
     output reg [DATA_WIDTH-1:0]         xr, yr, zr,     // Datele de iesire (coordonatele 3D rotite)
@@ -72,13 +74,10 @@ module rotation #(
     // ------------------------
     // Codificarea scenariilor de rotatie
     // ------------------------
- 
-    localparam [2:0] ROT_X_CCW = 3'b000,   // Axa X, sens trigonometric
-                     ROT_X_CW  = 3'b001,   // Axa X, sens orar
-                     ROT_Y_CCW = 3'b010,   // Axa Y, sens trigonometric
-                     ROT_Y_CW  = 3'b011,   // Axa Y, sens orar
-                     ROT_Z_CCW = 3'b100,   // Axa Z, sens trigonometric
-                     ROT_Z_CW  = 3'b101;   // Axa Z, sens orar
+
+    localparam [1:0] ROT_X  = 3'b00,   // Axa X, sens orar
+                     ROT_Y  = 3'b01,   // Axa Y, sens orar
+                     ROT_Z  = 3'b10;   // Axa Z, sens orar
 
 
     // ------------------------
@@ -343,19 +342,7 @@ module rotation #(
 
                     case (rotation)
  
-                        ROT_X_CCW: begin            //  [ 1,    0,      0   ]
-                            reg_a <= ONE;           //  [ 0,   cos,   -sin  ]
-                            reg_b <= ZERO;          //  [ 0,   sin,    cos  ]
-                            reg_c <= ZERO;
-                            reg_d <= ZERO;
-                            reg_e <= reg_cos;
-                            reg_f <= reg_neg_sin;
-                            reg_g <= ZERO;
-                            reg_h <= reg_sin;
-                            reg_i <= reg_cos;
-                        end
- 
-                        ROT_X_CW: begin             //  [ 1,    0,      0   ]
+                        ROT_X: begin                //  [ 1,    0,      0   ]
                             reg_a <= ONE;           //  [ 0,   cos,    sin  ]
                             reg_b <= ZERO;          //  [ 0,  -sin,    cos  ]
                             reg_c <= ZERO;
@@ -366,20 +353,8 @@ module rotation #(
                             reg_h <= reg_neg_sin;
                             reg_i <= reg_cos;
                         end
- 
-                        ROT_Y_CCW: begin            //  [ cos,   0,   sin  ]
-                            reg_a <= reg_cos;       //  [  0,    1,    0   ]
-                            reg_b <= ZERO;          //  [-sin,   0,   cos  ]
-                            reg_c <= reg_sin;
-                            reg_d <= ZERO;
-                            reg_e <= ONE;
-                            reg_f <= ZERO;
-                            reg_g <= reg_neg_sin;
-                            reg_h <= ZERO;
-                            reg_i <= reg_cos;
-                        end
- 
-                        ROT_Y_CW: begin             //  [ cos,   0,  -sin  ]
+  
+                        ROT_Y: begin                //  [ cos,   0,  -sin  ]
                             reg_a <= reg_cos;       //  [  0,    1,    0   ]
                             reg_b <= ZERO;          //  [ sin,   0,   cos  ]
                             reg_c <= reg_neg_sin;
@@ -391,19 +366,7 @@ module rotation #(
                             reg_i <= reg_cos;
                         end
  
-                        ROT_Z_CCW: begin            //  [ cos,  -sin,   0  ]
-                            reg_a <= reg_cos;       //  [ sin,   cos,   0  ]
-                            reg_b <= reg_neg_sin;   //  [  0,     0,    1  ]
-                            reg_c <= ZERO;
-                            reg_d <= reg_sin;
-                            reg_e <= reg_cos;
-                            reg_f <= ZERO;
-                            reg_g <= ZERO;
-                            reg_h <= ZERO;
-                            reg_i <= ONE;
-                        end
- 
-                        ROT_Z_CW: begin             //  [ cos,   sin,   0  ]
+                        ROT_Z: begin                //  [ cos,   sin,   0  ]
                             reg_a <= reg_cos;       //  [-sin,   cos,   0  ]
                             reg_b <= reg_sin;       //  [  0,     0,    1  ]
                             reg_c <= ZERO;

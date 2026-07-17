@@ -20,12 +20,12 @@
 //
 //              Functionalitati:
 //                  - scriere individuala de pixeli
-//                  - citire continua pentru HDMI controller
+//                  - citire continua pentru HDMI/VGA controller
 //                  - stergere completa a framebuffer-ului
 //
 //              Arhitectura:
 //                  - Dual-port BRAM
-//                      * Port A -> citire HDMI
+//                      * Port A -> citire
 //                      * Port B -> scriere / clear FSM
 //
 //              Scrierea unui pixel necesita operatie Read-Modify-Write:
@@ -34,6 +34,8 @@
 //                  3. se scrie inapoi cuvantul modificat
 //---------------------------------------------------------------
 
+`timescale 1ns / 1ps
+
 module framebuffer #(
     parameter H_RES       = 1280,                                   // Rezolutie orizontala in pixeli
     parameter V_RES       = 720,                                    // Rezolutie verticala in pixeli
@@ -41,25 +43,25 @@ module framebuffer #(
     parameter TOTAL_WORDS = (H_RES * V_RES) / WORD_BITS,            // Numarul total de cuvinte in memorie (64800)
     parameter FB_ADDR_WIDTH = $clog2((H_RES * V_RES) / WORD_BITS)   // Numarul minim de biti necesari pentru adresarea cuvintelor
 )(
-    input                       clk,                        // Semnal de ceas
-    input                       rst_n,                      // Reset asincron (activ in 0)
-    input                       cs,                         // Chip select
-    input                       wr,                         // Scriere/citire
-    input                       clear,                      // Comanda pentru stergerea framebuffer-ului
+    input                           clk,                            // Semnal de ceas
+    input                           rst_n,                          // Reset asincron (activ in 0)
+    input                           cs,                             // Chip select
+    input                           wr,                             // Scriere/citire
+    input                           clear,                          // Comanda pentru stergerea framebuffer-ului
 
     // Interfata scriere pixel individual (de la BU)
-    input  [10:0]               x_in,               // 0..1919
-    input  [10:0]               y_in,               // 0..1079
-    input                       pixel_in,           // Valoare pixel: 0 -> negru, 1 -> alb
+    input  [10:0]                   x_in,                           // 0..1919
+    input  [10:0]                   y_in,                           // 0..1079
+    input                           pixel_in,                       // Valoare pixel: 0 -> negru, 1 -> alb
 
-    // Interfata citire HDMI
-    input      [FB_ADDR_WIDTH-1:0] rd_address,
-    output reg [WORD_BITS-1:0]  rd_dataOut,
+    // Interfata citire
+    input      [FB_ADDR_WIDTH-1:0]  rd_address,
+    output reg [WORD_BITS-1:0]      rd_dataOut,
 
     // Semnale status/debug
-    output                      busy,
-    output     [FB_ADDR_WIDTH-1:0] dbg_clear_addr,      // Debug FSM clear
-    output     [2:0]            dbg_state               // Debug stare FSM
+    output                          busy,
+    output     [FB_ADDR_WIDTH-1:0]  dbg_clear_addr,                 // Debug FSM clear
+    output     [2:0]                dbg_state                       // Debug stare FSM
 );
     
     // ------------------------
@@ -102,7 +104,7 @@ module framebuffer #(
     localparam OFFSET_BITS = $clog2(WORD_BITS);
 
     wire [$clog2(H_RES*V_RES)-1:0] pixel_index;         // Index liniar pixel
-    wire [FB_ADDR_WIDTH-1:0]          pixel_addr;       // Adresa cuvantului BRAM
+    wire [FB_ADDR_WIDTH-1:0]       pixel_addr;          // Adresa cuvantului BRAM
     wire [OFFSET_BITS-1:0]         bit_offset;          // Pozitia bitului in cuvant
     wire [WORD_BITS-1:0]           bit_mask;            // Masca pentru modificarea pixelului
     wire in_bounds = (x_in < H_RES) && (y_in < V_RES);  // Protectie coordonate invalide
@@ -196,7 +198,7 @@ module framebuffer #(
 
 
     // ------------------------------------------------
-    // Port A (Citire HDMI)
+    // Port A (Citire)
     // ------------------------------------------------
 
     always @(posedge clk) begin
@@ -205,7 +207,7 @@ module framebuffer #(
 
 
     // ------------------------------------------------
-    // Port B (Acces FSM pentru Write/Clear)
+    // Port B (Acces FSM pentru Scriere/Stergere)
     // ------------------------------------------------
 
     reg [WORD_BITS-1:0] b_read_data;
